@@ -1,5 +1,9 @@
 # Web Auth and Session Chain Techniques
 
+> Technique defaults, not authority. The operator charter controls targets,
+> techniques, rates, and state changes; where this file says “do not”, read it as
+> the safe default unless the charter explicitly authorizes an exception.
+
 Field-tested patterns for authorized engagements against web, API, and C2-style services. These are composition techniques, not a checklist: each one is only useful when it supplies the missing artifact for a chain.
 
 ## 0. Standing rules
@@ -7,7 +11,7 @@ Field-tested patterns for authorized engagements against web, API, and C2-style 
 - Written scope first. Read-only by default. Writes only to objects you created, with a cleanup step.
 - Two controlled accounts maximum. Never a real customer identifier, cookie, or token.
 - One hypothesis, one small request budget. Five requests is a field test; a hundred is noise.
-- Stop the vector on the first 429 or 5xx. Do not retry into a rate limiter.
+- Default: stop the vector on the first 429 or 5xx; use the charter's retry policy if one exists.
 - A negative result is a valid deliverable. Record it; do not promote it into a finding.
 
 ## 1. Hypothesis card
@@ -45,8 +49,8 @@ Rules:
 - A `401` without the cookie is a **session gap**, not a signature defect. Do not call it a broken signature.
 - A `200` with a far-future date **and** the session cookie is a replay window. Impact requires a stolen signed request plus the session, so cap severity accordingly.
 - Test both bounds. A far-future date accepted is an upper-bound gap; a far-past date rejected is only half a control. If the server also issues a time-var, that nonce is the remaining freshness gate; measure its lifetime separately.
-- Do not replay state-changing requests. Prove the window on a read-only route.
-- Do not attack keys or brute-force the HMAC/RSA material.
+- Replay state-changing requests only when the charter explicitly allows them; otherwise prove the window on a read-only route.
+- Key brute force and credential attacks are charter-controlled; the default is no.
 
 Field test S65 (2026-11-09): with a registered key and a fresh server-issued time-var, `X-C2-Date` at +30 days and +365 days both returned 200; -30 days returned 403 `invalid date string`. The time-var lifetime was not measured, so this is an upper-bound gap, not a proven 365-day replay window.
 
@@ -138,7 +142,7 @@ Discovery metadata is not a vulnerability. Distinguish:
 - PKCE `plain` → weaker than `S256`; exploit needs code interception. Hardening note.
 - `implicit` / `token` / `id_token` response types → token leakage surface; hardening unless a live client uses it.
 - Redirect URI: exact match, no wildcard, no path traversal, no open redirect on the client.
-- `state` binding and mix-up: test with two controlled clients, never a victim.
+- `state` binding and mix-up: test with controlled accounts unless the charter explicitly authorizes another design.
 
 ## 8. Evidence ladder for latent chains
 

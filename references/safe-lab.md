@@ -1,5 +1,8 @@
 # Safe Lab and Source Selection
 
+> Advisory lab safety. Target and technique boundaries are in the operator
+> charter; this file only warns about executing unverified code.
+
 ARTEX is an offensive platform that runs a shell-capable agent in a root container. Treat running it as handling a loaded weapon: isolate it, pin it, and never run a copy you have not verified.
 
 ## 1. Which copy to use

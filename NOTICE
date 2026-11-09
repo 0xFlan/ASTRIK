@@ -1,7 +1,8 @@
 ARTEX Pentest Operator Skill
 
 This repository is an independent methodology document. It is not affiliated with,
-endorsed by, or maintained by any target vendor, the ARTEX maintainers, or the Pojun authors.
+endorsed by, or maintained by any target vendor, the ARTEX maintainers, the Pojun
+authors, or the external tool projects listed below.
 
 ARTEX is a separate open-source project licensed under AGPL-3.0:
 https://github.com/BaaRai/ARTEX
@@ -9,12 +10,25 @@ https://github.com/BaaRai/ARTEX
 Pojun Skill is a separate open-source project licensed under AGPL-3.0:
 https://github.com/chu0119/Pojun
 
-The files references/safety-rails.md and references/src-playbook.md are derived from
-Pojun and are included under this repository's AGPL-3.0 license.
+The file references/src-playbook.md is derived from Pojun and is included under
+this repository's AGPL-3.0 license.
 
-No upstream application source code is included in this repository. Names are used descriptively
-for attribution and interoperability. The ARTEX attack-surface annex records static,
-unconfirmed hypotheses about an open-source codebase for authorized testing and
-responsible disclosure; it is not a claim that any deployment is vulnerable.
+The former blanket safety reference has been retired. Target and technique
+boundaries are defined by the operator in references/operator-charter.md.
 
-Use this skill only against systems you own or are explicitly authorized to test.
+Linked external projects, not bundled:
+
+- Strix, Apache-2.0: https://github.com/usestrix/strix
+- Shannon, AGPL-3.0: https://github.com/KeygraphHQ/shannon
+- sapper-v2, MIT: https://github.com/N1nEmAn/sapper-v2
+- Ghidra, Apache-2.0: https://github.com/NationalSecurityAgency/ghidra
+- OSV-Scanner, Apache-2.0: https://github.com/google/osv-scanner
+
+No upstream application source code is included in this repository. Names are used
+descriptively for attribution and interoperability. The ARTEX attack-surface annex
+records static, unconfirmed hypotheses about an open-source codebase for authorized
+testing and responsible disclosure; it is not a claim that any deployment is
+vulnerable.
+
+Use this skill only against systems, repositories, or artifacts for which the
+operator has recorded authority.

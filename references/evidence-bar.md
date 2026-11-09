@@ -20,7 +20,7 @@ No "likely", "probably", or "confirmed-ish". If you did not see it, it is inferr
 | L3 | Real impact: read another principal's data, read a file, change state | High |
 | L4 | Full chain or control: admin, RCE, bulk access, cross-tenant | Critical |
 
-Hard gates for high/critical: at least one mechanical artifact — HTTP status + response body, command + output, JSON field echo, or an out-of-band callback record. A version string, a tool banner, or "the page says admin" never qualifies.
+Mechanical-artifact threshold for high/critical: at least one mechanical artifact — HTTP status + response body, command + output, JSON field echo, or an out-of-band callback record. A version string, a tool banner, or "the page says admin" never qualifies.
 
 ## 3. Confirmation gate
 

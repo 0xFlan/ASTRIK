@@ -81,7 +81,7 @@ Minimum proof: one forged token accepted by an endpoint that rejects the anonymo
 
 ### T2 — IDOR → account takeover
 `register two accounts` → `enumerate object IDs from a list response` → `read victim object as A` → `write victim email as A` → `trigger reset` → `log in as victim`.
-Minimum proof: one victim field read, one controlled write, one login. Use accounts you created; never a real customer.
+Minimum proof: one victim field read, one controlled write, one login. Use controlled accounts unless the charter explicitly covers another design.
 
 ### T3 — Upload → stored XSS → admin session
 `find accepted types` → `upload SVG/HTML with a script` → `locate the admin view that renders it` → `exfiltrate cookie/localStorage` → `replay token`.
@@ -93,11 +93,11 @@ Minimum proof: the credential works; do not dump the datastore.
 
 ### T5 — SSRF → metadata → cloud
 `URL-taking parameter` → `reach 169.254.169.254 or an internal admin plane` → `obtain role credentials` → `call one cloud API read`.
-Minimum proof: the metadata response and one successful API read. Do not touch production data.
+Minimum proof: the metadata response and one successful API read. Default: do not touch production data; the charter may define a safe equivalent.
 
 ### T6 — First-run claim → admin
 `detect uninitialized setup` → `race the legitimate owner or obtain the setup token from logs` → `claim admin` → `persist a test-only marker`.
-Minimum proof: the claim succeeds and the legitimate setup then fails. This is inherently state-changing; confirm scope first.
+Minimum proof: the claim succeeds and the legitimate setup then fails. This is inherently state-changing; the charter must authorize it first.
 
 ### T7 — Shared store → cross-task leak
 `capture traffic in task/tenant A` → `search the same host from task/tenant B` → `extract Authorization/Cookie` → `replay as A`.
