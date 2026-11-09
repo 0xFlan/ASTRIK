@@ -1,0 +1,33 @@
+=== RUN   TestF010MergeAllKeepsFirstTaskScope
+F010 merge_all first_task=101 contains_task_202=true contains_task_101=true
+--- PASS: TestF010MergeAllKeepsFirstTaskScope (0.00s)
+=== RUN   TestF010PromptAndTriggerManagementRoutes
+2026/11/09 13:48:47 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 13:48:47 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 13:48:47 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF010PromptAndTriggerManagementRoutes4234344920/004/jwt.key
+2026/11/09 13:48:47 [auth] no admin password is set. Setup token for the /setup page: [redacted]
+2026/11/09 13:48:47 [btw] recover: context canceled
+2026/11/09 13:48:47 [engine] built provider for LLM profile 194 (anthropic / claude-x)
+2026/11/09 13:48:47 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 13:48:47 [manager] reloaded 143 task(s) from PG
+2026/11/09 13:48:47 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 13:48:47 [task-archive] worker: context canceled
+F010 prompt_unauth=401 preview_status=200 preview_persisted=false prompt_saved=true builtin_trigger=400 custom_trigger_saved=true agent_route_tool=false
+--- PASS: TestF010PromptAndTriggerManagementRoutes (0.09s)
+=== RUN   TestF010TrafficCrossTaskCredentialReadAndReplay
+2026/11/09 13:48:47 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 13:48:47 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 13:48:48 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF010TrafficCrossTaskCredentialReadAndReplay2049395610/004/jwt.key
+2026/11/09 13:48:48 [auth] no admin password is set. Setup token for the /setup page: [redacted]
+2026/11/09 13:48:48 [btw] recover: context canceled
+2026/11/09 13:48:48 [engine] built provider for LLM profile 194 (anthropic / claude-x)
+2026/11/09 13:48:48 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 13:48:48 [manager] reloaded 143 task(s) from PG
+2026/11/09 13:48:48 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 13:48:48 [task-archive] worker: context canceled
+2026/11/09 13:48:48 [mcp] browser MCP now has the capture proxy http://127.0.0.1:0 attached (CA /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF010TrafficCrossTaskCredentialReadAndReplay2049395610/001/traffic/_ca/mitmproxy-ca-cert.pem)
+F010 cross_search=false cross_search_perm=deny cross_get_visible=false cross_get_perm=deny cross_blob_read=false cross_blob_perm=deny replay=false own_search=true own_search_perm=allow own_read=true own_read_perm=allow own_token_redacted=true operator_raw=true
+2026/11/09 13:48:48 [mcp] browser MCP capture proxy configuration removed
+--- PASS: TestF010TrafficCrossTaskCredentialReadAndReplay (0.10s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.558s

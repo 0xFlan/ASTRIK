@@ -288,3 +288,31 @@ auto-triggered; the delete is operator-assisted. No live-model prompt-injection
 test was run. Full suite green twice (14 packages, 0 `FAIL`, `server` 22.644 s
 then cached), both patches apply to `2e3c8f8`, and `evidence/f009/` carries the
 reproducer and logs.
+
+### Cross-task traffic credential read and replay (F-010)
+
+F-009 left A5 (the process-wide traffic store) and the prompt/trigger routes
+open. F-010 built two tasks with distinct assets and seeded traffic. Task B's
+worker used the assembled `traffic_search`/`traffic_get`/`traffic_blob` tools to
+read task A's `Authorization` header, body password, and oversized-response
+blob secret, then replayed the token against a local verifier; all four
+observations and the replay succeeded on `80de359`. The same run kept own-task
+reads and the operator `Traffic.Get` raw as positive controls.
+
+The fix resolves the caller's `RunInfo.TaskID` to its asset hosts and enforces
+that scope in both `CheckPermissions` (Deny) and each handler; `get` resolves the
+exchange host and `blob` resolves every referencing exchange. Agent-facing
+`traffic_get`/`traffic_blob` redact credential headers and secret-shaped body
+fields, while the operator view stays raw. After the fix cross-task search/get/
+blob are denied, the credential is absent, replay fails, and own-task/operator
+controls pass. The recorder still has no per-exchange task id, so same-host
+multi-task traffic remains a documented residual; the capture-level partition
+is still recommended.
+
+The same pass recorded two negatives by probe: prompt/trigger management is
+behind the JWT and preview does not persist (worker has no management tool), and
+`merge_mode=all` keeps the first task's `RunInfo` so later tasks are rejected by
+the F-009 scope check. Full suite green twice (14 test packages, 0 `FAIL`,
+`server` 24.680 s / 23.187 s); `evidence/f010/` carries the reproducer,
+patches, and logs. The traffic chain is authenticated-agent/cross-task, not
+unauthenticated remote; no live-model injection test was run.

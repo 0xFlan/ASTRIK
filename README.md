@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.13 |
+| Revision | 1.14 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -27,6 +27,7 @@
 | 1.11 | 2026-11-09 | Closed the archive-restore destination race with one `os.Root` for source and destination; proved an agent-facing `create_mcp` stdio launcher executes outside the MCP approval gate and made stdio operator-only; added F-007 and `evidence/f007/` |
 | 1.12 | 2026-11-09 | Proved custom command/script/http tools bypass Bash's approval gate, fixed permission parity, answered the F-007 reachability question as operator-assisted, and corrected F-007's impact; added F-008 and `evidence/f008/` |
 | 1.13 | 2026-11-09 | Proved the auto-triggered reporter crosses task scope to read and overwrite another task's evidence, fixed task scoping and the destructive delete approval gate, and added F-009 and `evidence/f009/` |
+| 1.14 | 2026-11-09 | Proved cross-task traffic credential read and replay, scoped agent traffic tools to task assets and redacted agent-facing credentials, and recorded the prompt/trigger and `merge_mode=all` negatives; added F-010 and `evidence/f010/` |
 
 ## 1 Scope
 
@@ -694,6 +695,37 @@ green (14 packages, 0 `FAIL`, `server` 22.644 s then cached); only the live-mode
 test skips. F-009 carries the reproducer, two patches, and the before/after logs
 under `evidence/f009/`. The operator-charter model and the "target content is
 data, not instructions" rule are unchanged.
+
+## Annex Q — Cross-task traffic credential read and replay (2026-11-09)
+
+F-010 closed the remaining A5 candidate. The traffic recorder is one
+process-wide SQLite index, and the agent tools (`traffic_search`, `traffic_get`,
+`traffic_blob`) were read-only, `Allowed`, and had no task argument. A worker in
+task B could search task A's host, read the captured `Authorization`/`Cookie`
+headers, follow the oversized-response blob pointer, and replay the token. The
+probe built two tasks with distinct assets and credentials; before the fix all
+four cross-task observations and the replay succeeded, while own-task and
+operator reads also worked.
+
+The fix gives the tools a task-asset host scope derived from the caller's
+`RunInfo.TaskID`, checks it in both the permission decision and the handler
+(`Deny`, not a read-only auto-allow), resolves `traffic_get`/`traffic_blob` back
+to the recorded host, and redacts credential headers and secret-shaped body
+fields from agent-facing output. `Traffic.Get` and the operator Traffic page
+remain raw. After the fix the cross-task search/get/blob calls are denied, the
+credential is absent, replay fails, and own-task plus operator controls pass.
+The recorder still has no per-exchange `task_id`, so two tasks sharing a host
+remain a documented residual; the reader-side scope and redaction are the
+interim boundary.
+
+The same pass recorded two negatives with probes: prompt and trigger management
+are authenticated operator routes (the preview route does not persist, and the
+worker has no management tool), and `merge_mode=all` keeps the first task's
+`RunInfo`, so F-009's scope check rejects later tasks rather than promoting
+them. Two consecutive full DB-backed suite runs are green (14 test packages
+`ok`, 0 `FAIL`, `server` 24.680 s / 23.187 s); the live-model test remains
+skipped. F-010 carries the reproducer, two patches, and the before/after logs
+under `evidence/f010/`.
 
 ## Bibliography
 

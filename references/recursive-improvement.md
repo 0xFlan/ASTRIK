@@ -224,3 +224,15 @@ intentionally small and can itself be improved by the same loop.
   operator-assisted, but the tool is irreversible and global. Put destructive
   verbs behind `AskUser` and keep a direct operator control in the probe. Do not
   let a benign reachability classification excuse an unguarded destructive sink.
+- **A read-only tool still needs an ownership check.** F-010's traffic readers
+  were `Allowed` and read-only, so the pipeline's read-only auto-allow made the
+  permission verdict irrelevant. Resolve the caller's task to its assets and
+  return `Deny` for a host outside that set; repeat the check in the handler so
+  a direct `.Call` cannot bypass the permission wrapper. Redact credential
+  headers/body fields in the agent-facing reader and keep the operator view raw.
+- **A process-wide capture needs explicit partition, not an inferred one.** A5
+  had no `task_id` in the exchange schema; scoping by the caller's asset hosts
+  closes the distinct-host chain but leaves same-host traffic shared. Record
+  that residual plainly and add a capture-level owner before claiming tenant
+  separation. Probe the prompt/trigger routes and `merge_mode=all` rather than
+  inferring their authority from the UI.

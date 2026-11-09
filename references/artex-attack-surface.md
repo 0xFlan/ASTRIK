@@ -96,18 +96,38 @@ Sound areas are listed in §6. Do not report those as gaps.
 
 **Fix.** Resolve with `filepath.EvalSymlinks` and re-check the prefix, or open with `O_NOFOLLOW`; reject any component that is a symlink; apply the same check to download.
 
-### A5 — Traffic capture is instance-global, not task-scoped
+### A5 — Traffic capture is instance-global; cross-task credential read and replay
 
-**Anchors.** `server/manager.go:400` (`traffic.Open(filepath.Join(dir,"traffic"), ...)` — one store per manager), `traffic/traffic.go:134` (`TrafficSearchDescription`: host is required; no task filter), `server/traffic_ingest.go:22` (authenticated ingest).
+**Anchors.** `server/manager.go` (`traffic.Open` — one store per manager;
+`HostTools`), `traffic/traffic.go` (`Traffic.Tools`, `query`, `Get`),
+`server/traffic_ingest.go` (authenticated ingest).
 
-**Mechanism.** Every task and every browser-extension capture writes to the same SQLite index and file tree. `traffic_search` filters by host/URL/body, not by task or owner. In a shared instance (M2), task B can search a host tested by task A and read A's captured `Authorization`/`Cookie` headers, then replay them. The same store also makes evidence poisoning possible: an authenticated ingest can plant a fabricated exchange that a later finding binds as proof (A11).
+**Mechanism.** Every task and every browser-extension capture writes to the
+same SQLite index. `traffic_search` filtered by host/URL/body, not by task or
+owner; `traffic_get` took only an exchange id and returned the raw request
+headers; `traffic_blob` took only a hash. In a shared instance (M2), task B's
+worker could search a host tested by task A, read A's captured
+`Authorization`/`Cookie` headers and body secrets, follow the blob pointer for
+an oversized response, and replay the token. F-010's two-task probe observed
+the read, the blob read, and a successful local replay; own-task and operator
+reads were positive controls.
 
-**Test recipe (lab, two tasks).**
-1. In task A, ingest a synthetic exchange to `canary.test` with header `Authorization: Bearer CANARY-A`.
-2. From task B, `traffic_search(host="canary.test")`, then `traffic_get` the hit.
-3. Expect `CANARY-A` in the response. Record both task IDs and the exchange ID.
+**Fix.** `Traffic.Tools(scope)` resolves the caller task's asset hosts through
+`Manager.trafficHostScope` and ties `RunInfo.TaskID` to
+`HostsByTaskWithSources`. The scope is enforced in `CheckPermissions` (Deny) and
+again in each handler; `get` resolves the exchange host and `blob` resolves every
+referencing exchange. Agent-facing `traffic_get`/`traffic_blob` redact credential
+headers and secret-shaped body fields; the operator `Traffic.Get` and Traffic
+page remain raw. Evidence: `evidence/f010/`.
 
-**Fix.** Add `task_id`/`owner` to exchanges and require it in every search/get/blob; scope ingest to a task token; partition the store per task.
+**Residual.** The recorder still has no per-exchange `task_id`, so tasks that
+attach the same host share that host's non-credential traffic. A capture-level
+task/owner column and task-scoped ingest token are the durable fix; do not
+describe the current reader-side scope as full tenant partitioning.
+
+**Negative controls.** A5's earlier browser-extension/ingest path (A11) remains
+an evidence-integrity candidate; F-010 did not test fabricated-exchange
+poisoning.
 
 ### A6 — CORS wildcard
 
@@ -265,7 +285,7 @@ id into `RunInfo`; `delegateToTask` rejects a different non-zero scope;
 
 Steps 2–5 are code-supported but unproven. Prove step 2 with a harmless marker before touching a real key. If step 2 is blocked, the chain stops there — record the negative.
 
-## 4. Chain: cross-task credential replay (M2)
+## 4. Chain: cross-task credential replay (M2) — observed and fixed (F-010)
 
 | # | Stage | Action | Artifact |
 |---|---|---|---|
@@ -273,9 +293,13 @@ Steps 2–5 are code-supported but unproven. Prove step 2 with a harmless marker
 | 2 | Entry | task B searches `host=target.test` | exchange metadata |
 | 3 | Identity | `traffic_get` reads A's token | bearer token |
 | 4 | Authority | replay the token against the target | authenticated session |
-| 5 | Impact | read one authorized record | data |
+| 5 | Impact | read or modify an authorized record | data / state |
 
-The missing link in the current code is a task filter; the search description explicitly takes only a host. Prove with a canary token, not a real credential.
+F-010 executed stages 1–4 with a canary token and a local verifier: the
+cross-task read and replay both succeeded pre-fix. After the fix the tools
+return `deny` for a host outside task B's assets, the token is redacted, and the
+replay fails; task B's own record and the operator raw read still work. The
+same-host multi-task residual is recorded in A5.
 
 ## 5. Porting the classes to other agent platforms
 
@@ -311,8 +335,8 @@ Ask these of any AI pentest/agent product:
 
 ## 7. What is still unverified
 
-- No runtime test of A1/A4/A5/A7 (no Docker/Postgres on the audit host).
-- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission; the remaining non-DB management modules (prompt templates, trigger configuration) remain route-by-route unverified. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request; no live-model prompt-injection probe was run, so remote Auto reachability remains unproven. F-009 covered the auto-triggered reporter and the remaining destructive platform tool: the reporter's cross-task reads and `update_finding_report` writes are now scoped to the triggering task, and `delete_assets_by_host` is `AskUser`-gated. Traffic A5, prompt templates, and trigger configuration remain unverified; no live-model injection test was run.
+- No runtime test of A1/A4/A7 (no Docker/Postgres on the audit host).
+- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request; no live-model prompt-injection probe was run, so remote Auto reachability remains unproven. F-009 covered the auto-triggered reporter and the remaining destructive platform tool: the reporter's cross-task reads and `update_finding_report` writes are now scoped to the triggering task, and `delete_assets_by_host` is `AskUser`-gated. F-010 covered A5: task B's worker read task A's captured bearer credential, blob, and replayed the token; agent-facing traffic tools now enforce the caller task's asset hosts and redact credentials, while the operator raw view and own-task reads remain. Prompt-template and trigger-configuration routes were probed as authenticated operator routes with a non-persisting preview and no agent management tool; `merge_mode=all` keeps the first task's scope. The capture store still lacks a per-exchange task id (same-host residual), and no live-model injection test was run.
 - No review of `mcphttp/`, `llmrec/`, `enrich/`, or the browser extension's message handling beyond permissions.
 - No CORS/CSRF browser test; the analysis is header-level only.
 - `guard.New()` is documented as the pentest-task guard, but current non-test call sites all use `NewWithInterceptor`; confirm per version before claiming a rule-less mode.

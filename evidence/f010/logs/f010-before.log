@@ -1,0 +1,20 @@
+=== RUN   TestF010TrafficCrossTaskCredentialReadAndReplay
+2026/11/09 13:48:46 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 13:48:46 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 13:48:46 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF010TrafficCrossTaskCredentialReadAndReplay2381893091/004/jwt.key
+2026/11/09 13:48:46 [auth] no admin password is set. Setup token for the /setup page: [redacted]
+2026/11/09 13:48:46 [btw] recover: context canceled
+2026/11/09 13:48:46 [engine] built provider for LLM profile 194 (anthropic / claude-x)
+2026/11/09 13:48:46 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 13:48:46 [manager] reloaded 143 task(s) from PG
+2026/11/09 13:48:46 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 13:48:46 [task-archive] worker: context canceled
+2026/11/09 13:48:46 [task-archive] worker: context canceled
+2026/11/09 13:48:46 [mcp] browser MCP now has the capture proxy http://127.0.0.1:0 attached (CA /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF010TrafficCrossTaskCredentialReadAndReplay2381893091/001/traffic/_ca/mitmproxy-ca-cert.pem)
+F010 cross_search=true cross_search_perm=allow cross_get_visible=true cross_get_perm=allow cross_blob_read=true cross_blob_perm=allow replay=true own_search=true own_search_perm=allow own_read=true own_read_perm=allow own_token_redacted=false operator_raw=true
+    zz_evidence_f010_test.go:159: cross-task search not blocked: result="[{\"id\":\"1794260926-0001\",\"method\":\"GET\",\"url\":\"http://f010-a-1680.example.test/account\",\"status\":200,\"resp_len\":307263}]" perm=allow
+2026/11/09 13:48:46 [mcp] browser MCP capture proxy configuration removed
+--- FAIL: TestF010TrafficCrossTaskCredentialReadAndReplay (0.10s)
+FAIL
+FAIL	github.com/Autumn-27/artex/server	0.505s
+FAIL

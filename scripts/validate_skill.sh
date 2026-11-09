@@ -70,6 +70,17 @@ required=(
   "evidence/f009/logs/f009-after.log"
   "evidence/f009/logs/go-test-run1.log"
   "evidence/f009/logs/go-test-run2.log"
+  "findings/f010-traffic-cross-task-credential-replay.md"
+  "evidence/f010/README.md"
+  "evidence/f010/repro/zz_evidence_f010_test.go"
+  "evidence/f010/repro/zz_evidence_f010_routes_test.go"
+  "evidence/f010/repro/trigger_merge_test.go"
+  "evidence/f010/patches/traffic-scope-and-redaction.patch"
+  "evidence/f010/patches/tests.patch"
+  "evidence/f010/logs/f010-before.log"
+  "evidence/f010/logs/f010-after.log"
+  "evidence/f010/logs/go-test-run1.log"
+  "evidence/f010/logs/go-test-run2.log"
 )
 
 for f in "${required[@]}"; do
@@ -79,8 +90,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.13 |' README.md; then
-  echo "README revision is not 1.13" >&2
+if ! grep -q '| Revision | 1.14 |' README.md; then
+  echo "README revision is not 1.14" >&2
   exit 1
 fi
 

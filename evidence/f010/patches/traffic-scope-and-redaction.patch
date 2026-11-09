@@ -1,0 +1,394 @@
+diff --git a/server/manager.go b/server/manager.go
+index 888f238..8512a35 100644
+--- a/server/manager.go
++++ b/server/manager.go
+@@ -52,13 +52,13 @@ type Task struct {
+ 	LLMChainRevision   int64   `json:"-"`
+ 	LLMFailoverState   string  `json:"llm_failover_state,omitempty"`
+ 	// LLMRotate (#85): per-intent round-robin over the task's LLM chain heads.
+-	LLMRotate  bool `json:"llm_rotate,omitempty"`
+-	rotateMu   sync.Mutex
+-	rotateNext int
+-	LLMFailoverReason  string  `json:"llm_failover_reason,omitempty"`
+-	SourceTaskIDs      []int64 `json:"source_task_ids,omitempty"`
+-	CompanyIDs         []int64 `json:"company_ids,omitempty"`
+-	Status             string  `json:"status"` // persisted lifecycle status (done/failed/timeout are terminal; empty/other is derived from runtime state)
++	LLMRotate         bool `json:"llm_rotate,omitempty"`
++	rotateMu          sync.Mutex
++	rotateNext        int
++	LLMFailoverReason string  `json:"llm_failover_reason,omitempty"`
++	SourceTaskIDs     []int64 `json:"source_task_ids,omitempty"`
++	CompanyIDs        []int64 `json:"company_ids,omitempty"`
++	Status            string  `json:"status"` // persisted lifecycle status (done/failed/timeout are terminal; empty/other is derived from runtime state)
+ 	// Task-level timeout (see docs/task-timeout-and-settle-design.md). DeadlineAt/FirstRunAt are unix seconds, 0 = unset/not yet run.
+ 	TimeoutSeconds       int                    `json:"timeout_seconds"`
+ 	PlanHeartbeatSeconds int                    `json:"plan_heartbeat_seconds"` // planner heartbeat trigger interval (seconds)
+@@ -752,7 +752,20 @@ func (m *Manager) HostTools() []actool.CoreTool {
+ 	if m.traffic == nil || !m.TrafficEnabled() {
+ 		return nil
+ 	}
+-	return m.traffic.Tools()
++	return m.traffic.Tools(m.trafficHostScope)
++}
++
++// trafficHostScope binds an agent's traffic reads to its task's assets. A task
++// run gets a concrete host set; operator/chat runs (TaskID 0) keep the platform
++// view. HostsByTaskWithSources includes direct source-task context and declared
++// scope, so inherited work remains readable without widening to every task.
++func (m *Manager) trafficHostScope(ctx context.Context) ([]string, bool, error) {
++	ri := agent.RunInfoFrom(ctx)
++	if ri.TaskID <= 0 || m.assets == nil {
++		return nil, false, nil
++	}
++	hosts, err := m.assets.HostsByTaskWithSources(ri.TaskID)
++	return hosts, true, err
+ }
+ 
+ func (m *Manager) Assets() *pgdb.AssetStore  { return m.assets }
+diff --git a/traffic/redact.go b/traffic/redact.go
+new file mode 100644
+index 0000000..f2c9100
+--- /dev/null
++++ b/traffic/redact.go
+@@ -0,0 +1,55 @@
++package traffic
++
++import (
++	"regexp"
++	"strings"
++)
++
++// redactHTTP removes credentials from an agent-facing request/response while
++// leaving the operator's stored capture untouched. Headers are redacted by
++// name; bodies by common secret-bearing JSON/form keys and bearer/JWT shapes.
++func redactHTTP(raw string) string {
++	head, body, sep := splitHTTP(raw)
++	lines := strings.Split(head, "\n")
++	for i, line := range lines {
++		name, _, ok := strings.Cut(line, ":")
++		if !ok || !sensitiveHeader(name) {
++			continue
++		}
++		lines[i] = name + ": [redacted]"
++	}
++	return strings.Join(lines, "\n") + sep + redactBody(body)
++}
++
++func splitHTTP(raw string) (head, body, sep string) {
++	if i := strings.Index(raw, "\r\n\r\n"); i >= 0 {
++		return raw[:i], raw[i+4:], "\r\n\r\n"
++	}
++	if i := strings.Index(raw, "\n\n"); i >= 0 {
++		return raw[:i], raw[i+2:], "\n\n"
++	}
++	return raw, "", ""
++}
++
++func sensitiveHeader(name string) bool {
++	switch strings.ToLower(strings.TrimSpace(name)) {
++	case "authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key", "api-key", "x-auth-token", "x-amz-security-token", "x-csrf-token", "x-xsrf-token":
++		return true
++	}
++	return false
++}
++
++var (
++	jsonSecret = regexp.MustCompile(`(?i)("(?:password|passwd|pwd|secret|token|access_token|refresh_token|api[_-]?key|apikey|authorization|cookie|session(?:id)?|client[_-]?secret)"\s*:\s*)"(?:[^"\\]|\\.)*"`)
++	formSecret = regexp.MustCompile(`(?i)\b(password|passwd|pwd|secret|token|access_token|refresh_token|api[_-]?key|apikey|authorization|cookie|session(?:id)?)=([^&\s"']+)`)
++	bearer     = regexp.MustCompile(`(?i)\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}`)
++	jwt        = regexp.MustCompile(`\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b`)
++)
++
++func redactBody(body string) string {
++	body = jsonSecret.ReplaceAllString(body, `${1}"[redacted]"`)
++	body = formSecret.ReplaceAllString(body, `${1}=[redacted]`)
++	body = bearer.ReplaceAllString(body, `${1} [redacted]`)
++	body = jwt.ReplaceAllString(body, `[redacted-jwt]`)
++	return body
++}
+diff --git a/traffic/scope.go b/traffic/scope.go
+new file mode 100644
+index 0000000..cd71bf4
+--- /dev/null
++++ b/traffic/scope.go
+@@ -0,0 +1,107 @@
++package traffic
++
++import (
++	"context"
++	"database/sql"
++	"errors"
++	"fmt"
++	"strings"
++)
++
++// HostScope resolves the hosts a run is allowed to inspect. scoped=false is the
++// operator/chat path: no task boundary applies. A scoped run with an empty host
++// set can inspect nothing; a lookup failure fails closed.
++type HostScope func(context.Context) (hosts []string, scoped bool, err error)
++
++func hostSet(hosts []string) map[string]struct{} {
++	out := make(map[string]struct{}, len(hosts))
++	for _, raw := range hosts {
++		host, _, err := normalizeSearchHost(raw)
++		if err != nil || host == "" {
++			continue
++		}
++		out[host] = struct{}{}
++	}
++	return out
++}
++
++// hostInScope reports whether host is one of the caller task's assets. The
++// original host may be a bare host, host:port, or a full URL; comparisons use
++// the same canonical hostname the traffic index stores.
++func (t *Traffic) hostInScope(ctx context.Context, scope HostScope, host string) (bool, error) {
++	if scope == nil {
++		return true, nil
++	}
++	hosts, scoped, err := scope(ctx)
++	if err != nil {
++		return false, err
++	}
++	if !scoped {
++		return true, nil
++	}
++	name, _, err := normalizeSearchHost(host)
++	if err != nil {
++		return false, err
++	}
++	_, ok := hostSet(hosts)[name]
++	return ok, nil
++}
++
++func (t *Traffic) exchangeHost(id string) (string, error) {
++	var host string
++	err := t.db.QueryRow(`SELECT host FROM exchanges WHERE id=?`, id).Scan(&host)
++	return host, err
++}
++
++// idInScope resolves an exchange id to its recorded host and applies the same
++// task-asset boundary as a host search. A missing id is not a scope violation;
++// Get reports the normal not-found error.
++func (t *Traffic) idInScope(ctx context.Context, scope HostScope, id string) (bool, error) {
++	if scope == nil {
++		return true, nil
++	}
++	host, err := t.exchangeHost(id)
++	if errors.Is(err, sql.ErrNoRows) {
++		return true, nil
++	}
++	if err != nil {
++		return false, err
++	}
++	return t.hostInScope(ctx, scope, host)
++}
++
++func (t *Traffic) blobInScope(ctx context.Context, scope HostScope, hash string) (bool, error) {
++	if scope == nil {
++		return true, nil
++	}
++	rows, err := t.db.Query(`SELECT DISTINCT e.host FROM blob_refs b JOIN exchanges e ON e.id=b.exchange_id WHERE b.hash=?`, strings.ToLower(strings.TrimSpace(hash)))
++	if err != nil {
++		return false, err
++	}
++	defer rows.Close()
++	var hosts []string
++	for rows.Next() {
++		var host string
++		if err := rows.Scan(&host); err != nil {
++			return false, err
++		}
++		hosts = append(hosts, host)
++	}
++	if err := rows.Err(); err != nil {
++		return false, err
++	}
++	if len(hosts) == 0 {
++		return false, fmt.Errorf("traffic blob %s is not associated with a recorded exchange", hash)
++	}
++	for _, host := range hosts {
++		ok, err := t.hostInScope(ctx, scope, host)
++		if err != nil || !ok {
++			return false, err
++		}
++	}
++	return true, nil
++}
++
++func scopeDenied(host string) string {
++	return fmt.Sprintf("traffic for host %q is outside this run's task assets; use the operator Traffic page for cross-task inspection", host)
++}
+diff --git a/traffic/traffic.go b/traffic/traffic.go
+index 71bac4f..63a2833 100644
+--- a/traffic/traffic.go
++++ b/traffic/traffic.go
+@@ -1996,12 +1996,42 @@ func normalizeSearchHost(raw string) (host, port string, err error) {
+ }
+ 
+ // Tools exposes traffic lookup to work agents so they query already-captured
+-// traffic instead of re-curling the same resource (token + dedup win).
+-func (t *Traffic) Tools() []actool.CoreTool {
+-	allow := func(context.Context, json.RawMessage, permission.Context) permission.Decision {
++// traffic instead of re-curling the same resource (token + dedup win). A task
++// run is restricted to the hosts attached to that task (scope), and the
++// agent-facing reader redacts credential material; the operator Traffic page
++// keeps using Traffic.Search/Get directly and remains unredacted.
++func (t *Traffic) Tools(scope HostScope) []actool.CoreTool {
++	ro := func(json.RawMessage) bool { return true }
++	checkHost := func(ctx context.Context, host string) permission.Decision {
++		ok, err := t.hostInScope(ctx, scope, host)
++		if err != nil {
++			return permission.Denied("traffic scope check failed: " + err.Error())
++		}
++		if !ok {
++			return permission.Denied(scopeDenied(host))
++		}
++		return permission.Allowed()
++	}
++	checkID := func(ctx context.Context, id string) permission.Decision {
++		ok, err := t.idInScope(ctx, scope, id)
++		if err != nil {
++			return permission.Denied("traffic scope check failed: " + err.Error())
++		}
++		if !ok {
++			return permission.Denied(scopeDenied("record " + id))
++		}
++		return permission.Allowed()
++	}
++	checkBlob := func(ctx context.Context, hash string) permission.Decision {
++		ok, err := t.blobInScope(ctx, scope, hash)
++		if err != nil {
++			return permission.Denied("traffic scope check failed: " + err.Error())
++		}
++		if !ok {
++			return permission.Denied(scopeDenied("blob " + hash))
++		}
+ 		return permission.Allowed()
+ 	}
+-	ro := func(json.RawMessage) bool { return true }
+ 
+ 	search := actool.Build(actool.Spec{
+ 		Name:        "traffic_search",
+@@ -2017,9 +2047,16 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ 			},
+ 			"required": []any{"host"},
+ 		},
+-		ReadOnly:    ro,
+-		Permissions: allow,
+-		Run: func(_ context.Context, in json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
++		ReadOnly: ro,
++		Permissions: func(ctx context.Context, in json.RawMessage, _ permission.Context) permission.Decision {
++			var a struct{ Host string }
++			_ = json.Unmarshal(in, &a)
++			if strings.TrimSpace(a.Host) == "" {
++				return permission.Allowed()
++			}
++			return checkHost(ctx, a.Host)
++		},
++		Run: func(ctx context.Context, in json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
+ 			var a struct {
+ 				Host, Contains string
+ 				BodyContains   string `json:"body_contains"`
+@@ -2030,6 +2067,11 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ 			if strings.TrimSpace(a.Host) == "" {
+ 				return actool.Errorf("host is a required parameter: specify a bare host, host:port, or full URL to avoid a full-database scan."), nil
+ 			}
++			if ok, err := t.hostInScope(ctx, scope, a.Host); err != nil {
++				return actool.Errorf("traffic scope check failed: " + err.Error()), nil
++			} else if !ok {
++				return actool.Errorf(scopeDenied(a.Host)), nil
++			}
+ 			rows, err := t.query(a.Host, a.Contains, a.BodyContains, a.Page, a.Limit)
+ 			if err != nil {
+ 				return actool.Errorf(err.Error()), nil
+@@ -2056,22 +2098,34 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ 
+ 	get := actool.Build(actool.Spec{
+ 		Name:        "traffic_get",
+-		Description: "Fetch the raw request/response of one captured traffic record by id (truncated when too large). Use together with traffic_search to avoid re-curling.",
++		Description: "Fetch the request/response of one captured traffic record by id (truncated when too large). Credential headers and secret-shaped body fields are redacted; the operator Traffic page retains the raw capture. Use together with traffic_search to avoid re-curling.",
+ 		Schema: map[string]any{
+ 			"type":       "object",
+ 			"properties": map[string]any{"id": map[string]any{"type": "string", "description": "the id returned by traffic_search"}},
+ 			"required":   []any{"id"},
+ 		},
+-		ReadOnly:    ro,
+-		Permissions: allow,
+-		Run: func(_ context.Context, in json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
++		ReadOnly: ro,
++		Permissions: func(ctx context.Context, in json.RawMessage, _ permission.Context) permission.Decision {
++			var a struct{ ID string }
++			_ = json.Unmarshal(in, &a)
++			if strings.TrimSpace(a.ID) == "" {
++				return permission.Allowed()
++			}
++			return checkID(ctx, a.ID)
++		},
++		Run: func(ctx context.Context, in json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
+ 			var a struct{ ID string }
+ 			_ = json.Unmarshal(in, &a)
++			if ok, err := t.idInScope(ctx, scope, a.ID); err != nil {
++				return actool.Errorf("traffic scope check failed: " + err.Error()), nil
++			} else if !ok {
++				return actool.Errorf(scopeDenied("record " + a.ID)), nil
++			}
+ 			req, resp, err := t.Get(a.ID)
+ 			if err != nil {
+ 				return actool.Errorf(err.Error()), nil
+ 			}
+-			return actool.Text("=== REQUEST ===\n" + clip(req, 2500) + "\n\n=== RESPONSE ===\n" + clip(resp, 4000)), nil
++			return actool.Text("=== REQUEST ===\n" + clip(redactHTTP(req), 2500) + "\n\n=== RESPONSE ===\n" + clip(redactHTTP(resp), 4000)), nil
+ 		},
+ 	})
+ 
+@@ -2087,9 +2141,16 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ 			},
+ 			"required": []any{"hash"},
+ 		},
+-		ReadOnly:    ro,
+-		Permissions: allow,
+-		Run: func(_ context.Context, in json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
++		ReadOnly: ro,
++		Permissions: func(ctx context.Context, in json.RawMessage, _ permission.Context) permission.Decision {
++			var a struct{ Hash string }
++			_ = json.Unmarshal(in, &a)
++			if strings.TrimSpace(a.Hash) == "" {
++				return permission.Allowed()
++			}
++			return checkBlob(ctx, a.Hash)
++		},
++		Run: func(ctx context.Context, in json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
+ 			var a struct {
+ 				Hash   string
+ 				Offset int64
+@@ -2099,6 +2160,11 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ 			if a.Length <= 0 || a.Length > maxBlobRead {
+ 				a.Length = maxBlobRead
+ 			}
++			if ok, err := t.blobInScope(ctx, scope, a.Hash); err != nil {
++				return actool.Errorf("traffic scope check failed: " + err.Error()), nil
++			} else if !ok {
++				return actool.Errorf(scopeDenied("blob " + a.Hash)), nil
++			}
+ 			data, total, err := t.BlobRange(a.Hash, a.Offset, a.Length)
+ 			if err != nil {
+ 				return actool.Errorf(err.Error()), nil
+@@ -2110,7 +2176,7 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ 			if isBinaryBody("", data) {
+ 				return actool.Text(head + "Binary content; first 512 bytes shown as hex:\n" + hex.EncodeToString(clipBytes(data, 512))), nil
+ 			}
+-			return actool.Text(head + truncateUTF8(data, len(data))), nil
++			return actool.Text(head + redactBody(truncateUTF8(data, len(data)))), nil
+ 		},
+ 	})
+ 
+@@ -2120,7 +2186,7 @@ func (t *Traffic) Tools() []actool.CoreTool {
+ // SeedToolMetas returns the traffic tools built on a ZERO receiver, for seeding the
+ // tools catalog (metadata only — Name/Description/InputSchema). The handlers close
+ // over the nil receiver but are never invoked on this instance, so it is safe.
+-func SeedToolMetas() []actool.CoreTool { return (&Traffic{}).Tools() }
++func SeedToolMetas() []actool.CoreTool { return (&Traffic{}).Tools(nil) }
+ 
+ func clip(s string, max int) string {
+ 	if len(s) <= max {

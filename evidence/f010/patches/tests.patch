@@ -1,0 +1,352 @@
+diff --git a/server/trigger_merge_test.go b/server/trigger_merge_test.go
+index deb0d6d..d45a5ae 100644
+--- a/server/trigger_merge_test.go
++++ b/server/trigger_merge_test.go
+@@ -1,6 +1,7 @@
+ package server
+ 
+ import (
++	"fmt"
+ 	"strings"
+ 	"testing"
+ )
+@@ -89,6 +90,26 @@ func TestTaskContextHeaderEmptyForIntervalFire(t *testing.T) {
+ 	}
+ }
+ 
++// F-010 evidence: merge_mode=all folds several tasks into one run but keeps the
++// FIRST task's RunInfo. F-009's scope check therefore treats later tasks in the
++// merged body as cross-task and rejects a reporter tool call against them; it
++// cannot use the merge to promote a later task into its scope.
++func TestF010MergeAllKeepsFirstTaskScope(t *testing.T) {
++	items := []triggeredRun{
++		{agentKey: "reporter", taskID: 101, taskDesc: "A", taskGoal: "task A", message: "event A", mergeable: true},
++		{agentKey: "reporter", taskID: 202, taskDesc: "B", taskGoal: "task B", message: "event B", mergeable: true},
++	}
++	out := mergeAllRuns(items)
++	fmt.Printf("F010 merge_all first_task=%d contains_task_202=%v contains_task_101=%v\n",
++		out.taskID, strings.Contains(out.message, "task#202"), strings.Contains(out.message, "task#101"))
++	if out.taskID != 101 {
++		t.Fatalf("merged run task = %d, want first task 101", out.taskID)
++	}
++	if !strings.Contains(out.message, "task#101") || !strings.Contains(out.message, "task#202") {
++		t.Fatalf("merged message lost a task: %q", out.message)
++	}
++}
++
+ func TestTaskContextHeaderTruncatesLongGoal(t *testing.T) {
+ 	huge := strings.Repeat("x", 5000)
+ 	h := taskContextHeader(72, "d", huge)
+diff --git a/server/zz_evidence_f010_routes_test.go b/server/zz_evidence_f010_routes_test.go
+new file mode 100644
+index 0000000..3112fbf
+--- /dev/null
++++ b/server/zz_evidence_f010_routes_test.go
+@@ -0,0 +1,84 @@
++package server
++
++import (
++	"context"
++	"fmt"
++	"net/http"
++	"net/http/httptest"
++	"strings"
++	"testing"
++	"time"
++
++	"github.com/Autumn-27/artex/agent"
++)
++
++// F-010 evidence: prompt and trigger management are operator routes behind the
++// JWT boundary, not tools target content can call. The preview route accepts an
++// arbitrary template but deliberately does not persist it; only an authenticated
++// PUT does. A trigger can only be persisted for a custom agent, again by an
++// authenticated operator request.
++func TestF010PromptAndTriggerManagementRoutes(t *testing.T) {
++	s, _, request := trafficEvidenceServer(t)
++	pg := s.m.pg
++	worker, err := pg.GetAgentByKey("worker")
++	if err != nil || worker == nil {
++		t.Fatal("missing worker", err)
++	}
++	oldPrompt, _ := pg.CurrentPrompt(worker.ID)
++	t.Cleanup(func() { _, _ = pg.SavePrompt(worker.ID, oldPrompt, "restore F-010 fixture", "test") })
++
++	unauth := httptest.NewRequest(http.MethodPut, "/api/agents/worker/prompt", strings.NewReader(`{"template":"UNAUTH_MARKER"}`))
++	unauth.Header.Set("Content-Type", "application/json")
++	uw := httptest.NewRecorder()
++	s.Handler().ServeHTTP(uw, unauth)
++
++	preview := request("POST", "/api/agents/worker/prompt/preview", `{"template":"F010_PREVIEW_MARKER {{.Now}}"}`)
++	afterPreview, _ := pg.CurrentPrompt(worker.ID)
++	previewPersisted := strings.Contains(afterPreview, "F010_PREVIEW_MARKER")
++
++	saved := request("PUT", "/api/agents/worker/prompt", `{"template":"F010_PROMPT_MARKER {{.Now}}","note":"F-010 probe"}`)
++	afterSave, _ := pg.CurrentPrompt(worker.ID)
++	promptSaved := saved.Code == http.StatusOK && strings.Contains(afterSave, "F010_PROMPT_MARKER")
++
++	builtinTrigger := request("POST", "/api/agents/worker/triggers", `{"enabled":true,"on_task_create":true,"task_create_message":"F010_TRIGGER_MARKER"}`)
++	key := fmt.Sprintf("f010_agent_%d", time.Now().UnixNano())
++	if _, err := pg.CreateAgent(key, "F-010 probe", "management route probe"); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = pg.DeleteTriggersForAgent(key); _ = pg.DeleteAgent(key) })
++	customTrigger := request("POST", "/api/agents/"+key+"/triggers", `{"enabled":true,"on_task_create":true,"task_create_message":"F010_TRIGGER_MARKER"}`)
++	triggers, _ := pg.ListTriggersFor(key)
++	triggerSaved := customTrigger.Code == http.StatusOK && len(triggers) == 1 && strings.Contains(triggers[0].TaskCreateMessage, "F010_TRIGGER_MARKER")
++
++	ctx := agent.WithRunInfo(context.Background(), agent.RunInfo{})
++	tools, _, cleanup := agent.AugmentTools(ctx, "worker", nil)
++	defer cleanup()
++	agentRouteTool := false
++	for _, tool := range tools {
++		if strings.Contains(tool.Name(), "prompt") || strings.Contains(tool.Name(), "trigger") {
++			agentRouteTool = true
++		}
++	}
++
++	fmt.Printf("F010 prompt_unauth=%d preview_status=%d preview_persisted=%v prompt_saved=%v builtin_trigger=%d custom_trigger_saved=%v agent_route_tool=%v\n",
++		uw.Code, preview.Code, previewPersisted, promptSaved, builtinTrigger.Code, triggerSaved, agentRouteTool)
++
++	if uw.Code != http.StatusUnauthorized {
++		t.Fatalf("unauthenticated prompt route = %d, want 401", uw.Code)
++	}
++	if preview.Code != http.StatusOK || previewPersisted {
++		t.Fatalf("preview route persisted template: status=%d persisted=%v", preview.Code, previewPersisted)
++	}
++	if !promptSaved {
++		t.Fatalf("authenticated prompt save failed: status=%d current=%q", saved.Code, afterSave)
++	}
++	if builtinTrigger.Code != http.StatusBadRequest {
++		t.Fatalf("built-in trigger route = %d, want 400", builtinTrigger.Code)
++	}
++	if !triggerSaved {
++		t.Fatalf("custom trigger was not persisted: status=%d body=%s triggers=%+v", customTrigger.Code, customTrigger.Body.String(), triggers)
++	}
++	if agentRouteTool {
++		t.Fatal("worker exposes a prompt/trigger management tool")
++	}
++}
+diff --git a/server/zz_evidence_f010_test.go b/server/zz_evidence_f010_test.go
+new file mode 100644
+index 0000000..9183988
+--- /dev/null
++++ b/server/zz_evidence_f010_test.go
+@@ -0,0 +1,179 @@
++package server
++
++import (
++	"context"
++	"encoding/json"
++	"fmt"
++	"net/http"
++	"net/http/httptest"
++	"strconv"
++	"strings"
++	"testing"
++
++	"github.com/Autumn-27/artex/agent"
++	"github.com/Autumn-27/artex/db"
++	"github.com/Autumn-27/artex/traffic"
++	"github.com/Autumn-27/norma/permission"
++	actool "github.com/Autumn-27/norma/tool"
++)
++
++func f010Seed(t *testing.T, s *Server, url, auth, response string) string {
++	t.Helper()
++	if err := s.m.traffic.RecordExternal(traffic.ExternalExchange{
++		Method: "GET", URL: url, Status: 200,
++		RequestHeaders:  map[string]string{"authorization": auth, "cookie": "session=f010-cookie"},
++		ResponseHeaders: map[string]string{"content-type": "application/json"},
++		ResponseBody:    response,
++	}); err != nil {
++		t.Fatal(err)
++	}
++	var id string
++	if err := s.m.traffic.DB().QueryRow(`SELECT id FROM exchanges WHERE url=?`, url).Scan(&id); err != nil {
++		t.Fatal(err)
++	}
++	return id
++}
++
++func f010Call(t *testing.T, ctx context.Context, tool actool.CoreTool, input any) (string, permission.Behavior) {
++	t.Helper()
++	raw, err := json.Marshal(input)
++	if err != nil {
++		t.Fatal(err)
++	}
++	decision := tool.CheckPermissions(ctx, raw, permission.Context{})
++	res, err := tool.Call(ctx, raw, nil)
++	if err != nil {
++		t.Fatalf("%s call: %v", tool.Name(), err)
++	}
++	return res.Flatten(), decision.Behavior
++}
++
++// F-010 evidence: a worker in task B must not read task A's captured
++// Authorization header (or its oversized response blob), and the token must not
++// be replayable. Own-task traffic and the operator's raw Traffic.Get stay live.
++func TestF010TrafficCrossTaskCredentialReadAndReplay(t *testing.T) {
++	s, fA, _ := trafficEvidenceServer(t)
++	if err := s.m.SetTrafficEnabled(true); err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = s.m.SetTrafficEnabled(false) })
++
++	findingA, err := s.m.pg.GetFinding(fA.FindingID)
++	if err != nil || findingA.TaskID == nil {
++		t.Fatalf("load task A: %v %+v", err, findingA)
++	}
++	taskA := *findingA.TaskID
++	taskB, err := s.m.CreateTask("F010 task B", "cross-task traffic probe", nil, 0, 0)
++	if err != nil {
++		t.Fatal(err)
++	}
++	taskBID, err := strconv.ParseInt(taskB.ID, 10, 64)
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = s.m.pg.DeleteTask(taskBID) })
++
++	hostA := fmt.Sprintf("f010-a-%d.example.test", taskA)
++	hostB := fmt.Sprintf("f010-b-%d.example.test", taskBID)
++	for _, asset := range []struct {
++		host string
++		task int64
++	}{{hostA, taskA}, {hostB, taskBID}} {
++		if _, err := s.m.Assets().UpsertRootDomain(db.UpsertRootDomainReq{Domain: asset.host, TaskID: asset.task}); err != nil {
++			t.Fatal(err)
++		}
++	}
++
++	const tokenA = "F010_TASK_A_SECRET"
++	const blobSecret = "F010_BLOB_A_SECRET"
++	large := strings.Repeat("A", 300*1024) + blobSecret
++	idA := f010Seed(t, s, "http://"+hostA+"/account", "Bearer "+tokenA, `{"account":"A","password":"BODY_A_PASSWORD"}`+"\n"+large)
++	idB := f010Seed(t, s, "http://"+hostB+"/account", "Bearer F010_TASK_B_SECRET", `{"account":"B","token":"BODY_B_SECRET"}`)
++
++	ctxB := agent.WithRunInfo(context.Background(), agent.RunInfo{TaskID: taskBID})
++	tools, _, cleanup := agent.AugmentTools(ctxB, "worker", nil)
++	defer cleanup()
++	search := scopeTool(t, tools, "traffic_search")
++	get := scopeTool(t, tools, "traffic_get")
++	blob := scopeTool(t, tools, "traffic_blob")
++
++	crossSearch, crossSearchPerm := f010Call(t, ctxB, search, map[string]any{"host": hostA})
++	ownSearch, ownSearchPerm := f010Call(t, ctxB, search, map[string]any{"host": hostB})
++	crossGet, crossGetPerm := f010Call(t, ctxB, get, map[string]any{"id": idA})
++	ownGet, ownGetPerm := f010Call(t, ctxB, get, map[string]any{"id": idB})
++
++	// The oversized A response exposes its blob pointer only in the raw,
++	// operator-side packet; task B must not be able to use that hash either.
++	operatorReq, operatorResp, err := s.m.traffic.Get(idA)
++	if err != nil {
++		t.Fatal(err)
++	}
++	hash := ""
++	if i := strings.Index(operatorResp, "@blob sha256:"); i >= 0 {
++		hash = strings.Fields(operatorResp[i+len("@blob sha256:"):])[0]
++	}
++	blobRead := false
++	blobPerm := permission.Behavior("")
++	if hash != "" {
++		var out string
++		out, blobPerm = f010Call(t, ctxB, blob, map[string]any{"hash": hash, "offset": 300 * 1024})
++		blobRead = strings.Contains(out, blobSecret)
++	}
++
++	// Replay control: take the token the task-B tool output exposed and use it
++	// against a local service that requires exactly task A's credential.
++	replayToken := ""
++	if i := strings.Index(crossGet, "Bearer "); i >= 0 {
++		replayToken = strings.Fields(crossGet[i+len("Bearer "):])[0]
++	}
++	replayed := false
++	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		if r.Header.Get("Authorization") == "Bearer "+tokenA {
++			replayed = true
++			w.WriteHeader(http.StatusOK)
++			_, _ = w.Write([]byte("replayed"))
++			return
++		}
++		http.Error(w, "forbidden", http.StatusForbidden)
++	}))
++	defer srv.Close()
++	if replayToken != "" {
++		req, _ := http.NewRequest(http.MethodGet, srv.URL, nil)
++		req.Header.Set("Authorization", "Bearer "+replayToken)
++		if resp, err := http.DefaultClient.Do(req); err == nil {
++			_ = resp.Body.Close()
++		}
++	}
++
++	crossVisible := strings.Contains(crossGet, tokenA) || strings.Contains(crossGet, "BODY_A_PASSWORD") || strings.Contains(crossGet, blobSecret)
++	ownVisible := strings.Contains(ownGet, `"account":"B"`)
++	ownTokenRedacted := !strings.Contains(ownGet, "F010_TASK_B_SECRET") && strings.Contains(ownGet, "[redacted]")
++	operatorVisible := strings.Contains(operatorReq, tokenA)
++
++	fmt.Printf("F010 cross_search=%v cross_search_perm=%s cross_get_visible=%v cross_get_perm=%s cross_blob_read=%v cross_blob_perm=%s replay=%v own_search=%v own_search_perm=%s own_read=%v own_read_perm=%s own_token_redacted=%v operator_raw=%v\n",
++		strings.Contains(crossSearch, idA), crossSearchPerm,
++		crossVisible, crossGetPerm, blobRead, blobPerm, replayed,
++		strings.Contains(ownSearch, idB), ownSearchPerm, ownVisible, ownGetPerm, ownTokenRedacted, operatorVisible)
++
++	if strings.Contains(crossSearch, idA) || crossSearchPerm != permission.Deny {
++		t.Fatalf("cross-task search not blocked: result=%q perm=%s", crossSearch, crossSearchPerm)
++	}
++	if crossGetPerm != permission.Deny || crossVisible {
++		t.Fatalf("cross-task get not blocked: result=%q perm=%s", crossGet, crossGetPerm)
++	}
++	if blobRead || (hash != "" && blobPerm != permission.Deny) {
++		t.Fatalf("cross-task blob not blocked: read=%v perm=%s hash=%q", blobRead, blobPerm, hash)
++	}
++	if replayed {
++		t.Fatal("captured task-A credential replayed successfully")
++	}
++	if !strings.Contains(ownSearch, idB) || ownSearchPerm != permission.Allow || !ownVisible || ownGetPerm != permission.Allow {
++		t.Fatalf("own-task read broke: search=%q perm=%s get=%q perm=%s", ownSearch, ownSearchPerm, ownGet, ownGetPerm)
++	}
++	if !ownTokenRedacted {
++		t.Fatalf("own-task credential was not redacted: %q", ownGet)
++	}
++	if !operatorVisible {
++		t.Fatal("operator raw traffic inspection broke")
++	}
++}
+diff --git a/traffic/redact_test.go b/traffic/redact_test.go
+new file mode 100644
+index 0000000..3b38736
+--- /dev/null
++++ b/traffic/redact_test.go
+@@ -0,0 +1,32 @@
++package traffic
++
++import (
++	"strings"
++	"testing"
++)
++
++func TestRedactHTTPRemovesCredentialHeadersAndBodySecrets(t *testing.T) {
++	raw := "GET /account HTTP/1.1\nHost: example.test\nAuthorization: Bearer TASK_A_SECRET\nCookie: sid=COOKIE_SECRET\n\n" +
++		`{"account":"a","password":"PASSWORD_SECRET","token":"BODY_TOKEN","ok":true}`
++	out := redactHTTP(raw)
++	for _, secret := range []string{"TASK_A_SECRET", "COOKIE_SECRET", "PASSWORD_SECRET", "BODY_TOKEN"} {
++		if strings.Contains(out, secret) {
++			t.Fatalf("redaction left %q in %q", secret, out)
++		}
++	}
++	for _, want := range []string{"Authorization: [redacted]", "Cookie: [redacted]", `"password":"[redacted]"`, `"token":"[redacted]"`, `"ok":true`} {
++		if !strings.Contains(out, want) {
++			t.Fatalf("redaction removed context %q: %q", want, out)
++		}
++	}
++}
++
++func TestRedactHTTPHandlesFormAndBareBearer(t *testing.T) {
++	out := redactHTTP("POST /login HTTP/1.1\n\nuser=a&password=FORM_SECRET&next=%2F  Bearer BARE_SECRET")
++	if strings.Contains(out, "FORM_SECRET") || strings.Contains(out, "BARE_SECRET") {
++		t.Fatalf("form/bearer secret leaked: %q", out)
++	}
++	if !strings.Contains(out, "user=a") || !strings.Contains(out, "password=[redacted]") {
++		t.Fatalf("form context changed: %q", out)
++	}
++}
