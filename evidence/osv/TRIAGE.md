@@ -123,6 +123,31 @@ overwrite an outside file (`200`), and `/mkdir` create an outside directory
 normal write/read control still returns `200`. Details:
 `findings/f005-workspace-symlink-escape.md`.
 
+### File-route confinement and os.Root (F-006)
+
+F-005's fix covered workspace read/download/write/mkdir but left the skill file
+routes on lexical validation and left a check-then-use window. F-006 drove every
+file route through `Server.Handler()` with links planted inside each allowed
+root. Confirmed escapes on the pre-fix tree: skill file read returned an outside
+canary (`200`), skill file write rewrote an outside file (`200`), a directory
+link let read/mkdir/delete reach and delete outside entries (`200`/`201`/`200`),
+a nested link escaped (`200`), a `SKILL.md` link let the meta update rewrite an
+outside file (`200`), a symlinked chat `uploads` dir took an upload outside the
+work dir (`200`), and a symlinked `tasks/` parent let `installTaskArchiveFiles`
+rename restored files outside the data dir with no error.
+
+After the fix every route resolves through `os.Root` and the escapes return
+`400 invalid path`; positive controls still return `200`/`201`. This closes the
+F-005 check-then-use race for the file routes (the root descriptor resolves each
+component, with no separate validation), rejects ZIP symlink entries explicitly,
+and refuses archive-restore destinations whose parents cross a link. The skill
+meta and delete routes, chat uploads, platform tools, and the `ask_operator`
+destination are covered; the `ask_operator` source read remains intentionally
+arbitrary because the agent already has host read access. Two consecutive full
+suite runs are green (14 packages, `server` 20.672 s / 21.368 s) after fixing a
+second-run `TestSkillGapsReport` isolation defect (the report aggregates the
+whole disposable DB). Details: `findings/f006-file-route-confinement.md`.
+
 ## What this does and does not prove
 
 - F-004 is a confirmed authenticated memory-exhaustion primitive (L2→availability
@@ -137,9 +162,14 @@ normal write/read control still returns `200`. Details:
   read/write), not privilege escalation from the agent: the agent's Bash can
   already reach the host. It breaks the browser file manager's documented
   "inside the work dir" boundary and turns any symlink in a cloned repo or task
-  workspace into an operator-session read/write primitive. The fix rejects paths
-  that cross a symlink; the check-then-use race remains for a multi-tenant
-  deployment, where `openat`/`O_NOFOLLOW` is the right primitive.
+  workspace into an operator-session read/write primitive.
+- F-006 extends that finding to every other file route (skill read/write/dirs/
+  delete/meta, chat uploads, platform tools, archive restore) and replaces the
+  check-then-use resolver with `os.Root`; the race is closed for those routes.
+  It is still an authenticated, link-planting primitive, not an unauthenticated
+  chain. The archive restore keeps a source-root/destination-root check because
+  `os.Root` cannot rename across roots; that path is server-controlled and is
+  recorded as defense-in-depth.
 - The Go panic is a reachable code path (L2): the vulnerable symbol is compiled
   in and called on an archive path. F-003 exercised its authentication boundary
   with the full route stack: anonymous requests do not reach it, and a valid JWT

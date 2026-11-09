@@ -1,0 +1,40 @@
+=== RUN   TestFileRouteConfinementMatrix
+2026/11/09 12:46:20 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 12:46:20 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 12:46:20 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestFileRouteConfinementMatrix286220319/002/jwt.key
+2026/11/09 12:46:20 [auth] no admin password is set. Setup token for the /setup page: <redacted>
+2026/11/09 12:46:20 [engine] built provider for LLM profile 13 (anthropic / claude-x)
+2026/11/09 12:46:20 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 12:46:20 [manager] reloaded 16 task(s) from PG
+    zz_evidence_confinement_test.go:128: probe skill-create                     POST /api/skills                                                      status=201 body="{\"name\":\"conf-probe\"} "
+    zz_evidence_confinement_test.go:133: probe skill-write-normal               PUT /api/skills/conf-probe/files/notes/readme.txt                    status=200 body="{\"ok\":true} "
+    zz_evidence_confinement_test.go:138: probe skill-read-normal                GET /api/skills/conf-probe/files/notes/readme.txt                    status=200 body="{\"content\":\"ARTEX-LEGIT-F006\",\"file\":\"notes/readme.txt\"} "
+    zz_evidence_confinement_test.go:141: probe skill-mkdir-normal               POST /api/skills/conf-probe/dirs                                      status=201 body="{\"dir\":\"docs\"} "
+    zz_evidence_confinement_test.go:144: probe skill-delete-normal              DELETE /api/skills/conf-probe/files/notes/readme.txt                    status=200 body="{\"deleted\":\"notes/readme.txt\"} "
+    zz_evidence_confinement_test.go:181: probe skill-read-filelink              GET /api/skills/conf-probe/files/leak                                status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:184: probe skill-write-filelink             PUT /api/skills/conf-probe/files/leak                                status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:191: probe skill-read-dirlink               GET /api/skills/conf-probe/files/outdir/victim.txt                   status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:194: probe skill-mkdir-dirlink              POST /api/skills/conf-probe/dirs                                      status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:201: probe skill-delete-dirlink             DELETE /api/skills/conf-probe/files/outdir/victim.txt                   status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:206: probe skill-read-nested                GET /api/skills/conf-probe/files/nested/escape                       status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:217: probe skill-dotdot                     GET /api/skills/conf-probe/files/..%2F..%2F..%2Fetc%2Fpasswd         status=400 body="{\"error\":\"invalid path: '..' not allowed\"} "
+    zz_evidence_confinement_test.go:217: probe skill-encoded-dotdot             GET /api/skills/conf-probe/files/%252e%252e%252f%252e%252e%252fetc%252fpasswd status=400 body="{\"error\":\"invalid path: illegal character '%'\"} "
+    zz_evidence_confinement_test.go:217: probe skill-absolute                   GET /api/skills/conf-probe/files/%2Fetc%2Fpasswd                     status=400 body="{\"error\":\"invalid path: must be relative with no empty segments\"} "
+    zz_evidence_confinement_test.go:217: probe skill-backslash                  GET /api/skills/conf-probe/files/..%5C..%5Cetc%5Cpasswd              status=400 body="{\"error\":\"invalid path: illegal character '\\\\\\\\'\"} "
+    zz_evidence_confinement_test.go:223: probe meta-skill-create                POST /api/skills                                                      status=201 body="{\"name\":\"conf-meta\"} "
+    zz_evidence_confinement_test.go:240: probe skill-meta-symlink               PUT /api/skills/conf-meta/meta                                       status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:248: probe skill-delete-symlinked-dir       DELETE /api/skills/conf-meta                                            status=200 body="{\"deleted\":\"conf-meta\"} "
+    zz_evidence_confinement_test.go:267: probe chat-upload-symlink              POST /api/chat/upload?scope=staging&id=probe                          status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:272: probe chat-upload-normal               POST /api/chat/upload?scope=staging&id=legit                          status=200 body="{\"attachments\":[{\"name\":\"legit.txt\",\"path\":\"uploads/legit.txt\",\"size\":23,\"abs\":\"/var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestFileRouteConfinementMatrix286220319/001/drafts/legit/uploads/legit.…"
+    zz_evidence_confinement_test.go:280: probe ws-write-normal                  POST /api/workspace/write                                             status=200 body="{\"ok\":true,\"path\":\"normal-f006.txt\"} "
+    zz_evidence_confinement_test.go:285: probe ws-read-normal                   GET /api/workspace/read?path=normal-f006.txt                         status=200 body="{\"binary\":false,\"content\":\"ARTEX-WS-LEGIT-F006\",\"path\":\"normal-f006.txt\",\"size\":19} "
+    zz_evidence_confinement_test.go:298: probe ws-read-symlink                  GET /api/workspace/read?path=ws-leak                                 status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:301: probe ws-download-symlink              GET /api/workspace/download?path=ws-leak                             status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:304: probe ws-list-symlink                  GET /api/workspace/list?path=ws-outdir                               status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:307: probe ws-delete-symlink                DELETE /api/workspace/delete?path=ws-outdir%2Fws-victim.txt             status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:312: probe ws-upload-symlink                POST /api/workspace/upload?path=ws-outdir                             status=400 body="{\"error\":\"target directory does not exist\"} "
+    zz_evidence_confinement_test.go:317: probe ws-backslash                     GET /api/workspace/read?path=..%5C..%5Cetc%5Chosts                   status=400 body="{\"error\":\"invalid path\"} "
+    zz_evidence_confinement_test.go:348: probe query-token                      GET /api/tasks?token=<redacted-jwt> status=200 body="{\"active\":\"192\",\"tasks\":[{\"id\":\"192\",\"exploration_id\":192,\"name\":\"\",\"pinned\":false,\"description\":\"evidence-fixture-beta\",\"goal\":\"Probe the loopback lab target at http://127.0.0.1:9/v1 for unauthentica…"
+--- PASS: TestFileRouteConfinementMatrix (0.06s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.649s

@@ -1,0 +1,19 @@
+diff --git a/server/skill_gaps_test.go b/server/skill_gaps_test.go
+index bd84efe..90a3f5f 100644
+--- a/server/skill_gaps_test.go
++++ b/server/skill_gaps_test.go
+@@ -21,7 +21,13 @@ func TestSkillGapsReport(t *testing.T) {
+ 	}
+ 	taskID, _ := strconv.ParseInt(task.ID, 10, 64)
+ 	defer func() { _ = m.pg.DeleteTask(taskID) }()
+-	defer func() { _, _ = m.pg.Exec(`DELETE FROM skill_usage WHERE task_id=$1`, taskID) }()
++	// The report aggregates skill_usage across the whole (disposable) test database.
++	// Clear rows left by earlier runs before asserting the global ordering, or a
++	// historical skill with more misses legitimately outranks the fixture rows.
++	if _, err := m.pg.Exec(`DELETE FROM skill_usage`); err != nil {
++		t.Fatal(err)
++	}
++	defer func() { _, _ = m.pg.Exec(`DELETE FROM skill_usage`) }()
+ 
+ 	if _, err := m.pg.Exec(`
+ INSERT INTO skill_usage(skill,agent_key,task_id,found) VALUES

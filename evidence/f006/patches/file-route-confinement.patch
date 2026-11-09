@@ -1,0 +1,920 @@
+diff --git a/server/ask_operator.go b/server/ask_operator.go
+index 0065f86..367b63a 100644
+--- a/server/ask_operator.go
++++ b/server/ask_operator.go
+@@ -96,8 +96,13 @@ func stageAskOperatorImage(dataDir, taskID, src string) ([]chatAttachment, error
+ 	if st.Size() > askOperatorMaxImage {
+ 		return nil, fmt.Errorf("image too large (%s, max 10MB)", humanBytes(st.Size()))
+ 	}
+-	dir := filepath.Join(dataDir, "tasks", taskID, "uploads")
+-	if err := os.MkdirAll(dir, 0o755); err != nil {
++	root, err := os.OpenRoot(dataDir)
++	if err != nil {
++		return nil, err
++	}
++	defer root.Close()
++	dir := filepath.Join("tasks", taskID, "uploads")
++	if err := root.MkdirAll(dir, 0o755); err != nil {
+ 		return nil, err
+ 	}
+ 	name := fmt.Sprintf("ask-operator-%d%s", time.Now().Unix(), ext)
+@@ -106,7 +111,7 @@ func stageAskOperatorImage(dataDir, taskID, src string) ([]chatAttachment, error
+ 		return nil, err
+ 	}
+ 	defer in.Close()
+-	out, err := os.Create(filepath.Join(dir, name))
++	out, err := root.OpenFile(filepath.Join(dir, name), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
+ 	if err != nil {
+ 		return nil, err
+ 	}
+diff --git a/server/chatupload.go b/server/chatupload.go
+index 58844bd..e14d008 100644
+--- a/server/chatupload.go
++++ b/server/chatupload.go
+@@ -74,9 +74,15 @@ func (s *Server) chatUpload(w http.ResponseWriter, r *http.Request) {
+ 		}
+ 		defer s.engine.decInflight(id)
+ 	}
+-	dir := filepath.Join(s.m.dir, sub, id, "uploads")
+-	if err := os.MkdirAll(dir, 0o755); err != nil {
+-		writeErr(w, 500, "failed to create directory: "+err.Error())
++	root, err := os.OpenRoot(s.m.dir)
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	dir := filepath.Join(sub, id, "uploads")
++	if err := root.MkdirAll(dir, 0o755); err != nil {
++		writeFileError(w, err, "failed to create directory")
+ 		return
+ 	}
+ 	r.Body = http.MaxBytesReader(w, r.Body, maxChatUpload)
+@@ -95,29 +101,30 @@ func (s *Server) chatUpload(w http.ResponseWriter, r *http.Request) {
+ 		if name == "" || name == "." || name == ".." || strings.ContainsAny(name, `/\`) {
+ 			continue
+ 		}
+-		dest := uniqueUploadPath(dir, name)
+-		if err := saveUpload(hdr, dest); err != nil {
+-			writeErr(w, 500, "Save failed: "+err.Error())
++		destRel := uniqueUploadRelPath(root, dir, name)
++		if err := saveUploadRoot(root, destRel, hdr); err != nil {
++			writeFileError(w, err, "Save failed")
+ 			return
+ 		}
+-		base := filepath.Base(dest)
+-		out = append(out, chatAttachment{Name: base, Path: "uploads/" + base, Size: hdr.Size, Abs: dest})
++		base := filepath.Base(destRel)
++		out = append(out, chatAttachment{Name: base, Path: "uploads/" + base, Size: hdr.Size, Abs: filepath.Join(s.m.dir, destRel)})
+ 	}
+ 	writeJSON(w, 200, map[string]any{"attachments": out})
+ }
+ 
+-// uniqueUploadPath returns dir/name, or dir/name-1, dir/name-2… when it already exists,
+-// so re-uploading the same filename never clobbers a prior attachment.
+-func uniqueUploadPath(dir, name string) string {
++// uniqueUploadRelPath returns dir/name, or dir/name-1, dir/name-2… when it already
++// exists, so re-uploading the same filename never clobbers a prior attachment. The
++// existence checks go through the root's descriptor.
++func uniqueUploadRelPath(root *os.Root, dir, name string) string {
+ 	dest := filepath.Join(dir, name)
+-	if _, err := os.Stat(dest); os.IsNotExist(err) {
++	if _, err := root.Lstat(dest); os.IsNotExist(err) {
+ 		return dest
+ 	}
+ 	ext := filepath.Ext(name)
+ 	stem := strings.TrimSuffix(name, ext)
+ 	for i := 1; ; i++ {
+ 		cand := filepath.Join(dir, fmt.Sprintf("%s-%d%s", stem, i, ext))
+-		if _, err := os.Stat(cand); os.IsNotExist(err) {
++		if _, err := root.Lstat(cand); os.IsNotExist(err) {
+ 			return cand
+ 		}
+ 	}
+diff --git a/server/platform_tools.go b/server/platform_tools.go
+index 7ebde5e..6970b07 100644
+--- a/server/platform_tools.go
++++ b/server/platform_tools.go
+@@ -98,11 +98,15 @@ func (s *Server) toolCreateSkill() actool.CoreTool {
+ 			if strings.TrimSpace(a.Description) == "" {
+ 				return actool.Errorf("description is required"), nil
+ 			}
+-			path := filepath.Join(s.skillDir, a.Name)
+-			if _, err := os.Stat(path); err == nil {
++			root, err := os.OpenRoot(s.skillDir)
++			if err != nil {
++				return actool.Errorf(err.Error()), nil
++			}
++			defer root.Close()
++			if _, err := root.Stat(a.Name); err == nil {
+ 				return actool.Errorf("skill already exists: " + a.Name), nil
+ 			}
+-			if err := os.MkdirAll(path, 0o755); err != nil {
++			if err := root.Mkdir(a.Name, 0o755); err != nil {
+ 				return actool.Errorf(err.Error()), nil
+ 			}
+ 			var b strings.Builder
+@@ -115,8 +119,8 @@ func (s *Server) toolCreateSkill() actool.CoreTool {
+ 			} else {
+ 				fmt.Fprintf(&b, "## %s\n\n1. \n2. \n3. \n", a.Name)
+ 			}
+-			if err := os.WriteFile(filepath.Join(path, "SKILL.md"), []byte(b.String()), 0o644); err != nil {
+-				_ = os.RemoveAll(path)
++			if err := root.WriteFile(filepath.Join(a.Name, "SKILL.md"), []byte(b.String()), 0o644); err != nil {
++				_ = root.RemoveAll(a.Name)
+ 				return actool.Errorf(err.Error()), nil
+ 			}
+ 			return actool.Text("skill created: " + a.Name), nil
+@@ -137,10 +141,6 @@ func (s *Server) toolUpdateSkillFile() actool.CoreTool {
+ 			if !validSkillName(a.Name) {
+ 				return actool.Errorf("invalid skill name"), nil
+ 			}
+-			skillPath := filepath.Join(s.skillDir, a.Name)
+-			if _, err := os.Stat(skillPath); os.IsNotExist(err) {
+-				return actool.Errorf("skill does not exist: " + a.Name), nil
+-			}
+ 			rel := strings.TrimSpace(a.File)
+ 			if rel == "" {
+ 				rel = "SKILL.md"
+@@ -149,11 +149,24 @@ func (s *Server) toolUpdateSkillFile() actool.CoreTool {
+ 			if msg != "" {
+ 				return actool.Errorf("illegal path: " + msg), nil
+ 			}
+-			full := filepath.Join(skillPath, clean)
+-			if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
++			root, err := os.OpenRoot(s.skillDir)
++			if err != nil {
++				return actool.Errorf(err.Error()), nil
++			}
++			defer root.Close()
++			if _, err := root.Stat(a.Name); err != nil {
++				if os.IsNotExist(err) {
++					return actool.Errorf("skill does not exist: " + a.Name), nil
++				}
+ 				return actool.Errorf(err.Error()), nil
+ 			}
+-			if err := os.WriteFile(full, []byte(a.Content), 0o644); err != nil {
++			full := filepath.Join(a.Name, clean)
++			if dir := filepath.Dir(full); dir != "." {
++				if err := root.MkdirAll(dir, 0o755); err != nil {
++					return actool.Errorf(err.Error()), nil
++				}
++			}
++			if err := root.WriteFile(full, []byte(a.Content), 0o644); err != nil {
+ 				return actool.Errorf(err.Error()), nil
+ 			}
+ 			return actool.Text("skill file written: " + a.Name + "/" + clean), nil
+diff --git a/server/server_mgmt.go b/server/server_mgmt.go
+index 3a378df..c399ec2 100644
+--- a/server/server_mgmt.go
++++ b/server/server_mgmt.go
+@@ -8,6 +8,7 @@ import (
+ 	"errors"
+ 	"fmt"
+ 	"io"
++	"io/fs"
+ 	"log"
+ 	"net/http"
+ 	"net/url"
+@@ -1094,11 +1095,20 @@ func (s *Server) fsCreateSkill(w http.ResponseWriter, r *http.Request) {
+ 		return
+ 	}
+ 	skillPath := filepath.Join(s.skillDir, body.Name)
+-	if _, err := os.Stat(skillPath); err == nil {
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	if _, err := root.Stat(body.Name); err == nil {
+ 		writeErr(w, 409, "skill already exists")
+ 		return
++	} else if !os.IsNotExist(err) {
++		writeSkillFileError(w, err, "skill not found")
++		return
+ 	}
+-	if err := os.MkdirAll(skillPath, 0o755); err != nil {
++	if err := root.Mkdir(body.Name, 0o755); err != nil {
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+@@ -1133,8 +1143,8 @@ func (s *Server) fsCreateSkill(w http.ResponseWriter, r *http.Request) {
+ 		sb.WriteString("<!-- Describe step-by-step instructions in Markdown. -->\n\n")
+ 		sb.WriteString("1. \n2. \n3. \n")
+ 	}
+-	if err := os.WriteFile(filepath.Join(skillPath, "SKILL.md"), []byte(sb.String()), 0o644); err != nil {
+-		_ = os.RemoveAll(skillPath)
++	if err := root.WriteFile(filepath.Join(body.Name, "SKILL.md"), []byte(sb.String()), 0o644); err != nil {
++		_ = root.RemoveAll(body.Name)
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+@@ -1170,10 +1180,16 @@ func (s *Server) fsUpdateSkillMeta(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, err.Error())
+ 		return
+ 	}
+-	skillMD := filepath.Join(s.skillDir, name, "SKILL.md")
+-	raw, err := os.ReadFile(skillMD)
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	skillMD := filepath.Join(name, "SKILL.md")
++	raw, err := root.ReadFile(skillMD)
+ 	if err != nil {
+-		writeErr(w, 404, "skill not found")
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+ 	updated, err := rewriteSkillFrontmatter(raw, body.MCPs, body.Description, body.License, body.Compatibility)
+@@ -1181,8 +1197,8 @@ func (s *Server) fsUpdateSkillMeta(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, err.Error())
+ 		return
+ 	}
+-	if err := os.WriteFile(skillMD, updated, 0o644); err != nil {
+-		writeErr(w, 500, err.Error())
++	if err := root.WriteFile(skillMD, updated, 0o644); err != nil {
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+ 	writeJSON(w, 200, map[string]any{"ok": true})
+@@ -1419,9 +1435,14 @@ func (s *Server) fsUploadSkill(w http.ResponseWriter, r *http.Request) {
+ 		return
+ 	}
+ 
+-	skillPath := filepath.Join(s.skillDir, name)
+ 	overwrite := r.URL.Query().Get("overwrite") == "true"
+-	if _, err := os.Stat(skillPath); err == nil && !overwrite {
++	skillRoot, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer skillRoot.Close()
++	if _, err := skillRoot.Stat(name); err == nil && !overwrite {
+ 		writeErr(w, 409, "skill already exists: "+name+" (retry after confirming if you want to overwrite)")
+ 		return
+ 	}
+@@ -1453,6 +1474,10 @@ func (s *Server) fsUploadSkill(w http.ResponseWriter, r *http.Request) {
+ 			writeErr(w, 400, "archive contains an illegal path "+e.name+": "+msg)
+ 			return
+ 		}
++		if f.Mode()&os.ModeSymlink != 0 {
++			writeErr(w, 400, "archive contains a symbolic link, which is not allowed: "+e.name)
++			return
++		}
+ 		if entries++; entries > maxSkillEntries {
+ 			writeErr(w, 400, "too many files in the archive")
+ 			return
+@@ -1496,9 +1521,9 @@ func (s *Server) fsUploadSkill(w http.ResponseWriter, r *http.Request) {
+ 	}
+ 
+ 	if overwrite {
+-		_ = os.RemoveAll(skillPath)
++		_ = skillRoot.RemoveAll(name)
+ 	}
+-	if err := os.Rename(tmp, skillPath); err != nil {
++	if err := skillRoot.Rename(filepath.Base(tmp), name); err != nil {
+ 		writeErr(w, 500, "installation failed: "+err.Error())
+ 		return
+ 	}
+@@ -1530,10 +1555,16 @@ func (s *Server) fsDeleteSkill(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+-	if err := os.RemoveAll(filepath.Join(s.skillDir, name)); err != nil {
++	root, err := s.openSkillRoot()
++	if err != nil {
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
++	defer root.Close()
++	if err := root.RemoveAll(name); err != nil {
++		writeSkillFileError(w, err, "skill not found")
++		return
++	}
+ 	writeJSON(w, 200, map[string]any{"deleted": name})
+ }
+ 
+@@ -1628,25 +1659,60 @@ func walkSkillFiles(root string) ([]string, error) {
+ 	return entries, err
+ }
+ 
++// openSkillRoot opens the skills directory as an os.Root. Every skill file route
++// resolves through it, so a symlink planted inside a skill (by an uploaded archive,
++// a platform tool, or a host-side writer) cannot read or write outside skillDir.
++func (s *Server) openSkillRoot() (*os.Root, error) {
++	return os.OpenRoot(s.skillDir)
++}
++
++func writeSkillFileError(w http.ResponseWriter, err error, missing string) {
++	switch {
++	case os.IsNotExist(err):
++		writeErr(w, 404, missing)
++	case pathEscapes(err):
++		writeErr(w, 400, "invalid path")
++	default:
++		writeErr(w, 500, err.Error())
++	}
++}
++
+ func (s *Server) fsListFiles(w http.ResponseWriter, r *http.Request) {
+ 	name := r.PathValue("name")
+ 	if !validSkillName(name) {
+ 		writeErr(w, 400, "invalid skill name")
+ 		return
+ 	}
+-	dirPath := filepath.Join(s.skillDir, name)
+-	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
+-		writeErr(w, 404, "skill not found")
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	if _, err := root.Stat(name); err != nil {
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+-	files, err := walkSkillFiles(dirPath)
++	files := []string{}
++	err = fs.WalkDir(root.FS(), name, func(p string, d fs.DirEntry, walkErr error) error {
++		if walkErr != nil {
++			return nil // skip unreadable entries, as before
++		}
++		rel, relErr := filepath.Rel(name, filepath.FromSlash(p))
++		if relErr != nil || rel == "." {
++			return nil
++		}
++		if d.IsDir() {
++			files = append(files, filepath.ToSlash(rel)+"/")
++		} else {
++			files = append(files, filepath.ToSlash(rel))
++		}
++		return nil
++	})
+ 	if err != nil {
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+-	if files == nil {
+-		files = []string{}
+-	}
+ 	writeJSON(w, 200, map[string]any{"files": files})
+ }
+ 
+@@ -1661,13 +1727,15 @@ func (s *Server) fsReadFile(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, errMsg)
+ 		return
+ 	}
+-	data, err := os.ReadFile(filepath.Join(s.skillDir, name, file))
+-	if os.IsNotExist(err) {
+-		writeErr(w, 404, "file not found")
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
+ 		return
+ 	}
++	defer root.Close()
++	data, err := root.ReadFile(filepath.Join(name, file))
+ 	if err != nil {
+-		writeErr(w, 500, err.Error())
++		writeSkillFileError(w, err, "file not found")
+ 		return
+ 	}
+ 	writeJSON(w, 200, map[string]any{"content": string(data), "file": file})
+@@ -1691,19 +1759,26 @@ func (s *Server) fsWriteFile(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, err.Error())
+ 		return
+ 	}
+-	skillPath := filepath.Join(s.skillDir, name)
+-	if _, err := os.Stat(skillPath); os.IsNotExist(err) {
+-		writeErr(w, 404, "skill not found")
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+-	fullPath := filepath.Join(skillPath, file)
+-	// create parent subdirectory if needed (e.g. scripts/, references/, assets/)
+-	if err := os.MkdirAll(filepath.Dir(fullPath), 0o755); err != nil {
+-		writeErr(w, 500, err.Error())
++	defer root.Close()
++	if _, err := root.Stat(name); err != nil {
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+-	if err := os.WriteFile(fullPath, []byte(body.Content), 0o644); err != nil {
+-		writeErr(w, 500, err.Error())
++	fullPath := filepath.Join(name, file)
++	// create parent subdirectory if needed (e.g. scripts/, references/, assets/)
++	if dir := filepath.Dir(fullPath); dir != "." {
++		if err := root.MkdirAll(dir, 0o755); err != nil {
++			writeSkillFileError(w, err, "skill not found")
++			return
++		}
++	}
++	if err := root.WriteFile(fullPath, []byte(body.Content), 0o644); err != nil {
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+ 	writeJSON(w, 200, map[string]any{"ok": true})
+@@ -1727,13 +1802,18 @@ func (s *Server) fsCreateDir(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, errMsg)
+ 		return
+ 	}
+-	skillPath := filepath.Join(s.skillDir, name)
+-	if _, err := os.Stat(skillPath); os.IsNotExist(err) {
+-		writeErr(w, 404, "skill not found")
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	if _, err := root.Stat(name); err != nil {
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+-	if err := os.MkdirAll(filepath.Join(skillPath, dir), 0o755); err != nil {
+-		writeErr(w, 500, err.Error())
++	if err := root.MkdirAll(filepath.Join(name, dir), 0o755); err != nil {
++		writeSkillFileError(w, err, "skill not found")
+ 		return
+ 	}
+ 	writeJSON(w, 201, map[string]any{"dir": dir})
+@@ -1750,13 +1830,19 @@ func (s *Server) fsDeletePath(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, errMsg)
+ 		return
+ 	}
+-	fullPath := filepath.Join(s.skillDir, name, file)
+-	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+-		writeErr(w, 404, "not found")
++	root, err := s.openSkillRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	fullPath := filepath.Join(name, file)
++	if _, err := root.Lstat(fullPath); err != nil {
++		writeSkillFileError(w, err, "not found")
+ 		return
+ 	}
+-	if err := os.RemoveAll(fullPath); err != nil {
+-		writeErr(w, 500, err.Error())
++	if err := root.RemoveAll(fullPath); err != nil {
++		writeSkillFileError(w, err, "not found")
+ 		return
+ 	}
+ 	writeJSON(w, 200, map[string]any{"deleted": file})
+diff --git a/server/task_archive_package.go b/server/task_archive_package.go
+index f23c4c8..4d9f402 100644
+--- a/server/task_archive_package.go
++++ b/server/task_archive_package.go
+@@ -251,6 +251,12 @@ func installTaskArchiveFiles(dataDir, extractedDir, taskID string, archiveID int
+ 		})
+ 	}
+ 	for _, move := range sources {
++		// The destination tree is built from a numeric task id, but a symlinked
++		// tasks/ or transcripts/ parent would still redirect the rename outside the
++		// data dir. Refuse any existing link component below it.
++		if pathCrossesSymlink(dataDir, move.Destination) {
++			return nil, fmt.Errorf("restore destination crosses a symlink: %s", move.Destination)
++		}
+ 		if _, err := os.Lstat(move.Destination); err == nil {
+ 			return nil, fmt.Errorf("restore destination already exists: %s", move.Destination)
+ 		} else if !os.IsNotExist(err) {
+diff --git a/server/workspace.go b/server/workspace.go
+index df78e3e..1281d42 100644
+--- a/server/workspace.go
++++ b/server/workspace.go
+@@ -15,33 +15,105 @@ import (
+ 
+ // Workspace file manager — browse / view / edit / download / upload / delete the
+ // shared work dir (s.m.dir), where all agents write their artifacts. Every path is
+-// confined to the work dir root (traversal via ".." is neutralised). All routes sit
+-// behind requireAuth (see Handler()).
++// confined to the work dir root. All routes sit behind requireAuth (see Handler()).
++//
++// Confinement is enforced by os.Root: the root directory is held open and every
++// component is resolved through that descriptor. A symlink, ".." segment, absolute
++// path, or nested link that would leave the root is refused by the kernel-facing
++// layer, and there is no window between a path check and the operation itself, so
++// the check-then-use gap of a lexical resolver is closed.
+ 
+ const (
+ 	maxWorkspaceRead   = 2 << 20   // 2 MiB: files bigger than this aren't inlined for view/edit (download instead)
+ 	maxWorkspaceUpload = 512 << 20 // 512 MiB per upload request
+ )
+ 
+-// wsResolve maps a user-supplied relative path to an absolute path INSIDE the work
+-// dir. It returns ok=false if the path would escape the root. filepath.Clean on a
+-// rooted copy collapses any ".." so nothing can climb above the root.
+-func (s *Server) wsResolve(rel string) (string, bool) {
+-	base := filepath.Clean(s.m.dir)
+-	rel = strings.TrimPrefix(strings.TrimSpace(rel), "/")
+-	clean := filepath.Clean("/" + rel) // e.g. "/a/../../etc" → "/etc" (still rooted at "/")
+-	abs := filepath.Clean(filepath.Join(base, clean))
+-	if abs != base && !strings.HasPrefix(abs, base+string(os.PathSeparator)) {
++// wsRelative normalizes a client-supplied path to a path relative to the workspace
++// root. It is deliberately lexical and performs no filesystem access: the actual
++// confinement comes from os.Root in the handler. Rejecting traversal here keeps the
++// API explicit (400 instead of silently remapping ".." back into the root).
++func wsRelative(rel string) (string, bool) {
++	rel = strings.TrimSpace(rel)
++	if strings.ContainsRune(rel, 0) {
+ 		return "", false
+ 	}
+-	return abs, true
++	if strings.HasPrefix(rel, "/") || strings.ContainsRune(rel, '\\') {
++		return "", false // absolute path, or a Windows separator on any host
++	}
++	if rel == "" {
++		return ".", true
++	}
++	for _, part := range strings.Split(rel, "/") {
++		if part == ".." {
++			return "", false
++		}
++	}
++	clean := filepath.Clean(filepath.FromSlash(rel))
++	if clean == "." {
++		return ".", true
++	}
++	if filepath.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
++		return "", false
++	}
++	return clean, true
++}
++
++// wsRoot opens the workspace as an os.Root. Callers must close it.
++func (s *Server) wsRoot() (*os.Root, error) {
++	return os.OpenRoot(s.m.dir)
++}
++
++// pathEscapes reports whether err is os.Root's refusal to resolve a path outside
++// its root. os.Root does not export the sentinel (the message is stable across the
++// platforms we build for), so match it explicitly instead of treating it as a 500.
++func pathEscapes(err error) bool {
++	return err != nil && strings.Contains(err.Error(), "path escapes from parent")
++}
++
++// writeFileError maps a confined-filesystem error onto the route's status codes.
++func writeFileError(w http.ResponseWriter, err error, missing string) {
++	switch {
++	case os.IsNotExist(err):
++		writeErr(w, 404, missing)
++	case pathEscapes(err):
++		writeErr(w, 400, "invalid path")
++	default:
++		writeErr(w, 500, err.Error())
++	}
++}
++
++// pathCrossesSymlink reports whether any existing component of abs below root is a
++// symlink. Kept for the archive-restore helper, whose destinations are built from
++// server-side data and whose sources are renamed from a separate temp root, so it
++// cannot use a single os.Root for both sides. The file-manager and skill routes do
++// not use this check: os.Root resolves them directly and has no check-then-use gap.
++func pathCrossesSymlink(root, abs string) bool {
++	rel, err := filepath.Rel(root, abs)
++	if err != nil {
++		return true
++	}
++	current := root
++	for _, part := range strings.Split(rel, string(os.PathSeparator)) {
++		if part == "" || part == "." {
++			continue
++		}
++		current = filepath.Join(current, part)
++		info, err := os.Lstat(current)
++		if os.IsNotExist(err) {
++			return false
++		}
++		if err != nil {
++			return true
++		}
++		if info.Mode()&os.ModeSymlink != 0 {
++			return true
++		}
++	}
++	return false
+ }
+ 
+-// wsRel renders an absolute path back as a workspace-relative path (forward slashes).
+-func (s *Server) wsRel(abs string) string {
+-	base := filepath.Clean(s.m.dir)
+-	rel, err := filepath.Rel(base, abs)
+-	if err != nil || rel == "." {
++func wsDisplay(rel string) string {
++	if rel == "." {
+ 		return ""
+ 	}
+ 	return filepath.ToSlash(rel)
+@@ -57,21 +129,33 @@ type wsEntry struct {
+ 
+ // GET /api/workspace/list?path=<rel>
+ func (s *Server) wsList(w http.ResponseWriter, r *http.Request) {
+-	abs, ok := s.wsResolve(r.URL.Query().Get("path"))
++	rel, ok := wsRelative(r.URL.Query().Get("path"))
+ 	if !ok {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	fi, err := os.Stat(abs)
++	root, err := s.wsRoot()
+ 	if err != nil {
+-		writeErr(w, 404, "path does not exist")
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	dir, err := root.Open(rel)
++	if err != nil {
++		writeFileError(w, err, "path does not exist")
++		return
++	}
++	defer dir.Close()
++	fi, err := dir.Stat()
++	if err != nil {
++		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+ 	if !fi.IsDir() {
+ 		writeErr(w, 400, "not a directory")
+ 		return
+ 	}
+-	ents, err := os.ReadDir(abs)
++	ents, err := dir.ReadDir(-1)
+ 	if err != nil {
+ 		writeErr(w, 500, err.Error())
+ 		return
+@@ -84,7 +168,7 @@ func (s *Server) wsList(w http.ResponseWriter, r *http.Request) {
+ 		}
+ 		out = append(out, wsEntry{
+ 			Name:  e.Name(),
+-			Path:  s.wsRel(filepath.Join(abs, e.Name())),
++			Path:  wsDisplay(filepath.Join(rel, e.Name())),
+ 			Dir:   e.IsDir(),
+ 			Size:  info.Size(),
+ 			MTime: info.ModTime().UnixMilli(),
+@@ -97,20 +181,32 @@ func (s *Server) wsList(w http.ResponseWriter, r *http.Request) {
+ 		}
+ 		return strings.ToLower(out[i].Name) < strings.ToLower(out[j].Name)
+ 	})
+-	writeJSON(w, 200, map[string]any{"path": s.wsRel(abs), "entries": out})
++	writeJSON(w, 200, map[string]any{"path": wsDisplay(rel), "entries": out})
+ }
+ 
+ // GET /api/workspace/read?path=<rel> — inline text for view/edit. Binary or oversize
+ // files return {binary:true}/{too_large:true} with no content (use download instead).
+ func (s *Server) wsRead(w http.ResponseWriter, r *http.Request) {
+-	abs, ok := s.wsResolve(r.URL.Query().Get("path"))
++	rel, ok := wsRelative(r.URL.Query().Get("path"))
+ 	if !ok {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	fi, err := os.Stat(abs)
++	root, err := s.wsRoot()
+ 	if err != nil {
+-		writeErr(w, 404, "file does not exist")
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	file, err := root.Open(rel)
++	if err != nil {
++		writeFileError(w, err, "file does not exist")
++		return
++	}
++	defer file.Close()
++	fi, err := file.Stat()
++	if err != nil {
++		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+ 	if fi.IsDir() {
+@@ -118,19 +214,23 @@ func (s *Server) wsRead(w http.ResponseWriter, r *http.Request) {
+ 		return
+ 	}
+ 	if fi.Size() > maxWorkspaceRead {
+-		writeJSON(w, 200, map[string]any{"path": s.wsRel(abs), "size": fi.Size(), "too_large": true, "binary": true})
++		writeJSON(w, 200, map[string]any{"path": wsDisplay(rel), "size": fi.Size(), "too_large": true, "binary": true})
+ 		return
+ 	}
+-	data, err := os.ReadFile(abs)
++	data, err := io.ReadAll(io.LimitReader(file, maxWorkspaceRead+1))
+ 	if err != nil {
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
++	if len(data) > maxWorkspaceRead {
++		writeJSON(w, 200, map[string]any{"path": wsDisplay(rel), "size": int64(len(data)), "too_large": true, "binary": true})
++		return
++	}
+ 	if bytes.IndexByte(data, 0) >= 0 || !utf8.Valid(data) {
+-		writeJSON(w, 200, map[string]any{"path": s.wsRel(abs), "size": fi.Size(), "binary": true})
++		writeJSON(w, 200, map[string]any{"path": wsDisplay(rel), "size": int64(len(data)), "binary": true})
+ 		return
+ 	}
+-	writeJSON(w, 200, map[string]any{"path": s.wsRel(abs), "size": fi.Size(), "binary": false, "content": string(data)})
++	writeJSON(w, 200, map[string]any{"path": wsDisplay(rel), "size": int64(len(data)), "binary": false, "content": string(data)})
+ }
+ 
+ // POST /api/workspace/write  {path, content} — create/overwrite a text file.
+@@ -143,24 +243,32 @@ func (s *Server) wsWrite(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, err.Error())
+ 		return
+ 	}
+-	abs, ok := s.wsResolve(req.Path)
+-	if !ok || abs == filepath.Clean(s.m.dir) {
++	rel, ok := wsRelative(req.Path)
++	if !ok || rel == "." {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	if fi, err := os.Stat(abs); err == nil && fi.IsDir() {
+-		writeErr(w, 400, "target is a directory")
++	root, err := s.wsRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+-	if err := os.MkdirAll(filepath.Dir(abs), 0o755); err != nil {
+-		writeErr(w, 500, err.Error())
++	defer root.Close()
++	if fi, err := root.Stat(rel); err == nil && fi.IsDir() {
++		writeErr(w, 400, "target is a directory")
+ 		return
+ 	}
+-	if err := os.WriteFile(abs, []byte(req.Content), 0o644); err != nil {
+-		writeErr(w, 500, err.Error())
++	if dir := filepath.Dir(rel); dir != "." {
++		if err := root.MkdirAll(dir, 0o755); err != nil {
++			writeFileError(w, err, "path does not exist")
++			return
++		}
++	}
++	if err := root.WriteFile(rel, []byte(req.Content), 0o644); err != nil {
++		writeFileError(w, err, "path does not exist")
+ 		return
+ 	}
+-	writeJSON(w, 200, map[string]any{"ok": true, "path": s.wsRel(abs)})
++	writeJSON(w, 200, map[string]any{"ok": true, "path": wsDisplay(rel)})
+ }
+ 
+ // POST /api/workspace/mkdir  {path}
+@@ -172,36 +280,48 @@ func (s *Server) wsMkdir(w http.ResponseWriter, r *http.Request) {
+ 		writeErr(w, 400, err.Error())
+ 		return
+ 	}
+-	abs, ok := s.wsResolve(req.Path)
+-	if !ok || abs == filepath.Clean(s.m.dir) {
++	rel, ok := wsRelative(req.Path)
++	if !ok || rel == "." {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	if err := os.MkdirAll(abs, 0o755); err != nil {
++	root, err := s.wsRoot()
++	if err != nil {
+ 		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+-	writeJSON(w, 200, map[string]any{"ok": true, "path": s.wsRel(abs)})
++	defer root.Close()
++	if err := root.MkdirAll(rel, 0o755); err != nil {
++		writeFileError(w, err, "path does not exist")
++		return
++	}
++	writeJSON(w, 200, map[string]any{"ok": true, "path": wsDisplay(rel)})
+ }
+ 
+ // DELETE /api/workspace/delete?path=<rel> — removes a file or a directory tree
+ // (confined to the work dir; the root itself can't be deleted).
+ func (s *Server) wsDelete(w http.ResponseWriter, r *http.Request) {
+-	abs, ok := s.wsResolve(r.URL.Query().Get("path"))
++	rel, ok := wsRelative(r.URL.Query().Get("path"))
+ 	if !ok {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	if abs == filepath.Clean(s.m.dir) {
++	if rel == "." {
+ 		writeErr(w, 400, "cannot delete the workspace root directory")
+ 		return
+ 	}
+-	if _, err := os.Stat(abs); err != nil {
+-		writeErr(w, 404, "path does not exist")
++	root, err := s.wsRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
+ 		return
+ 	}
+-	if err := os.RemoveAll(abs); err != nil {
+-		writeErr(w, 500, err.Error())
++	defer root.Close()
++	if _, err := root.Lstat(rel); err != nil {
++		writeFileError(w, err, "path does not exist")
++		return
++	}
++	if err := root.RemoveAll(rel); err != nil {
++		writeFileError(w, err, "path does not exist")
+ 		return
+ 	}
+ 	writeJSON(w, 200, map[string]any{"ok": true})
+@@ -209,30 +329,48 @@ func (s *Server) wsDelete(w http.ResponseWriter, r *http.Request) {
+ 
+ // GET /api/workspace/download?path=<rel> — stream a file as an attachment.
+ func (s *Server) wsDownload(w http.ResponseWriter, r *http.Request) {
+-	abs, ok := s.wsResolve(r.URL.Query().Get("path"))
++	rel, ok := wsRelative(r.URL.Query().Get("path"))
+ 	if !ok {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	fi, err := os.Stat(abs)
++	root, err := s.wsRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	file, err := root.Open(rel)
++	if err != nil {
++		writeFileError(w, err, "file does not exist")
++		return
++	}
++	defer file.Close()
++	fi, err := file.Stat()
+ 	if err != nil || fi.IsDir() {
+ 		writeErr(w, 404, "file does not exist")
+ 		return
+ 	}
+-	name := filepath.Base(abs)
++	name := filepath.Base(rel)
+ 	// RFC 5987 filename* keeps non-ASCII names intact; plain filename is the fallback.
+ 	w.Header().Set("Content-Disposition", "attachment; filename=\""+sanitizeFilename(name)+"\"; filename*=UTF-8''"+url.PathEscape(name))
+-	http.ServeFile(w, r, abs)
++	http.ServeContent(w, r, name, fi.ModTime(), file)
+ }
+ 
+ // POST /api/workspace/upload?path=<dir> — multipart form field "file" (one or more).
+ func (s *Server) wsUpload(w http.ResponseWriter, r *http.Request) {
+-	dirAbs, ok := s.wsResolve(r.URL.Query().Get("path"))
++	relDir, ok := wsRelative(r.URL.Query().Get("path"))
+ 	if !ok {
+ 		writeErr(w, 400, "invalid path")
+ 		return
+ 	}
+-	if fi, err := os.Stat(dirAbs); err != nil || !fi.IsDir() {
++	root, err := s.wsRoot()
++	if err != nil {
++		writeErr(w, 500, err.Error())
++		return
++	}
++	defer root.Close()
++	if fi, err := root.Stat(relDir); err != nil || !fi.IsDir() {
+ 		writeErr(w, 400, "target directory does not exist")
+ 		return
+ 	}
+@@ -252,12 +390,9 @@ func (s *Server) wsUpload(w http.ResponseWriter, r *http.Request) {
+ 		if name == "" || name == "." || name == ".." {
+ 			continue
+ 		}
+-		destAbs, okd := s.wsResolve(filepath.Join(s.wsRel(dirAbs), name))
+-		if !okd {
+-			continue
+-		}
+-		if err := saveUpload(hdr, destAbs); err != nil {
+-			writeErr(w, 500, err.Error())
++		destRel := filepath.Join(relDir, name)
++		if err := saveUploadRoot(root, destRel, hdr); err != nil {
++			writeFileError(w, err, "path does not exist")
+ 			return
+ 		}
+ 		saved++
+@@ -265,13 +400,15 @@ func (s *Server) wsUpload(w http.ResponseWriter, r *http.Request) {
+ 	writeJSON(w, 200, map[string]any{"uploaded": saved})
+ }
+ 
+-func saveUpload(hdr *multipart.FileHeader, dest string) error {
++// saveUploadRoot writes an uploaded multipart file through an os.Root, so the
++// destination cannot follow a symlink out of the root.
++func saveUploadRoot(root *os.Root, dest string, hdr *multipart.FileHeader) error {
+ 	src, err := hdr.Open()
+ 	if err != nil {
+ 		return err
+ 	}
+ 	defer src.Close()
+-	out, err := os.Create(dest)
++	out, err := root.OpenFile(dest, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o644)
+ 	if err != nil {
+ 		return err
+ 	}

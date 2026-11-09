@@ -137,3 +137,26 @@ intentionally small and can itself be improved by the same loop.
   untouched. The authorization invariant held, but the response would make an
   operator believe the rule changed. Record it as an API-semantics defect rather
   than inflating it into an IDOR.
+- **Check-then-use is the bug, not only the symlink.** F-005's `Lstat` walk
+  rejected the tested links but still validated one path string and then let a
+  second syscall resolve it. F-006 replaced every file route with `os.Root`,
+  which holds the directory open and resolves each component through that
+  descriptor. When a reviewer says "add a symlink check", prefer the primitive
+  that makes the check and the operation the same resolution.
+- **A route is only as confined as its least-hardened sibling.** The workspace
+  was fixed while skill read/write/dirs/delete/meta, chat uploads, and restore
+  still followed links. Enumerate every handler that calls `os.Open`,
+  `ReadFile`, `WriteFile`, `MkdirAll`, `RemoveAll`, or `ServeFile` with a
+  client-influenced path, and run the same link/traversal/absolute/backslash
+  matrix against each one. Include the destructive routes: the skill delete
+  escape removed an outside file, which a read-only probe would have missed.
+- **Second-run failures are fixture defects until proven otherwise.** The
+  `TestSkillGapsReport` rerun failed because the report aggregates the whole
+  disposable `_server` database while the test assumed it was the only writer;
+  earlier runs' `graphql-audit` rows outranked the fixture. Clear the aggregate
+  table around the fixture or scope the assertion; do not weaken the ordering
+  assertion to make the rerun pass.
+- **Keep the fail-before log even when the fix is broad.** To prove the archive
+  restore check mattered, remove only that check, run the probe, capture the
+  `err=<nil>` escape, restore the file, and rerun. A targeted revert produces
+  cleaner before/after evidence than stashing the whole patch.

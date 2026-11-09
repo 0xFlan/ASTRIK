@@ -31,6 +31,17 @@ required=(
   "evidence/db/logs/f005-probe-after.log"
   "evidence/db/logs/go-test-fresh.log"
   "evidence/db/logs/go-test-rerun.log"
+  "findings/f006-file-route-confinement.md"
+  "evidence/f006/README.md"
+  "evidence/f006/repro/zz_evidence_confinement_test.go"
+  "evidence/f006/patches/file-route-confinement.patch"
+  "evidence/f006/patches/test-skill-gaps-isolation.patch"
+  "evidence/f006/logs/f006-before.log"
+  "evidence/f006/logs/f006-after.log"
+  "evidence/f006/logs/f006-archive-before.log"
+  "evidence/f006/logs/f006-archive-after.log"
+  "evidence/f006/logs/go-test-run1.log"
+  "evidence/f006/logs/go-test-run2.log"
 )
 
 for f in "${required[@]}"; do
@@ -40,8 +51,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.9 |' README.md; then
-  echo "README revision is not 1.9" >&2
+if ! grep -q '| Revision | 1.10 |' README.md; then
+  echo "README revision is not 1.10" >&2
   exit 1
 fi
 

@@ -79,7 +79,7 @@ mut_stale_revision() {
   python3 - "$tmp/repo/README.md" <<'PY'
 import sys
 p = sys.argv[1]
-s = open(p).read().replace("| Revision | 1.9 |", "| Revision | 1.8 |", 1)
+s = open(p).read().replace("| Revision | 1.10 |", "| Revision | 1.9 |", 1)
 open(p, "w").write(s)
 PY
 }
