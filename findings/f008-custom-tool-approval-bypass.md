@@ -152,9 +152,9 @@ tool is not executing it, and the approval belongs at invocation.
   platform wants to prevent an agent from even staging an executable tool, that
   is a separate policy decision that would break the Auto "install the tool"
   workflow.
-- `delete_assets_by_host` remains an Allowed, irreversible write bound to Auto.
-  It was outside this chain (no code execution) and is recorded as the next
-  authority-boundary candidate rather than silently changed.
+- `delete_assets_by_host` remained an Allowed, irreversible write bound to Auto
+  at F-008 time. It was outside this chain (no code execution) and is now
+  `AskUser`-gated in F-009; the Auto delete path is still operator-assisted.
 - `ModeBypass` still allows everything by explicit operator choice; the fix
   restores the default/`auto`/`dontAsk` behavior, not an absolute sandbox.
 - Auto's operator-assisted status means the F-007 MCP chain is not claimed as a

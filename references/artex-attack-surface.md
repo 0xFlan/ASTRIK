@@ -32,6 +32,7 @@ State the model in the report. "Critical" for M2 is often "by design" for M1.
 | A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | static | `server/traffic_ingest.go:22` |
 | A12 | Agent-facing MCP write installs a stdio launcher that executes outside the MCP approval gate | Medium (approval/persistence bypass; F-008 correction) | confirmed (F-007) | `server/platform_tools.go` (`toolCreateMCP`), `server/mcpdiscover.go` (`discoverEmptyMCPsOnStartup`) |
 | A13 | Agent-created command/script/http custom tools bypass Bash's approval gate | High (M1/M2) | confirmed (F-008) | `server/customtool.go` (`buildCustomTool`), `server/platform_tools.go` (`toolCreateCustomTool`) |
+| A14 | Auto-triggered reporter reads/overwrites another task's evidence; global delete is Allowed | High (authenticated-agent cross-task write; delete is operator-assisted) | confirmed (F-009) | `server/conversations.go` (`runTriggeredRun`), `agent/chat.go` (`RunInfo`), `server/orchestration.go` (`delegateToTask`, `toolUpdateFindingReport`), `server/platform_tools.go` (`toolDeleteAssetsByHost`) |
 
 Sound areas are listed in §6. Do not report those as gaps.
 
@@ -212,13 +213,45 @@ execution post-fix, with the operator executor and Bash control intact.
 **Fix.** `buildCustomTool` now renders the command from the call parameters and
 delegates to `actool.NewBash().CheckPermissions`; script and http return
 `AskUser`; unknown/empty kinds return `Denied`. Creation stays Allowed because
-it is not execution. `delete_assets_by_host` is still Allowed and remains the
-next candidate.
+it is not execution. F-009 now gates `delete_assets_by_host` (see A14).
 
 **F-007 correction.** Auto's ChatAgent base is `actool.DefaultTools()` (including
 Bash), and its only turn entries are operator conversation/side questions, so
 the MCP stdio launch was an approval/persistence bypass, not remote code
 execution. The reachability answer is operator-assisted.
+
+### A14 — Reporter cross-task read/write and Allowed global delete
+
+**Anchor.** `server/conversations.go` (`runTriggeredRun` drops `item.taskID`),
+`agent/chat.go:122` (`RunInfo{SessionID}` only), `server/orchestration.go`
+(`delegateToTask` trusts `task_id`; `toolUpdateFindingReport` writes by global
+node id), `server/platform_tools.go` (`toolDeleteAssetsByHost` uses `wrTool`).
+
+**Mechanism.** The reporter is auto-triggered by `report_finding`; its trigger
+carries the task id, but the run discarded it. The reporter is bound to
+`get_task_node_detail`, worker-trace, finding-list, graph, and
+`update_finding_report`; the query tools delegated to any supplied `task_id`, and
+the report writer accepted any finding node. A task-A reporter read task B's
+secret evidence and overwrote task B's report. Separately, Auto's
+`delete_assets_by_host` returned `allow` and removed a task-B asset from the
+shared library. F-009's probe observed all three pre-fix; after threading the
+task id into `RunInfo` and enforcing it at `delegateToTask` and
+`update_finding_report`, the cross-task read/write calls return
+`outside this run's task scope`, and the delete returns `ask` with the asset
+intact. Own-task read/write, Auto's platform-wide read, the direct operator
+delete, and the operator report write all still succeed.
+
+**Reachability.** The reporter chain is authenticated-agent and auto-triggered;
+its input includes target-influenced finding evidence. The delete chain is
+operator-assisted: Auto has no scheduler/trigger entry, and no live-model
+prompt-injection test was run. Do not claim either as unauthenticated remote.
+
+**Fix.** `runTriggeredRun` → `runConversationSync` → `Chat` now carries the task
+id into `RunInfo`; `delegateToTask` rejects a different non-zero scope;
+`update_finding_report` checks the finding's task via
+`FindingTaskIDByNodeID`; `delete_assets_by_host` uses `wrAskTool` and returns
+`AskUser`. Regression tests: `server/agent_scope_test.go`,
+`agent/chat_runinfo_test.go`; evidence: `evidence/f009/`.
 
 ## 3. Chain: symlink → key → admin (the one to prove first)
 
@@ -279,7 +312,7 @@ Ask these of any AI pentest/agent product:
 ## 7. What is still unverified
 
 - No runtime test of A1/A4/A5/A7 (no Docker/Postgres on the audit host).
-- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission; the remaining non-DB management modules (prompt templates, trigger configuration) remain route-by-route unverified. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request; no live-model prompt-injection probe was run, so remote Auto reachability remains unproven.
+- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission; the remaining non-DB management modules (prompt templates, trigger configuration) remain route-by-route unverified. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request; no live-model prompt-injection probe was run, so remote Auto reachability remains unproven. F-009 covered the auto-triggered reporter and the remaining destructive platform tool: the reporter's cross-task reads and `update_finding_report` writes are now scoped to the triggering task, and `delete_assets_by_host` is `AskUser`-gated. Traffic A5, prompt templates, and trigger configuration remain unverified; no live-model injection test was run.
 - No review of `mcphttp/`, `llmrec/`, `enrich/`, or the browser extension's message handling beyond permissions.
 - No CORS/CSRF browser test; the analysis is header-level only.
 - `guard.New()` is documented as the pentest-task guard, but current non-test call sites all use `NewWithInterceptor`; confirm per version before claiming a rule-less mode.

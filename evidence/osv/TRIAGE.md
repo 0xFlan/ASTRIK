@@ -268,3 +268,23 @@ candidate. Details: `findings/f008-custom-tool-approval-bypass.md`.
   `github.com/klauspost/compress` to 1.20.2 and `next` to 16.2.11+, then re-run
   the same three commands. These repositories are upstream to this skill; this
   repository records the triage rather than editing them.
+
+### Reporter task scope and destructive delete approval (F-009)
+
+F-008 left the global `delete_assets_by_host` and the agent management tools as
+candidates. F-009 resolved both. The reporter is started automatically by
+`report_finding`; its trigger carries a task id, but `runTriggeredRun` dropped
+it and `Chat` created `RunInfo{SessionID}` only. The reporter's bound
+`get_task_node_detail` / worker-trace / finding tools delegated to any supplied
+`task_id`, and `update_finding_report` wrote any global finding node. The probe
+ran the reporter with task A's intended context and read task B's secret evidence
+and overwrote task B's report; after threading the task id and enforcing it in
+`delegateToTask` and `update_finding_report`, both calls are rejected while
+own-task read/write, Auto's platform-wide read, and the operator write control
+still pass. The same probe showed `delete_assets_by_host` was `allow` and removed
+a task-B asset; it now returns `ask` and the asset remains, with the direct
+operator delete still working. The reporter chain is authenticated-agent and
+auto-triggered; the delete is operator-assisted. No live-model prompt-injection
+test was run. Full suite green twice (14 packages, 0 `FAIL`, `server` 22.644 s
+then cached), both patches apply to `2e3c8f8`, and `evidence/f009/` carries the
+reproducer and logs.

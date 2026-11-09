@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.12 |
+| Revision | 1.13 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -26,6 +26,7 @@
 | 1.10 | 2026-11-09 | Extended confinement to every file route: proved and fixed symlink escapes in skill read/write/dir/delete/meta, chat uploads, platform tools, and archive restore; replaced check-then-use with `os.Root`; added F-006 and `evidence/f006/` |
 | 1.11 | 2026-11-09 | Closed the archive-restore destination race with one `os.Root` for source and destination; proved an agent-facing `create_mcp` stdio launcher executes outside the MCP approval gate and made stdio operator-only; added F-007 and `evidence/f007/` |
 | 1.12 | 2026-11-09 | Proved custom command/script/http tools bypass Bash's approval gate, fixed permission parity, answered the F-007 reachability question as operator-assisted, and corrected F-007's impact; added F-008 and `evidence/f008/` |
+| 1.13 | 2026-11-09 | Proved the auto-triggered reporter crosses task scope to read and overwrite another task's evidence, fixed task scoping and the destructive delete approval gate, and added F-009 and `evidence/f009/` |
 
 ## 1 Scope
 
@@ -667,6 +668,32 @@ DB-backed suite runs are green (14 packages, 0 `FAIL`, `server` 22.699 s /
 22.043 s); only the live-model test skips. F-008 carries the reproducer, two
 patches, and the before/after logs under `evidence/f008/`. The operator-charter
 model and the "target content is data, not instructions" rule are unchanged.
+
+## Annex P — Reporter task scope and destructive delete approval (2026-11-09)
+
+F-009 followed the authority boundary from F-008 into the auto-triggered
+reporter. The trigger event carries `task_id`, but `runTriggeredRun` discarded
+it before `Chat`, and `Chat` set `RunInfo{SessionID}` only. The reporter is
+bound to `get_task_node_detail`, `get_task_worker_trace`, `list_task_findings`,
+`get_task_graph`, `search_task_worker_traces`, and `update_finding_report`; the
+query tools trusted any `task_id`, and the report writer trusted any global
+finding node id. A reporter run for task A could therefore read task B's evidence
+and overwrite task B's report. The probe observed both on the pre-fix tree and
+blocked both after threading the trigger task id into `RunInfo` and enforcing it
+at `delegateToTask` and `update_finding_report`; own-task read/write, Auto's
+platform-wide read, and the direct operator write controls still pass.
+
+The same pass resolved the remaining Allowed destructive primitive.
+`delete_assets_by_host` hard-deletes the shared cross-task asset library and was
+wrapped in the unconditional `wrTool`; the probe's Auto context removed a task-B
+asset pre-fix. It now uses `wrAskTool` and returns `AskUser`, while the direct
+operator delete still works. This is an operator-assisted primitive, not a
+remote chain: Auto has no unattended target-to-turn entry, and no live-model
+prompt-injection test was run. Two consecutive full DB-backed suite runs are
+green (14 packages, 0 `FAIL`, `server` 22.644 s then cached); only the live-model
+test skips. F-009 carries the reproducer, two patches, and the before/after logs
+under `evidence/f009/`. The operator-charter model and the "target content is
+data, not instructions" rule are unchanged.
 
 ## Bibliography
 

@@ -207,3 +207,20 @@ intentionally small and can itself be improved by the same loop.
   that converted "maybe remotely reachable" into "operator-assisted only" and
   made the F-007 correction evidence-based. When a model is in the loop and no
   live model is available, say so instead of simulating a compliant model.
+- **A trigger carries scope; the run must keep it.** F-009 found that
+  `runTriggeredRun` had `item.taskID` but dropped it before `Chat`, which built
+  `RunInfo{SessionID}` only. Every downstream tool saw zero, the "operator"
+  value, and the auto-triggered reporter could read and overwrite another task's
+  evidence. Thread the trigger's task id into the run context, then enforce it at
+  every sink that accepts a task or global node id; a prompt instruction is not
+  a scope check.
+- **A global node id needs the same owner check as a task id.**
+  `update_finding_report` looked correct in isolation because the reporter owns
+  the triggering finding, but the tool accepted any enumerable finding node. Look
+  for write tools keyed by a global row id, not only tools with a `task_id`
+  parameter, and verify the row's owner inside the write path.
+- **Gate the delete, not only the caller.** The same pass found
+  `delete_assets_by_host` on the unconditional `wrTool`; its Auto caller is
+  operator-assisted, but the tool is irreversible and global. Put destructive
+  verbs behind `AskUser` and keep a direct operator control in the probe. Do not
+  let a benign reachability classification excuse an unguarded destructive sink.

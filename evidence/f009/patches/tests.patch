@@ -1,0 +1,271 @@
+diff --git a/agent/chat_runinfo_test.go b/agent/chat_runinfo_test.go
+new file mode 100644
+index 0000000..19c3eec
+--- /dev/null
++++ b/agent/chat_runinfo_test.go
+@@ -0,0 +1,85 @@
++package agent
++
++import (
++	"context"
++	"encoding/json"
++	"iter"
++	"testing"
++	"time"
++
++	"github.com/Autumn-27/artex/db"
++	"github.com/Autumn-27/norma/llm"
++	"github.com/Autumn-27/norma/permission"
++	actool "github.com/Autumn-27/norma/tool"
++	"github.com/Autumn-27/norma/transcript"
++)
++
++type runInfoProvider struct{ calls int }
++
++func (p *runInfoProvider) Complete(context.Context, llm.CompletionRequest) (llm.Message, string, llm.Usage, error) {
++	p.calls++
++	if p.calls == 1 {
++		return llm.Message{Role: llm.RoleAssistant, Content: []llm.ContentBlock{{
++			Type: llm.BlockToolUse, ID: "scope-probe", Name: "scope_probe", Input: json.RawMessage(`{}`),
++		}}}, "tool_use", llm.Usage{}, nil
++	}
++	return llm.Message{Role: llm.RoleAssistant, Content: []llm.ContentBlock{llm.TextBlock("done")}}, "end_turn", llm.Usage{}, nil
++}
++
++func (p *runInfoProvider) Stream(ctx context.Context, req llm.CompletionRequest) iter.Seq2[llm.StreamEvent, error] {
++	return func(y func(llm.StreamEvent, error) bool) {
++		msg, stop, _, err := p.Complete(ctx, req)
++		if err != nil {
++			y(llm.StreamEvent{}, err)
++			return
++		}
++		for _, b := range msg.Content {
++			if b.Type == llm.BlockToolUse {
++				if !y(llm.StreamEvent{Type: llm.SEToolUseStart, ToolID: b.ID, ToolName: b.Name}, nil) ||
++					!y(llm.StreamEvent{Type: llm.SEToolInputJSON, Text: string(b.Input)}, nil) {
++					return
++				}
++			} else if !y(llm.StreamEvent{Type: llm.SETextDelta, Text: b.Text}, nil) {
++				return
++			}
++		}
++		y(llm.StreamEvent{Type: llm.SEMessageDelta, StopReason: stop}, nil)
++		y(llm.StreamEvent{Type: llm.SEMessageStop}, nil)
++	}
++}
++
++type runInfoProbe struct{ got RunInfo }
++
++func (p *runInfoProbe) tool() actool.CoreTool {
++	return actool.Build(actool.Spec{
++		Name:        "scope_probe",
++		Description: "records the run context",
++		Schema:      map[string]any{"type": "object", "properties": map[string]any{}},
++		Permissions: func(context.Context, json.RawMessage, permission.Context) permission.Decision {
++			return permission.Allowed()
++		},
++		Run: func(ctx context.Context, _ json.RawMessage, _ *actool.ToolContext) (actool.Result, error) {
++			p.got = RunInfoFrom(ctx)
++			return actool.Text("ok"), nil
++		},
++	})
++}
++
++func TestChatRunInfoCarriesTriggerTaskID(t *testing.T) {
++	probe := &runInfoProbe{}
++	old := ToolAugment
++	ToolAugment = func(context.Context, string) ([]actool.CoreTool, DeferredInfo, func()) {
++		return []actool.CoreTool{probe.tool()}, DeferredInfo{}, func() {}
++	}
++	defer func() { ToolAugment = old }()
++
++	chat := NewChatAgent(&runInfoProvider{}, "fixture", t.TempDir(), transcript.NewStore(t.TempDir()), 1000)
++	chat.SetNonStreaming(func() bool { return true })
++	_, err := chat.Chat(context.Background(), "reporter", "conv-scope", "call the probe", 42, 2, time.Minute, false, func(db.Activity) {})
++	if err != nil {
++		t.Fatal(err)
++	}
++	if probe.got.TaskID != 42 || probe.got.SessionID != "conv-scope" {
++		t.Fatalf("Chat run info = %+v, want task 42 and conv-scope", probe.got)
++	}
++}
+diff --git a/agent/side_questions_test.go b/agent/side_questions_test.go
+index 176a57d..63ea9f5 100644
+--- a/agent/side_questions_test.go
++++ b/agent/side_questions_test.go
+@@ -71,7 +71,7 @@ func TestSideActualChatCheckpointToolResultAndTranscriptIsolation(t *testing.T)
+ 			var snapshots []sidequestion.Snapshot
+ 			var activities []db.Activity
+ 			ctx := sidequestion.WithPublisher(t.Context(), func(s sidequestion.Snapshot) { snapshots = append(snapshots, s) })
+-			if _, err := chat.Chat(ctx, "mainagent", "conv-987654", "Read the local fixture", 5, time.Minute, false, func(a db.Activity) { activities = append(activities, a) }); err != nil {
++			if _, err := chat.Chat(ctx, "mainagent", "conv-987654", "Read the local fixture", 0, 5, time.Minute, false, func(a db.Activity) { activities = append(activities, a) }); err != nil {
+ 				t.Fatal(err)
+ 			}
+ 			if len(snapshots) < 3 {
+diff --git a/server/agent_scope_test.go b/server/agent_scope_test.go
+new file mode 100644
+index 0000000..ee9ce4b
+--- /dev/null
++++ b/server/agent_scope_test.go
+@@ -0,0 +1,161 @@
++package server
++
++import (
++	"context"
++	"encoding/json"
++	"fmt"
++	"strconv"
++	"strings"
++	"testing"
++
++	"github.com/Autumn-27/artex/agent"
++	"github.com/Autumn-27/artex/db"
++	"github.com/Autumn-27/norma/permission"
++	actool "github.com/Autumn-27/norma/tool"
++)
++
++func scopeTool(t *testing.T, tools []actool.CoreTool, name string) actool.CoreTool {
++	t.Helper()
++	for _, tool := range tools {
++		if tool.Name() == name {
++			return tool
++		}
++	}
++	t.Fatalf("tool %q is not bound", name)
++	return nil
++}
++
++// The reporter is auto-triggered with a task id, and it is bound to cross-task
++// query tools plus update_finding_report. Those tools must stay inside the task
++// that fired the trigger; otherwise target content read by the reporter can make
++// it read or overwrite another task's evidence.
++func TestReporterTaskScopeBlocksCrossTaskReadAndWrite(t *testing.T) {
++	s, fA, _ := trafficEvidenceServer(t)
++	pg := s.m.pg
++
++	findingA, err := pg.GetFinding(fA.FindingID)
++	if err != nil || findingA.TaskID == nil {
++		t.Fatalf("load finding A: %v %+v", err, findingA)
++	}
++	taskA := *findingA.TaskID
++
++	taskB, err := s.m.CreateTask("scope B", "scope B", nil, 0, 0)
++	if err != nil {
++		t.Fatal(err)
++	}
++	taskBID, err := strconv.ParseInt(taskB.ID, 10, 64)
++	if err != nil {
++		t.Fatal(err)
++	}
++	t.Cleanup(func() { _ = pg.DeleteTask(taskBID) })
++
++	findingB, err := s.evidenceStore().Record(context.Background(), db.RecordFindingInput{
++		TaskID: taskBID, ExplorationID: taskB.ExpID, Worker: "test",
++		VulnClass: "SCOPE", Name: "task B evidence", Severity: "low",
++		Summary: "B-task-secret-evidence",
++	}, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if _, err := pg.SetFindingReportVersionByNodeID(context.Background(), findingB.NodeID, "B-original", nil); err != nil {
++		t.Fatal(err)
++	}
++
++	reporterCtx := agent.WithRunInfo(context.Background(), agent.RunInfo{TaskID: taskA})
++	tools, _, cleanup := agent.AugmentTools(reporterCtx, "reporter", nil)
++	defer cleanup()
++	getDetail := scopeTool(t, tools, "get_task_node_detail")
++	updateReport := scopeTool(t, tools, "update_finding_report")
++
++	// Cross-task read is denied.
++	res, err := getDetail.Call(reporterCtx, json.RawMessage(fmt.Sprintf(`{"task_id":%q,"id":%d}`, taskB.ID, findingB.NodeID)), nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if !strings.Contains(res.Flatten(), "outside this run's task scope") {
++		t.Fatalf("reporter read task B: %s", res.Flatten())
++	}
++
++	// Cross-task report overwrite is denied and leaves B unchanged.
++	res, err = updateReport.Call(reporterCtx, json.RawMessage(fmt.Sprintf(`{"finding_id":%d,"report":"overwritten by reporter"}`, findingB.NodeID)), nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if !strings.Contains(res.Flatten(), "outside this run's task scope") {
++		t.Fatalf("reporter updated task B: %s", res.Flatten())
++	}
++	findingBAfter, err := pg.GetFinding(findingB.FindingID)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if findingBAfter.Report != "B-original" {
++		t.Fatalf("task B report changed: %q", findingBAfter.Report)
++	}
++
++	// Own-task read and write still work.
++	res, err = getDetail.Call(reporterCtx, json.RawMessage(fmt.Sprintf(`{"task_id":%q,"id":%d}`, fmt.Sprintf("%d", taskA), fA.NodeID)), nil)
++	if err != nil || !strings.Contains(res.Flatten(), "bound evidence") {
++		t.Fatalf("reporter read own task: %s %v", res.Flatten(), err)
++	}
++	res, err = updateReport.Call(reporterCtx, json.RawMessage(fmt.Sprintf(`{"finding_id":%d,"report":"own-task report"}`, fA.NodeID)), nil)
++	if err != nil || !strings.Contains(res.Flatten(), "updated") {
++		t.Fatalf("reporter updated own task: %s %v", res.Flatten(), err)
++	}
++	findingAAfter, err := pg.GetFinding(fA.FindingID)
++	if err != nil || findingAAfter.Report != "own-task report" {
++		t.Fatalf("own-task report not written: %+v %v", findingAAfter, err)
++	}
++
++	// Auto has no task scope and keeps its platform-wide read view.
++	autoCtx := agent.WithRunInfo(context.Background(), agent.RunInfo{})
++	autoTools, _, autoCleanup := agent.AugmentTools(autoCtx, "auto", nil)
++	defer autoCleanup()
++	autoGet := scopeTool(t, autoTools, "get_task_node_detail")
++	res, err = autoGet.Call(autoCtx, json.RawMessage(fmt.Sprintf(`{"task_id":%q,"id":%d}`, taskB.ID, findingB.NodeID)), nil)
++	if err != nil || !strings.Contains(res.Flatten(), "B-task-secret-evidence") {
++		t.Fatalf("Auto lost platform-wide read: %s %v", res.Flatten(), err)
++	}
++}
++
++func TestDeleteAssetsByHostRequiresApproval(t *testing.T) {
++	s, _, _ := trafficEvidenceServer(t)
++	task, err := s.m.CreateTask("delete approval", "delete approval", nil, 0, 0)
++	if err != nil {
++		t.Fatal(err)
++	}
++	taskID, err := strconv.ParseInt(task.ID, 10, 64)
++	if err != nil {
++		t.Fatal(err)
++	}
++	host := fmt.Sprintf("f009-delete-%d.example.test", taskID)
++	if _, err := s.m.Assets().UpsertRootDomain(db.UpsertRootDomainReq{Domain: host, TaskID: taskID}); err != nil {
++		t.Fatal(err)
++	}
++
++	autoCtx := agent.WithRunInfo(context.Background(), agent.RunInfo{})
++	tools, _, cleanup := agent.AugmentTools(autoCtx, "auto", nil)
++	defer cleanup()
++	del := scopeTool(t, tools, "delete_assets_by_host")
++	input := json.RawMessage(fmt.Sprintf(`{"host":%q}`, host))
++	if got := del.CheckPermissions(autoCtx, input, permission.Context{}).Behavior; got != permission.Ask {
++		t.Fatalf("delete permission = %q, want ask", got)
++	}
++
++	// Approval was not granted, so the asset must still exist.
++	assets, err := s.m.Assets().QueryByTask(taskID, "root_domain", 10, 0)
++	if err != nil || len(assets) == 0 {
++		t.Fatalf("asset disappeared before approval: %v %v", assets, err)
++	}
++	// Operator/direct control remains functional.
++	counts, err := s.m.Assets().DeleteByHost(host)
++	if err != nil {
++		t.Fatal(err)
++	}
++	var total int64
++	for _, n := range counts {
++		total += n
++	}
++	if total == 0 {
++		t.Fatal("direct operator delete removed nothing")
++	}
++}
