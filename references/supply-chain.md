@@ -78,3 +78,28 @@ Record:
 A scanner report alone is an L1 clue. It becomes a finding only when the
 vulnerable code path is reachable and the impact is demonstrated under the
 operator charter.
+
+## 6. Field notes (2026-11-09, osv-scanner 2.7.0)
+
+- v2 syntax: `osv-scanner scan source -r <dir>`; `--sbom` is deprecated in favour
+  of `-L <lockfile-or-sbom>`. `--format cyclonedx-1-6 --output-file <path>`
+  generates an SBOM containing the vulnerable components.
+- A tree with no manifests exits 128 (no package sources). Add
+  `--allow-no-lockfiles` when the absence of dependencies is the expected result;
+  the run then exits 0 with `No issues found`.
+- Round-trip the SBOM: `osv-scanner scan source --sbom <cdx.json>` must produce
+  the same advisory ID set as the direct scan. If it does not, the SBOM is
+  incomplete and is not evidence.
+- `--format json` nests packages under `results[].packages[]` in v2; a naive
+  `results[].vulnerabilities` parser silently reports zero findings. Count
+  `groups[].ids` instead.
+- OSV call analysis (`experimental_analysis.<id>.called`) is useful but narrow:
+  `called:true` means the symbol is in the binary's call graph, not that an
+  attacker can reach it. Confirm the import path in source, as with the zstd
+  panic in `server/skill_zip.go`.
+- Reachability is a property of the dependency path. In the ARTEX web app, most
+  flagged npm packages were transitive dependencies of the `shadcn` CLI, not of
+  the Next runtime; a lockfile hit is not a runtime hit.
+- Do not scan the evidence directory back into the report. A generated SBOM sits
+  in the tree and will be picked up by a later `-r .` run; exclude it or record
+  the difference.

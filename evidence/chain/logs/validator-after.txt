@@ -1,0 +1,3 @@
+scripts/ contains files not in MANIFEST.sha256 (or is missing listed files)
+listed: ghidra/ReportArtifacts.java test_validate_skill.sh validate_skill.sh 
+actual: ghidra/ProofMarker.java ghidra/ReportArtifacts.java test_validate_skill.sh validate_skill.sh 

@@ -1,0 +1,10 @@
+# addr	name	status	file
+100000460	_check_token	decompiled	100000460__check_token.c
+100000484	_run_command	decompiled	100000484__run_command.c
+1000004e8	_lab_flag	decompiled	1000004e8__lab_flag.c
+1000004f4	entry	decompiled	1000004f4_entry.c
+10000053c	___stack_chk_fail	decompiled	10000053c____stack_chk_fail.c
+100000548	_puts	decompiled	100000548__puts.c
+100000554	_snprintf	decompiled	100000554__snprintf.c
+100000560	_strcmp	decompiled	100000560__strcmp.c
+10000056c	_system	decompiled	10000056c__system.c

@@ -1,0 +1,5 @@
+ghidra_script_executed=true
+user=flan
+cwd=/private/tmp/artex-mutant
+program=vuln_target.stripped
+payload=benign-marker-only

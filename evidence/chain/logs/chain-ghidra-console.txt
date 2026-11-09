@@ -1,0 +1,73 @@
+openjdk version "21.0.10" 2026-01-20
+OpenJDK Runtime Environment Homebrew (build 21.0.10)
+OpenJDK 64-Bit Server VM Homebrew (build 21.0.10, mixed mode)
+INFO  Using log config file: jar:file:/opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: /Users/flan/Library/ghidra/ghidra_12.0.4_PUBLIC/application.log (LoggingInitialization)  
+INFO  Loading user preferences: /Users/flan/Library/ghidra/ghidra_12.0.4_PUBLIC/preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (480 ms) (ClassSearcher)  
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: NativePRNGNonBlocking (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (991 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 58 extension points (18 false positives) (ClassSearcher)  
+INFO  HEADLESS Script Paths:
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/Base/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/BSim/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Processors/8051/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/BytePatterns/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /tmp/artex-mutant/scripts/ghidra
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/Jython/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/PyGhidra/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/PDB/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/homebrew/Cellar/ghidra/12.0.4/libexec/Ghidra/Debug/Debugger/ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Creating temporary project: /tmp/ghidra-proj-chain/Chain (HeadlessAnalyzer)  
+INFO  Creating project: /tmp/ghidra-proj-chain/Chain (DefaultProject)  
+INFO  REPORT: Processing input files:  (HeadlessAnalyzer)  
+INFO       project: /tmp/ghidra-proj-chain/Chain (HeadlessAnalyzer)  
+INFO  IMPORTING: file:///Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped (HeadlessAnalyzer)  
+INFO  Using Loader: Mac OS X Mach-O (ProgramLoader)  
+INFO  Using Language/Compiler: AARCH64:LE:64:AppleSilicon:default (ProgramLoader)  
+INFO  Using Library Search Path: [., /System/Library/dyld/dyld_shared_cache_arm64e, /System/Library/dyld/dyld_shared_cache_x86_64, /System/Library/dyld/dyld_shared_cache_x86_64h, /System/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e, /System/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64, /System/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_x86_64h, /Users/flan/Library/Java/Extensions, /Library/Java/Extensions, /Network/Library/Java/Extensions, /System/Library/Java/Extensions, /usr/lib/java] (ProgramLoader)  
+INFO  Additional info:
+Loading file:///Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped?MD5=9f70e4fbc896e8c8dcfe2f6f2a60821b...
+Discovered 6 DYLD_CHAINED_PTR_64_OFFSET chained pointers.
+Fixed up 6 chained pointers.
+------------------------------------------------
+
+Linking the External Programs of 'vuln_target.stripped' to imported libraries...
+  [/usr/lib/libSystem.B.dylib] -> not found in project
+------------------------------------------------
+
+ (ProgramLoader)  
+INFO  IMPORTING: Loaded 0 additional files (HeadlessAnalyzer)  
+INFO  ANALYZING all memory and code: file:///Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped (HeadlessAnalyzer)  
+INFO  hit non-returning function, restarting decompiler switch analyzer later (DecompilerSwitchAnalyzer)  
+INFO  Packed database cache: /var/tmp/flan-ghidra/packed-db-cache (PackedDatabaseCache)  
+INFO  Applied data type archive: mac_osx (ApplyDataArchiveAnalyzer)  
+INFO  REPORT: Analysis succeeded for file: file:///Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: ProofMarker.java  (HeadlessAnalyzer)  
+INFO  SCRIPT: /tmp/artex-mutant/scripts/ghidra/ProofMarker.java (HeadlessAnalyzer)  
+INFO  ProofMarker.java> ProofMarker wrote /tmp/artex-ghidra-scriptpath-proof.txt (GhidraScript)  
+INFO  ANALYZING changes made by post scripts: file:///Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped (HeadlessAnalyzer)  
+INFO  REPORT: Post-analysis succeeded for file: file:///Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped (HeadlessAnalyzer)  
+INFO  /vuln_target.stripped: file created (flan) (LocalFileSystem)  
+INFO  REPORT: Save succeeded for: /vuln_target.stripped (Chain:/vuln_target.stripped) (HeadlessAnalyzer)  
+INFO  REPORT: Import succeeded (HeadlessAnalyzer)  

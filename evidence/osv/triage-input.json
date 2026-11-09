@@ -1,0 +1,6800 @@
+[
+ {
+  "source": "~/artex-audit/baarai/go.mod",
+  "package": "github.com/andybalholm/brotli",
+  "version": "1.2.1",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6888"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6888": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.2.7"
+  ],
+  "summary": "Excessive memory allocation when decompressing crafted streams in github.com/andybalholm/brotli"
+ },
+ {
+  "source": "~/artex-audit/baarai/go.mod",
+  "package": "github.com/klauspost/compress",
+  "version": "1.18.6",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5841",
+   "GHSA-259r-337f-4rfw"
+  ],
+  "max_severity": "7.5",
+  "analysis": {
+   "GO-2026-5841": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.18.7"
+  ],
+  "summary": "OOB read in github.com/klauspost/compress/s2"
+ },
+ {
+  "source": "~/artex-audit/baarai/go.mod",
+  "package": "github.com/klauspost/compress",
+  "version": "1.18.6",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6865"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6865": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.20.2"
+  ],
+  "summary": "Panic on two-block frames in github.com/klauspost/compress"
+ },
+ {
+  "source": "~/artex-audit/baarai/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5932"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-5932": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.58.1-0.20261009181718-2f1f834330b2"
+  ],
+  "summary": "The golang.org/x/crypto/openpgp package is unmaintained, unsafe by design, and has known security issues"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "basic-ftp",
+  "version": "5.3.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-c475-qrg2-pj4r"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "6.2.1"
+  ],
+  "summary": "basic-ftp: Quadratic-time CPU denial of service in Client.list() Unix directory-listing parser (RE_LINE backtracking)"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "extract-zip",
+  "version": "2.0.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7pqw-9j4j-h8q3"
+  ],
+  "max_severity": "8.1",
+  "analysis": {},
+  "fixed": [],
+  "summary": "extract-zip allows arbitrary file writes through symlink archive entries"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "extract-zip",
+  "version": "2.0.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jmr9-qjv8-65gv"
+  ],
+  "max_severity": "8.6",
+  "analysis": {},
+  "fixed": [],
+  "summary": "extract-zip unvalidated symlink path traversal"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jq-vg5j-6vgg"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.1"
+  ],
+  "summary": "ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2vr4-cq9g-pvrc"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4xrf-jv44-h6hh"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.2"
+  ],
+  "summary": "ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-h3mg-xc3c-68pw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-j6r3-76f7-8jcv"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mwp4-54f8-5fhr"
+  ],
+  "max_severity": "7.7",
+  "analysis": {},
+  "fixed": [
+   "10.3.1"
+  ],
+  "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rpw4-54j3-4h4q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rxp7-6hxx-x8q5"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.4"
+  ],
+  "summary": "ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process"
+ },
+ {
+  "source": "~/artex-audit/baarai/skills/api-recon/scripts/package-lock.json",
+  "package": "zod",
+  "version": "3.23.8",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@hono/node-server",
+  "version": "1.19.14",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-frvp-7c67-39w9"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "1.19.15",
+   "2.0.5"
+  ],
+  "summary": "Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@hono/node-server",
+  "version": "1.19.14",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rmxm-3fg6-px4f"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "2.1.3"
+  ],
+  "summary": "@hono/node-server: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jm-h49p-29qw"
+  ],
+  "max_severity": "8.6",
+  "analysis": {},
+  "fixed": [
+   "1.32.0"
+  ],
+  "summary": "MCP TypeScript SDK: Experimental tasks were not tied to the session that created them"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-46jr-4wx8-v453"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.3.0"
+  ],
+  "summary": "MCP TypeScript SDK: One HTTP request within the default size limit could exhaust server memory during validation"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6prh-2h8m-c8cw"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.3.0"
+  ],
+  "summary": "MCP TypeScript client SDK: HTTP client transports and OAuth requests followed cross-origin redirects and re-sent custom headers and request bodies"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6qxp-vccf-f47h"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.31.0",
+   "2.2.0"
+  ],
+  "summary": "MCP TypeScript SDK: OAuth client could send credentials to an authorization server chosen by the MCP server"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f897-62hf-6gxq"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.30.1",
+   "2.0.1",
+   "2.1.0"
+  ],
+  "summary": "MCP TypeScript SDK: HTTP server transports and handlers did not limit request body size or JSON-RPC batch length"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rvq5-wwqv-78pq"
+  ],
+  "max_severity": "6.8",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.0.2",
+   "2.3.0",
+   "2.3.1"
+  ],
+  "summary": "MCP TypeScript SDK: Server bearer authentication accepted tokens issued for another service"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "baseline-browser-mapping",
+  "version": "2.10.40",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w5vr-8v7q-w6rv"
+  ],
+  "max_severity": "6.6",
+  "analysis": {},
+  "fixed": [
+   "2.11.0"
+  ],
+  "summary": "baseline-browser-mapping process termination on invalid input causes denial of service"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "body-parser",
+  "version": "2.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-27r3-jxmh-p828"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.20.9",
+   "2.4.0"
+  ],
+  "summary": "body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6j4f-fj2g-mc7p"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.19",
+   "2.1.5",
+   "3.0.7",
+   "5.0.10"
+  ],
+  "summary": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mh99-v99m-4gvg"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.17",
+   "2.1.3",
+   "3.0.3",
+   "5.0.8"
+  ],
+  "summary": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-q2hr-2g5m-vwhr"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "1.1.21",
+   "2.1.7",
+   "3.0.9",
+   "5.0.12"
+  ],
+  "summary": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qhr7-859c-m2p7"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.20",
+   "2.1.6",
+   "3.0.8",
+   "5.0.11"
+  ],
+  "summary": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rgw5-rvv9-x895"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.18",
+   "2.1.4",
+   "3.0.6",
+   "5.0.9"
+  ],
+  "summary": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "browserslist",
+  "version": "4.28.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-73wf-gq98-2v4g"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "4.28.7"
+  ],
+  "summary": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "browserslist",
+  "version": "4.28.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-c83g-rgw3-j3cx"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "4.28.7"
+  ],
+  "summary": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "deepmerge",
+  "version": "4.3.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-gcqx-w48m-w2h4"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [],
+  "summary": "deepmerge mergeObject() allows prototype poisoning of returned objects"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-333x-w4r6-6crp"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to scheme injection via an unescaped first-segment colon in suffix references"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5jgf-p345-68v8"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7p8r-x3mc-p8w7"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.4",
+   "3.1.5",
+   "4.1.2"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via backslash authority introducer"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f65p-4m7j-42xc"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fph4-wmhf-6fwf"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-hrr3-gc8f-f4qj"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "2.4.7",
+   "3.1.8",
+   "4.1.5"
+  ],
+  "summary": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jqff-g426-hqxp"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qw65-cvwx-89v3"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.6",
+   "3.1.7",
+   "4.1.4"
+  ],
+  "summary": "fast-uri vulnerable to authority injection via an unvalidated port in serialize"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-v2hh-gcrm-f6hx"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.3",
+   "3.1.4",
+   "4.1.1"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via literal backslash authority delimiter"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w74x-v6f9-j3xg"
+  ],
+  "max_severity": "6.1",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to URI scheme spoofing via percent-encoded scheme decoding"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-wjr9-j795-jxcr"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via unchecked WHATWG host canonicalization"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-xhq7-xmqj-769h"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to improper path equivalence in relative reference normalization"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-54fx-42gc-7vw4"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: Algorithmic Complexity DoS in Language Middleware"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5r4p-p66f-jhc7"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.13.11"
+  ],
+  "summary": "Hono: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-79qm-7rj5-m7r9"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: Proxy Helper does not remove response headers listed in the `Connection` header"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8j4g-w8fx-2239"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: ReDoS in CORS middleware via Access-Control-Request-Headers"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-crvj-82cr-hjcx"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f23p-vx2j-j53r"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: `memo()` retains SSR output across requests, leading to cross-user data disclosure"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-g6gw-c38x-mqfc"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-gqvv-2mrq-wpjv"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-hxh3-vqpv-xpqv"
+  ],
+  "max_severity": "4.7",
+  "analysis": {},
+  "fixed": [
+   "4.13.7"
+  ],
+  "summary": "hono/jsx renders plain strings unescaped in boundary components, leading to XSS"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jq-vg5j-6vgg"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.1"
+  ],
+  "summary": "ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2vr4-cq9g-pvrc"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4xrf-jv44-h6hh"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.2"
+  ],
+  "summary": "ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-h3mg-xc3c-68pw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-j6r3-76f7-8jcv"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mwp4-54f8-5fhr"
+  ],
+  "max_severity": "7.7",
+  "analysis": {},
+  "fixed": [
+   "10.3.1"
+  ],
+  "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rpw4-54j3-4h4q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rxp7-6hxx-x8q5"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.4"
+  ],
+  "summary": "ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "js-yaml",
+  "version": "4.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2883-xcg3-v3hh"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "3.15.2",
+   "4.3.2"
+  ],
+  "summary": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "js-yaml",
+  "version": "4.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5p4m-2wfm-xmqj"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "3.15.1",
+   "4.3.1"
+  ],
+  "summary": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) \u2014 CVE-2026-59870 fix not backported"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "minimatch",
+  "version": "10.2.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-g3hv-75wg-m249"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "11.0.1"
+  ],
+  "summary": "minimatch has potential denial of service via globparts amplification"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "nanoid",
+  "version": "3.3.15",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-28wg-ghj8-5hjv"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "3.3.16",
+   "5.1.16"
+  ],
+  "summary": "nanoid: non-secure generators can loop indefinitely with negative size"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "nanoid",
+  "version": "3.3.15",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2v37-7h3g-55p8"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "3.3.18",
+   "5.1.6"
+  ],
+  "summary": "nanoid: custom generators can loop indefinitely when size is zero"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2464-fhr4-w9xw"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "15.5.28",
+   "16.4.1"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when SVG files are used"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2xp9-vwfh-vxw4"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "15.5.24",
+   "16.3.3"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when AVIF files are used"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-39w2-rjm5-chcv"
+  ],
+  "max_severity": "5.4",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has information disclosure in development server's Model Context Protocol endpoint"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4633-3j49-mh5q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4c39-4ccg-62r3"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Unbounded Server Action payload in Edge runtime"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4jqv-mc3x-m676"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.27",
+   "16.3.8"
+  ],
+  "summary": "Next.js has cache poisoning of SSG and ISR pages in self-hosted applications"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-673q-mjm6-r5xr"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "16.4.1"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in `use cache` functions returning typed arrays"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-68g3-v927-f742"
+  ],
+  "max_severity": "6.0",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Cache confusion of response bodies for requests with bodies"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6gpp-xcg3-4w24"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "16.2.11"
+  ],
+  "summary": "Next.js: Middleware / Proxy bypass in App Router applications using Turbopack and single locale"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-89xv-2m56-2m9x"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Server-Side Request Forgery in Server Actions on custom servers"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-955p-x3mx-jcvp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Unauthenticated disclosure of internal Server Function endpoints"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-cjq9-62q9-8jv4"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has Server-Side Request Forgery in Image Optimization"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f87g-xv8r-7p7x"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has information disclosure in App Router metadata image routes via dynamicParams bypass"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-m99w-x7hq-7vfj"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Denial of Service in App Router using Server Actions"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mcj8-r9mp-w47p"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.27",
+   "16.3.8"
+  ],
+  "summary": "Next.js has cache poisoning in SSG/ISR rendering that leads to cross-user content substitution and persistent denial of service"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p293-qw3h-jr36"
+  ],
+  "max_severity": "9.0",
+  "analysis": {},
+  "fixed": [
+   "15.5.24",
+   "16.3.3"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution on windows-hosted servers"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p3m5-59mp-jv5r"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "15.5.28",
+   "16.4.1"
+  ],
+  "summary": "Next.js: Denial of Service in App Router using Server Actions"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p9j2-gv94-2wf4"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-q8wf-6r8g-63ch"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Denial of Service in the Image Optimization API using SVGs"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-vcvr-r3jv-pc5j"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "16.3.6"
+  ],
+  "summary": "Next.js: Remote Code Execution in next/og ImageResponse"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6g55-p6wh-862q"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.12"
+  ],
+  "summary": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "8.5.23"
+  ],
+  "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qx2v-qp2m-jg93"
+  ],
+  "max_severity": "6.1",
+  "analysis": {},
+  "fixed": [
+   "8.5.10"
+  ],
+  "summary": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r28c-9q8g-f849"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.18"
+  ],
+  "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.5.16",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "8.5.23"
+  ],
+  "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.5.16",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r28c-9q8g-f849"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.18"
+  ],
+  "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "postcss-selector-parser",
+  "version": "7.1.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rj75-hqrm-r3gf"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.1.5",
+   "7.1.6"
+  ],
+  "summary": "PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "proxy-addr",
+  "version": "2.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jqcg-44mw-7w3h"
+  ],
+  "max_severity": "9.1",
+  "analysis": {},
+  "fixed": [
+   "2.0.8"
+  ],
+  "summary": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4mjr-xmp4-gh2g"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.0"
+  ],
+  "summary": "qs: Denial of Service via Attacker Controlled isBuffer"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6pq8-jhm2-2vcw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.1"
+  ],
+  "summary": "qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS)"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-x5fp-wj9c-mxmx"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.0"
+  ],
+  "summary": "qs array-limit bypass via bracket-key comma parsing"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f88m-g3jw-g9cj"
+  ],
+  "max_severity": "7.0",
+  "analysis": {},
+  "fixed": [
+   "0.35.0"
+  ],
+  "summary": "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rgj7-g3m4-5g8c"
+  ],
+  "max_severity": "8.9",
+  "analysis": {},
+  "fixed": [
+   "0.35.4"
+  ],
+  "summary": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-wq5f-xc86-pv6w"
+  ],
+  "max_severity": "8.9",
+  "analysis": {},
+  "fixed": [
+   "0.35.5"
+  ],
+  "summary": "sharp : Vulnerability in librsvg dependency CVE-2026-96889"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "source-map-js",
+  "version": "1.2.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-68fv-2mgg-jv7q"
+  ],
+  "max_severity": "8.7",
+  "analysis": {},
+  "fixed": [
+   "1.2.2"
+  ],
+  "summary": "source-map-js allows event-loop denial of service through indexed source-map section offsets"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3f7j-7jwc-fxfj"
+  ],
+  "max_severity": "7.8",
+  "analysis": {},
+  "fixed": [
+   "5.33.16"
+  ],
+  "summary": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4vjg-vx72-qq4g"
+  ],
+  "max_severity": "3.3",
+  "analysis": {},
+  "fixed": [
+   "5.33.14"
+  ],
+  "summary": "systeminformation has path traversal in Linux networkStats() that allows symlink-based file disclosure outside /sys/class/net"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7648-jmwf-vw7j"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "5.33.13"
+  ],
+  "summary": "systeminformation has prototype pollution in `networkStats()` via the interface name"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2gqq-gqf2-x968"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to response truncation via oversized chunked responses in the dump interceptor"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2jfj-6hjv-fm6j"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2m5v-pch6-74hx"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3wwx-pv8p-q78v"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3xpg-4rpp-hhhm"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unbounded decompression of compressed responses"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4cwx-7wf7-3272"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4qv8-2p9j-2685"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unbounded memory in the EventSource parser"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4w7w-5xrc-9h26"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-55wc-3pg8-jfw6"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8436-99hf-9mmv"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to caching and replay of unsafe HTTP method responses"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8xcm-r25x-g524"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to downstream response desynchronization via retry interceptor"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-9fm3-97px-rjf6"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f72v-6w45-q472"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jr45-8vmc-qm54"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-m8rv-5g2x-5cg5"
+  ],
+  "max_severity": "4.2",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to CRLF Injection via blob-like body 'type' property"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-pmjh-fq2x-6v4x"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via orphaned RetryHandler response body"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qrxm-fqhp-jwvm"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r53p-7pc4-xj5r"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to downstream response splitting via retry interceptor"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rfgv-xxqx-mfg5"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rx4f-c7p8-82vq"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via WebSocketStream unclean close"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-v3r7-h72x-cjcm"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w293-vg96-wgc3"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-xjj6-f33q-929c"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled error on excessive content-encodings"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "zod",
+  "version": "3.25.76",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/baarai/web/package-lock.json",
+  "package": "zod",
+  "version": "4.4.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "github.com/andybalholm/brotli",
+  "version": "1.2.1",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6888"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6888": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.2.7"
+  ],
+  "summary": "Excessive memory allocation when decompressing crafted streams in github.com/andybalholm/brotli"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "github.com/klauspost/compress",
+  "version": "1.18.6",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5841",
+   "GHSA-259r-337f-4rfw"
+  ],
+  "max_severity": "7.5",
+  "analysis": {
+   "GO-2026-5841": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.18.7"
+  ],
+  "summary": "OOB read in github.com/klauspost/compress/s2"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "github.com/klauspost/compress",
+  "version": "1.18.6",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6865"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6865": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.20.2"
+  ],
+  "summary": "Panic on two-block frames in github.com/klauspost/compress"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5932"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-5932": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.58.1-0.20261009181718-2f1f834330b2"
+  ],
+  "summary": "The golang.org/x/crypto/openpgp package is unmaintained, unsafe by design, and has known security issues"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6354"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6354": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.56.0"
+  ],
+  "summary": "Prevent DoS on deadlocked undecided channel in golang.org/x/crypto/ssh"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6355"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6355": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.56.0"
+  ],
+  "summary": "Prevent DoS on deadlocked established channel in golang.org/x/crypto/ssh"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6603"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6603": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 server memory exhaustion due to Trailer headers in net/http"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6610"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6610": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 transport accepts malformed framing-related headers in net/http"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6611"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6611": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "Excessive CPU consumption from repeated initial window changes in net/http"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6612"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6612": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "Double flow control refund on HTTP/2 server streams in net/http"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6617"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6617": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 server crash due to HPACK encoder race in net/http"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6860"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6860": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.62.0"
+  ],
+  "summary": "Avoid quadratic complexity when coalescing text nodes in html in golang.org/x/net"
+ },
+ {
+  "source": "~/artex-audit/hinln/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6866"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6866": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.62.0"
+  ],
+  "summary": "Check all ancestor namespace transitions when rendering raw text in html in golang.org/x/net"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "basic-ftp",
+  "version": "5.3.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-c475-qrg2-pj4r"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "6.2.1"
+  ],
+  "summary": "basic-ftp: Quadratic-time CPU denial of service in Client.list() Unix directory-listing parser (RE_LINE backtracking)"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "extract-zip",
+  "version": "2.0.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7pqw-9j4j-h8q3"
+  ],
+  "max_severity": "8.1",
+  "analysis": {},
+  "fixed": [],
+  "summary": "extract-zip allows arbitrary file writes through symlink archive entries"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "extract-zip",
+  "version": "2.0.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jmr9-qjv8-65gv"
+  ],
+  "max_severity": "8.6",
+  "analysis": {},
+  "fixed": [],
+  "summary": "extract-zip unvalidated symlink path traversal"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jq-vg5j-6vgg"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.1"
+  ],
+  "summary": "ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2vr4-cq9g-pvrc"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4xrf-jv44-h6hh"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.2"
+  ],
+  "summary": "ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-h3mg-xc3c-68pw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-j6r3-76f7-8jcv"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mwp4-54f8-5fhr"
+  ],
+  "max_severity": "7.7",
+  "analysis": {},
+  "fixed": [
+   "10.3.1"
+  ],
+  "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rpw4-54j3-4h4q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rxp7-6hxx-x8q5"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.4"
+  ],
+  "summary": "ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process"
+ },
+ {
+  "source": "~/artex-audit/hinln/skills/api-recon/scripts/package-lock.json",
+  "package": "zod",
+  "version": "3.23.8",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@hono/node-server",
+  "version": "1.19.14",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-frvp-7c67-39w9"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "1.19.15",
+   "2.0.5"
+  ],
+  "summary": "Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@hono/node-server",
+  "version": "1.19.14",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rmxm-3fg6-px4f"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "2.1.3"
+  ],
+  "summary": "@hono/node-server: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jm-h49p-29qw"
+  ],
+  "max_severity": "8.6",
+  "analysis": {},
+  "fixed": [
+   "1.32.0"
+  ],
+  "summary": "MCP TypeScript SDK: Experimental tasks were not tied to the session that created them"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-46jr-4wx8-v453"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.3.0"
+  ],
+  "summary": "MCP TypeScript SDK: One HTTP request within the default size limit could exhaust server memory during validation"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6prh-2h8m-c8cw"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.3.0"
+  ],
+  "summary": "MCP TypeScript client SDK: HTTP client transports and OAuth requests followed cross-origin redirects and re-sent custom headers and request bodies"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6qxp-vccf-f47h"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.31.0",
+   "2.2.0"
+  ],
+  "summary": "MCP TypeScript SDK: OAuth client could send credentials to an authorization server chosen by the MCP server"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f897-62hf-6gxq"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.30.1",
+   "2.0.1",
+   "2.1.0"
+  ],
+  "summary": "MCP TypeScript SDK: HTTP server transports and handlers did not limit request body size or JSON-RPC batch length"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rvq5-wwqv-78pq"
+  ],
+  "max_severity": "6.8",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.0.2",
+   "2.3.0",
+   "2.3.1"
+  ],
+  "summary": "MCP TypeScript SDK: Server bearer authentication accepted tokens issued for another service"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "baseline-browser-mapping",
+  "version": "2.10.40",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w5vr-8v7q-w6rv"
+  ],
+  "max_severity": "6.6",
+  "analysis": {},
+  "fixed": [
+   "2.11.0"
+  ],
+  "summary": "baseline-browser-mapping process termination on invalid input causes denial of service"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "body-parser",
+  "version": "2.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-27r3-jxmh-p828"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.20.9",
+   "2.4.0"
+  ],
+  "summary": "body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6j4f-fj2g-mc7p"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.19",
+   "2.1.5",
+   "3.0.7",
+   "5.0.10"
+  ],
+  "summary": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mh99-v99m-4gvg"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.17",
+   "2.1.3",
+   "3.0.3",
+   "5.0.8"
+  ],
+  "summary": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-q2hr-2g5m-vwhr"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "1.1.21",
+   "2.1.7",
+   "3.0.9",
+   "5.0.12"
+  ],
+  "summary": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qhr7-859c-m2p7"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.20",
+   "2.1.6",
+   "3.0.8",
+   "5.0.11"
+  ],
+  "summary": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rgw5-rvv9-x895"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.18",
+   "2.1.4",
+   "3.0.6",
+   "5.0.9"
+  ],
+  "summary": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "browserslist",
+  "version": "4.28.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-73wf-gq98-2v4g"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "4.28.7"
+  ],
+  "summary": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "browserslist",
+  "version": "4.28.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-c83g-rgw3-j3cx"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "4.28.7"
+  ],
+  "summary": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "deepmerge",
+  "version": "4.3.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-gcqx-w48m-w2h4"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [],
+  "summary": "deepmerge mergeObject() allows prototype poisoning of returned objects"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-333x-w4r6-6crp"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to scheme injection via an unescaped first-segment colon in suffix references"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5jgf-p345-68v8"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7p8r-x3mc-p8w7"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.4",
+   "3.1.5",
+   "4.1.2"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via backslash authority introducer"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f65p-4m7j-42xc"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fph4-wmhf-6fwf"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-hrr3-gc8f-f4qj"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "2.4.7",
+   "3.1.8",
+   "4.1.5"
+  ],
+  "summary": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jqff-g426-hqxp"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qw65-cvwx-89v3"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.6",
+   "3.1.7",
+   "4.1.4"
+  ],
+  "summary": "fast-uri vulnerable to authority injection via an unvalidated port in serialize"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-v2hh-gcrm-f6hx"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.3",
+   "3.1.4",
+   "4.1.1"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via literal backslash authority delimiter"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w74x-v6f9-j3xg"
+  ],
+  "max_severity": "6.1",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to URI scheme spoofing via percent-encoded scheme decoding"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-wjr9-j795-jxcr"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via unchecked WHATWG host canonicalization"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-xhq7-xmqj-769h"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to improper path equivalence in relative reference normalization"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-54fx-42gc-7vw4"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: Algorithmic Complexity DoS in Language Middleware"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5r4p-p66f-jhc7"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.13.11"
+  ],
+  "summary": "Hono: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-79qm-7rj5-m7r9"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: Proxy Helper does not remove response headers listed in the `Connection` header"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8j4g-w8fx-2239"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: ReDoS in CORS middleware via Access-Control-Request-Headers"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-crvj-82cr-hjcx"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f23p-vx2j-j53r"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: `memo()` retains SSR output across requests, leading to cross-user data disclosure"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-g6gw-c38x-mqfc"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-gqvv-2mrq-wpjv"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-hxh3-vqpv-xpqv"
+  ],
+  "max_severity": "4.7",
+  "analysis": {},
+  "fixed": [
+   "4.13.7"
+  ],
+  "summary": "hono/jsx renders plain strings unescaped in boundary components, leading to XSS"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jq-vg5j-6vgg"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.1"
+  ],
+  "summary": "ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2vr4-cq9g-pvrc"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4xrf-jv44-h6hh"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.2"
+  ],
+  "summary": "ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-h3mg-xc3c-68pw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-j6r3-76f7-8jcv"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mwp4-54f8-5fhr"
+  ],
+  "max_severity": "7.7",
+  "analysis": {},
+  "fixed": [
+   "10.3.1"
+  ],
+  "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rpw4-54j3-4h4q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rxp7-6hxx-x8q5"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.4"
+  ],
+  "summary": "ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "js-yaml",
+  "version": "4.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2883-xcg3-v3hh"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "3.15.2",
+   "4.3.2"
+  ],
+  "summary": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "js-yaml",
+  "version": "4.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5p4m-2wfm-xmqj"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "3.15.1",
+   "4.3.1"
+  ],
+  "summary": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) \u2014 CVE-2026-59870 fix not backported"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "minimatch",
+  "version": "10.2.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-g3hv-75wg-m249"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "11.0.1"
+  ],
+  "summary": "minimatch has potential denial of service via globparts amplification"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "nanoid",
+  "version": "3.3.15",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-28wg-ghj8-5hjv"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "3.3.16",
+   "5.1.16"
+  ],
+  "summary": "nanoid: non-secure generators can loop indefinitely with negative size"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "nanoid",
+  "version": "3.3.15",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2v37-7h3g-55p8"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "3.3.18",
+   "5.1.6"
+  ],
+  "summary": "nanoid: custom generators can loop indefinitely when size is zero"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2464-fhr4-w9xw"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "15.5.28",
+   "16.4.1"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when SVG files are used"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2xp9-vwfh-vxw4"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "15.5.24",
+   "16.3.3"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when AVIF files are used"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-39w2-rjm5-chcv"
+  ],
+  "max_severity": "5.4",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has information disclosure in development server's Model Context Protocol endpoint"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4633-3j49-mh5q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4c39-4ccg-62r3"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Unbounded Server Action payload in Edge runtime"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4jqv-mc3x-m676"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.27",
+   "16.3.8"
+  ],
+  "summary": "Next.js has cache poisoning of SSG and ISR pages in self-hosted applications"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-673q-mjm6-r5xr"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "16.4.1"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in `use cache` functions returning typed arrays"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-68g3-v927-f742"
+  ],
+  "max_severity": "6.0",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Cache confusion of response bodies for requests with bodies"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6gpp-xcg3-4w24"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "16.2.11"
+  ],
+  "summary": "Next.js: Middleware / Proxy bypass in App Router applications using Turbopack and single locale"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-89xv-2m56-2m9x"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Server-Side Request Forgery in Server Actions on custom servers"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-955p-x3mx-jcvp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Unauthenticated disclosure of internal Server Function endpoints"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-cjq9-62q9-8jv4"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has Server-Side Request Forgery in Image Optimization"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f87g-xv8r-7p7x"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has information disclosure in App Router metadata image routes via dynamicParams bypass"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-m99w-x7hq-7vfj"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Denial of Service in App Router using Server Actions"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mcj8-r9mp-w47p"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.27",
+   "16.3.8"
+  ],
+  "summary": "Next.js has cache poisoning in SSG/ISR rendering that leads to cross-user content substitution and persistent denial of service"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p293-qw3h-jr36"
+  ],
+  "max_severity": "9.0",
+  "analysis": {},
+  "fixed": [
+   "15.5.24",
+   "16.3.3"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution on windows-hosted servers"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p3m5-59mp-jv5r"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "15.5.28",
+   "16.4.1"
+  ],
+  "summary": "Next.js: Denial of Service in App Router using Server Actions"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p9j2-gv94-2wf4"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-q8wf-6r8g-63ch"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Denial of Service in the Image Optimization API using SVGs"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-vcvr-r3jv-pc5j"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "16.3.6"
+  ],
+  "summary": "Next.js: Remote Code Execution in next/og ImageResponse"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6g55-p6wh-862q"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.12"
+  ],
+  "summary": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "8.5.23"
+  ],
+  "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qx2v-qp2m-jg93"
+  ],
+  "max_severity": "6.1",
+  "analysis": {},
+  "fixed": [
+   "8.5.10"
+  ],
+  "summary": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r28c-9q8g-f849"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.18"
+  ],
+  "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.5.16",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "8.5.23"
+  ],
+  "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.5.16",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r28c-9q8g-f849"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.18"
+  ],
+  "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "postcss-selector-parser",
+  "version": "7.1.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rj75-hqrm-r3gf"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.1.5",
+   "7.1.6"
+  ],
+  "summary": "PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "proxy-addr",
+  "version": "2.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jqcg-44mw-7w3h"
+  ],
+  "max_severity": "9.1",
+  "analysis": {},
+  "fixed": [
+   "2.0.8"
+  ],
+  "summary": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4mjr-xmp4-gh2g"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.0"
+  ],
+  "summary": "qs: Denial of Service via Attacker Controlled isBuffer"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6pq8-jhm2-2vcw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.1"
+  ],
+  "summary": "qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS)"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-x5fp-wj9c-mxmx"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.0"
+  ],
+  "summary": "qs array-limit bypass via bracket-key comma parsing"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f88m-g3jw-g9cj"
+  ],
+  "max_severity": "7.0",
+  "analysis": {},
+  "fixed": [
+   "0.35.0"
+  ],
+  "summary": "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rgj7-g3m4-5g8c"
+  ],
+  "max_severity": "8.9",
+  "analysis": {},
+  "fixed": [
+   "0.35.4"
+  ],
+  "summary": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-wq5f-xc86-pv6w"
+  ],
+  "max_severity": "8.9",
+  "analysis": {},
+  "fixed": [
+   "0.35.5"
+  ],
+  "summary": "sharp : Vulnerability in librsvg dependency CVE-2026-96889"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "source-map-js",
+  "version": "1.2.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-68fv-2mgg-jv7q"
+  ],
+  "max_severity": "8.7",
+  "analysis": {},
+  "fixed": [
+   "1.2.2"
+  ],
+  "summary": "source-map-js allows event-loop denial of service through indexed source-map section offsets"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3f7j-7jwc-fxfj"
+  ],
+  "max_severity": "7.8",
+  "analysis": {},
+  "fixed": [
+   "5.33.16"
+  ],
+  "summary": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4vjg-vx72-qq4g"
+  ],
+  "max_severity": "3.3",
+  "analysis": {},
+  "fixed": [
+   "5.33.14"
+  ],
+  "summary": "systeminformation has path traversal in Linux networkStats() that allows symlink-based file disclosure outside /sys/class/net"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7648-jmwf-vw7j"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "5.33.13"
+  ],
+  "summary": "systeminformation has prototype pollution in `networkStats()` via the interface name"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2gqq-gqf2-x968"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to response truncation via oversized chunked responses in the dump interceptor"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2jfj-6hjv-fm6j"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2m5v-pch6-74hx"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3wwx-pv8p-q78v"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3xpg-4rpp-hhhm"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unbounded decompression of compressed responses"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4cwx-7wf7-3272"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4qv8-2p9j-2685"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unbounded memory in the EventSource parser"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4w7w-5xrc-9h26"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-55wc-3pg8-jfw6"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8436-99hf-9mmv"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to caching and replay of unsafe HTTP method responses"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8xcm-r25x-g524"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to downstream response desynchronization via retry interceptor"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-9fm3-97px-rjf6"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f72v-6w45-q472"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jr45-8vmc-qm54"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-m8rv-5g2x-5cg5"
+  ],
+  "max_severity": "4.2",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to CRLF Injection via blob-like body 'type' property"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-pmjh-fq2x-6v4x"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via orphaned RetryHandler response body"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qrxm-fqhp-jwvm"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r53p-7pc4-xj5r"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to downstream response splitting via retry interceptor"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rfgv-xxqx-mfg5"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rx4f-c7p8-82vq"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via WebSocketStream unclean close"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-v3r7-h72x-cjcm"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w293-vg96-wgc3"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-xjj6-f33q-929c"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled error on excessive content-encodings"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "zod",
+  "version": "3.25.76",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/hinln/web/package-lock.json",
+  "package": "zod",
+  "version": "4.4.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5942"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-5942": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.56.0",
+   "1.26.6",
+   "1.27.0-rc.3"
+  ],
+  "summary": "Parsing an invalid SVCB or HTTPS RR can panic in golang.org/x/net/dns/dnsmessage"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6603"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6603": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 server memory exhaustion due to Trailer headers in net/http"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6610"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6610": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 transport accepts malformed framing-related headers in net/http"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6611"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6611": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "Excessive CPU consumption from repeated initial window changes in net/http"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6612"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6612": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "Double flow control refund on HTTP/2 server streams in net/http"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6617"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6617": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 server crash due to HPACK encoder race in net/http"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6860"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6860": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.62.0"
+  ],
+  "summary": "Avoid quadratic complexity when coalescing text nodes in html in golang.org/x/net"
+ },
+ {
+  "source": "~/artex-audit/norma/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6866"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6866": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.62.0"
+  ],
+  "summary": "Check all ancestor namespace transitions when rendering raw text in html in golang.org/x/net"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "github.com/andybalholm/brotli",
+  "version": "1.2.1",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6888"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6888": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.2.7"
+  ],
+  "summary": "Excessive memory allocation when decompressing crafted streams in github.com/andybalholm/brotli"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "github.com/klauspost/compress",
+  "version": "1.18.6",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5841",
+   "GHSA-259r-337f-4rfw"
+  ],
+  "max_severity": "7.5",
+  "analysis": {
+   "GO-2026-5841": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.18.7"
+  ],
+  "summary": "OOB read in github.com/klauspost/compress/s2"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "github.com/klauspost/compress",
+  "version": "1.18.6",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6865"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6865": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "1.20.2"
+  ],
+  "summary": "Panic on two-block frames in github.com/klauspost/compress"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-5932"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-5932": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.58.1-0.20261009181718-2f1f834330b2"
+  ],
+  "summary": "The golang.org/x/crypto/openpgp package is unmaintained, unsafe by design, and has known security issues"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6354"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6354": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.56.0"
+  ],
+  "summary": "Prevent DoS on deadlocked undecided channel in golang.org/x/crypto/ssh"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/crypto",
+  "version": "0.55.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6355"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6355": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.56.0"
+  ],
+  "summary": "Prevent DoS on deadlocked established channel in golang.org/x/crypto/ssh"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6603"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6603": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 server memory exhaustion due to Trailer headers in net/http"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6610"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6610": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 transport accepts malformed framing-related headers in net/http"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6611"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6611": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "Excessive CPU consumption from repeated initial window changes in net/http"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6612"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6612": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "Double flow control refund on HTTP/2 server streams in net/http"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6617"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6617": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.60.0",
+   "1.26.9",
+   "1.27.2"
+  ],
+  "summary": "HTTP/2 server crash due to HPACK encoder race in net/http"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6860"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6860": {
+    "called": true,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.62.0"
+  ],
+  "summary": "Avoid quadratic complexity when coalescing text nodes in html in golang.org/x/net"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/go.mod",
+  "package": "golang.org/x/net",
+  "version": "0.58.0",
+  "ecosystem": "Go",
+  "ids": [
+   "GO-2026-6866"
+  ],
+  "max_severity": "",
+  "analysis": {
+   "GO-2026-6866": {
+    "called": false,
+    "unimportant": false
+   }
+  },
+  "fixed": [
+   "0.62.0"
+  ],
+  "summary": "Check all ancestor namespace transitions when rendering raw text in html in golang.org/x/net"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "basic-ftp",
+  "version": "5.3.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-c475-qrg2-pj4r"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "6.2.1"
+  ],
+  "summary": "basic-ftp: Quadratic-time CPU denial of service in Client.list() Unix directory-listing parser (RE_LINE backtracking)"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "extract-zip",
+  "version": "2.0.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7pqw-9j4j-h8q3"
+  ],
+  "max_severity": "8.1",
+  "analysis": {},
+  "fixed": [],
+  "summary": "extract-zip allows arbitrary file writes through symlink archive entries"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "extract-zip",
+  "version": "2.0.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jmr9-qjv8-65gv"
+  ],
+  "max_severity": "8.6",
+  "analysis": {},
+  "fixed": [],
+  "summary": "extract-zip unvalidated symlink path traversal"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jq-vg5j-6vgg"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.1"
+  ],
+  "summary": "ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2vr4-cq9g-pvrc"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4xrf-jv44-h6hh"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.2"
+  ],
+  "summary": "ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-h3mg-xc3c-68pw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-j6r3-76f7-8jcv"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mwp4-54f8-5fhr"
+  ],
+  "max_severity": "7.7",
+  "analysis": {},
+  "fixed": [
+   "10.3.1"
+  ],
+  "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rpw4-54j3-4h4q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rxp7-6hxx-x8q5"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.4"
+  ],
+  "summary": "ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/skills/api-recon/scripts/package-lock.json",
+  "package": "zod",
+  "version": "3.23.8",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@hono/node-server",
+  "version": "1.19.14",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-frvp-7c67-39w9"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "1.19.15",
+   "2.0.5"
+  ],
+  "summary": "Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@hono/node-server",
+  "version": "1.19.14",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rmxm-3fg6-px4f"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "2.1.3"
+  ],
+  "summary": "@hono/node-server: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jm-h49p-29qw"
+  ],
+  "max_severity": "8.6",
+  "analysis": {},
+  "fixed": [
+   "1.32.0"
+  ],
+  "summary": "MCP TypeScript SDK: Experimental tasks were not tied to the session that created them"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-46jr-4wx8-v453"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.3.0"
+  ],
+  "summary": "MCP TypeScript SDK: One HTTP request within the default size limit could exhaust server memory during validation"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6prh-2h8m-c8cw"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.3.0"
+  ],
+  "summary": "MCP TypeScript client SDK: HTTP client transports and OAuth requests followed cross-origin redirects and re-sent custom headers and request bodies"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6qxp-vccf-f47h"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.31.0",
+   "2.2.0"
+  ],
+  "summary": "MCP TypeScript SDK: OAuth client could send credentials to an authorization server chosen by the MCP server"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f897-62hf-6gxq"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.30.1",
+   "2.0.1",
+   "2.1.0"
+  ],
+  "summary": "MCP TypeScript SDK: HTTP server transports and handlers did not limit request body size or JSON-RPC batch length"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "@modelcontextprotocol/sdk",
+  "version": "1.29.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rvq5-wwqv-78pq"
+  ],
+  "max_severity": "6.8",
+  "analysis": {},
+  "fixed": [
+   "1.32.0",
+   "2.0.2",
+   "2.3.0",
+   "2.3.1"
+  ],
+  "summary": "MCP TypeScript SDK: Server bearer authentication accepted tokens issued for another service"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "baseline-browser-mapping",
+  "version": "2.10.40",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w5vr-8v7q-w6rv"
+  ],
+  "max_severity": "6.6",
+  "analysis": {},
+  "fixed": [
+   "2.11.0"
+  ],
+  "summary": "baseline-browser-mapping process termination on invalid input causes denial of service"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "body-parser",
+  "version": "2.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-27r3-jxmh-p828"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.20.9",
+   "2.4.0"
+  ],
+  "summary": "body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6j4f-fj2g-mc7p"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.19",
+   "2.1.5",
+   "3.0.7",
+   "5.0.10"
+  ],
+  "summary": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mh99-v99m-4gvg"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.17",
+   "2.1.3",
+   "3.0.3",
+   "5.0.8"
+  ],
+  "summary": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-q2hr-2g5m-vwhr"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "1.1.21",
+   "2.1.7",
+   "3.0.9",
+   "5.0.12"
+  ],
+  "summary": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qhr7-859c-m2p7"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.20",
+   "2.1.6",
+   "3.0.8",
+   "5.0.11"
+  ],
+  "summary": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "brace-expansion",
+  "version": "5.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rgw5-rvv9-x895"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "1.1.18",
+   "2.1.4",
+   "3.0.6",
+   "5.0.9"
+  ],
+  "summary": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "browserslist",
+  "version": "4.28.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-73wf-gq98-2v4g"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "4.28.7"
+  ],
+  "summary": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "browserslist",
+  "version": "4.28.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-c83g-rgw3-j3cx"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "4.28.7"
+  ],
+  "summary": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "deepmerge",
+  "version": "4.3.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-gcqx-w48m-w2h4"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [],
+  "summary": "deepmerge mergeObject() allows prototype poisoning of returned objects"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-333x-w4r6-6crp"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to scheme injection via an unescaped first-segment colon in suffix references"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5jgf-p345-68v8"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7p8r-x3mc-p8w7"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.4",
+   "3.1.5",
+   "4.1.2"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via backslash authority introducer"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f65p-4m7j-42xc"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fph4-wmhf-6fwf"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-hrr3-gc8f-f4qj"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "2.4.7",
+   "3.1.8",
+   "4.1.5"
+  ],
+  "summary": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jqff-g426-hqxp"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.5",
+   "3.1.6",
+   "4.1.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qw65-cvwx-89v3"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.6",
+   "3.1.7",
+   "4.1.4"
+  ],
+  "summary": "fast-uri vulnerable to authority injection via an unvalidated port in serialize"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-v2hh-gcrm-f6hx"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "2.4.3",
+   "3.1.4",
+   "4.1.1"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via literal backslash authority delimiter"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w74x-v6f9-j3xg"
+  ],
+  "max_severity": "6.1",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to URI scheme spoofing via percent-encoded scheme decoding"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-wjr9-j795-jxcr"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to host confusion via unchecked WHATWG host canonicalization"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "fast-uri",
+  "version": "3.1.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-xhq7-xmqj-769h"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "2.4.8",
+   "3.1.9",
+   "4.2.3"
+  ],
+  "summary": "fast-uri vulnerable to improper path equivalence in relative reference normalization"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-54fx-42gc-7vw4"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: Algorithmic Complexity DoS in Language Middleware"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5r4p-p66f-jhc7"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.13.11"
+  ],
+  "summary": "Hono: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-79qm-7rj5-m7r9"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: Proxy Helper does not remove response headers listed in the `Connection` header"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8j4g-w8fx-2239"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: ReDoS in CORS middleware via Access-Control-Request-Headers"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-crvj-82cr-hjcx"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f23p-vx2j-j53r"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "4.12.34"
+  ],
+  "summary": "Hono: `memo()` retains SSR output across requests, leading to cross-user data disclosure"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-g6gw-c38x-mqfc"
+  ],
+  "max_severity": "5.3",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-gqvv-2mrq-wpjv"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "4.13.5"
+  ],
+  "summary": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "hono",
+  "version": "4.12.27",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-hxh3-vqpv-xpqv"
+  ],
+  "max_severity": "4.7",
+  "analysis": {},
+  "fixed": [
+   "4.13.7"
+  ],
+  "summary": "hono/jsx renders plain strings unescaped in boundary components, leading to XSS"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-22jq-vg5j-6vgg"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.1"
+  ],
+  "summary": "ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2vr4-cq9g-pvrc"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4xrf-jv44-h6hh"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "10.2.2"
+  ],
+  "summary": "ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-h3mg-xc3c-68pw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-j6r3-76f7-8jcv"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.1"
+  ],
+  "summary": "ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mwp4-54f8-5fhr"
+  ],
+  "max_severity": "7.7",
+  "analysis": {},
+  "fixed": [
+   "10.3.1"
+  ],
+  "summary": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rpw4-54j3-4h4q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.5.1"
+  ],
+  "summary": "ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "ip-address",
+  "version": "10.2.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rxp7-6hxx-x8q5"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "10.7.4"
+  ],
+  "summary": "ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "js-yaml",
+  "version": "4.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2883-xcg3-v3hh"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "3.15.2",
+   "4.3.2"
+  ],
+  "summary": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "js-yaml",
+  "version": "4.3.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-5p4m-2wfm-xmqj"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "3.15.1",
+   "4.3.1"
+  ],
+  "summary": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) \u2014 CVE-2026-59870 fix not backported"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "minimatch",
+  "version": "10.2.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-g3hv-75wg-m249"
+  ],
+  "max_severity": "6.9",
+  "analysis": {},
+  "fixed": [
+   "11.0.1"
+  ],
+  "summary": "minimatch has potential denial of service via globparts amplification"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "nanoid",
+  "version": "3.3.15",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-28wg-ghj8-5hjv"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "3.3.16",
+   "5.1.16"
+  ],
+  "summary": "nanoid: non-secure generators can loop indefinitely with negative size"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "nanoid",
+  "version": "3.3.15",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2v37-7h3g-55p8"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "3.3.18",
+   "5.1.6"
+  ],
+  "summary": "nanoid: custom generators can loop indefinitely when size is zero"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2464-fhr4-w9xw"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "15.5.28",
+   "16.4.1"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when SVG files are used"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2xp9-vwfh-vxw4"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "15.5.24",
+   "16.3.3"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when AVIF files are used"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-39w2-rjm5-chcv"
+  ],
+  "max_severity": "5.4",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has information disclosure in development server's Model Context Protocol endpoint"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4633-3j49-mh5q"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4c39-4ccg-62r3"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Unbounded Server Action payload in Edge runtime"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4jqv-mc3x-m676"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.27",
+   "16.3.8"
+  ],
+  "summary": "Next.js has cache poisoning of SSG and ISR pages in self-hosted applications"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-673q-mjm6-r5xr"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "16.4.1"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution in `use cache` functions returning typed arrays"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-68g3-v927-f742"
+  ],
+  "max_severity": "6.0",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Cache confusion of response bodies for requests with bodies"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6gpp-xcg3-4w24"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "16.2.11"
+  ],
+  "summary": "Next.js: Middleware / Proxy bypass in App Router applications using Turbopack and single locale"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-89xv-2m56-2m9x"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Server-Side Request Forgery in Server Actions on custom servers"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-955p-x3mx-jcvp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Unauthenticated disclosure of internal Server Function endpoints"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-cjq9-62q9-8jv4"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has Server-Side Request Forgery in Image Optimization"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f87g-xv8r-7p7x"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "16.3.8"
+  ],
+  "summary": "Next.js has information disclosure in App Router metadata image routes via dynamicParams bypass"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-m99w-x7hq-7vfj"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Denial of Service in App Router using Server Actions"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mcj8-r9mp-w47p"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.27",
+   "16.3.8"
+  ],
+  "summary": "Next.js has cache poisoning in SSG/ISR rendering that leads to cross-user content substitution and persistent denial of service"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p293-qw3h-jr36"
+  ],
+  "max_severity": "9.0",
+  "analysis": {},
+  "fixed": [
+   "15.5.24",
+   "16.3.3"
+  ],
+  "summary": "Next.js: Unauthenticated Remote Code Execution on windows-hosted servers"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p3m5-59mp-jv5r"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "15.5.28",
+   "16.4.1"
+  ],
+  "summary": "Next.js: Denial of Service in App Router using Server Actions"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-p9j2-gv94-2wf4"
+  ],
+  "max_severity": "8.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-q8wf-6r8g-63ch"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "15.5.21",
+   "16.2.11"
+  ],
+  "summary": "Next.js: Denial of Service in the Image Optimization API using SVGs"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "next",
+  "version": "16.2.9",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-vcvr-r3jv-pc5j"
+  ],
+  "max_severity": "9.5",
+  "analysis": {},
+  "fixed": [
+   "16.3.6"
+  ],
+  "summary": "Next.js: Remote Code Execution in next/og ImageResponse"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6g55-p6wh-862q"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.12"
+  ],
+  "summary": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "8.5.23"
+  ],
+  "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qx2v-qp2m-jg93"
+  ],
+  "max_severity": "6.1",
+  "analysis": {},
+  "fixed": [
+   "8.5.10"
+  ],
+  "summary": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.4.31",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r28c-9q8g-f849"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.18"
+  ],
+  "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.5.16",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-fxqj-rqcc-2cmp"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "8.5.23"
+  ],
+  "summary": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss",
+  "version": "8.5.16",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r28c-9q8g-f849"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "8.5.18"
+  ],
+  "summary": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "postcss-selector-parser",
+  "version": "7.1.4",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rj75-hqrm-r3gf"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.1.5",
+   "7.1.6"
+  ],
+  "summary": "PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "proxy-addr",
+  "version": "2.0.7",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jqcg-44mw-7w3h"
+  ],
+  "max_severity": "9.1",
+  "analysis": {},
+  "fixed": [
+   "2.0.8"
+  ],
+  "summary": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4mjr-xmp4-gh2g"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.0"
+  ],
+  "summary": "qs: Denial of Service via Attacker Controlled isBuffer"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-6pq8-jhm2-2vcw"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.1"
+  ],
+  "summary": "qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS)"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "qs",
+  "version": "6.15.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-x5fp-wj9c-mxmx"
+  ],
+  "max_severity": "6.3",
+  "analysis": {},
+  "fixed": [
+   "6.16.0"
+  ],
+  "summary": "qs array-limit bypass via bracket-key comma parsing"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f88m-g3jw-g9cj"
+  ],
+  "max_severity": "7.0",
+  "analysis": {},
+  "fixed": [
+   "0.35.0"
+  ],
+  "summary": "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rgj7-g3m4-5g8c"
+  ],
+  "max_severity": "8.9",
+  "analysis": {},
+  "fixed": [
+   "0.35.4"
+  ],
+  "summary": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "sharp",
+  "version": "0.34.5",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-wq5f-xc86-pv6w"
+  ],
+  "max_severity": "8.9",
+  "analysis": {},
+  "fixed": [
+   "0.35.5"
+  ],
+  "summary": "sharp : Vulnerability in librsvg dependency CVE-2026-96889"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "source-map-js",
+  "version": "1.2.1",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-68fv-2mgg-jv7q"
+  ],
+  "max_severity": "8.7",
+  "analysis": {},
+  "fixed": [
+   "1.2.2"
+  ],
+  "summary": "source-map-js allows event-loop denial of service through indexed source-map section offsets"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3f7j-7jwc-fxfj"
+  ],
+  "max_severity": "7.8",
+  "analysis": {},
+  "fixed": [
+   "5.33.16"
+  ],
+  "summary": "systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4vjg-vx72-qq4g"
+  ],
+  "max_severity": "3.3",
+  "analysis": {},
+  "fixed": [
+   "5.33.14"
+  ],
+  "summary": "systeminformation has path traversal in Linux networkStats() that allows symlink-based file disclosure outside /sys/class/net"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "systeminformation",
+  "version": "5.31.11",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-7648-jmwf-vw7j"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "5.33.13"
+  ],
+  "summary": "systeminformation has prototype pollution in `networkStats()` via the interface name"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2gqq-gqf2-x968"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to response truncation via oversized chunked responses in the dump interceptor"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2jfj-6hjv-fm6j"
+  ],
+  "max_severity": "6.5",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-2m5v-pch6-74hx"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3wwx-pv8p-q78v"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-3xpg-4rpp-hhhm"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unbounded decompression of compressed responses"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4cwx-7wf7-3272"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4qv8-2p9j-2685"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unbounded memory in the EventSource parser"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-4w7w-5xrc-9h26"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-55wc-3pg8-jfw6"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8436-99hf-9mmv"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to caching and replay of unsafe HTTP method responses"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-8xcm-r25x-g524"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to downstream response desynchronization via retry interceptor"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-9fm3-97px-rjf6"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-f72v-6w45-q472"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-jr45-8vmc-qm54"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-m8rv-5g2x-5cg5"
+  ],
+  "max_severity": "4.2",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to CRLF Injection via blob-like body 'type' property"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-pmjh-fq2x-6v4x"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via orphaned RetryHandler response body"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-qrxm-fqhp-jwvm"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-r53p-7pc4-xj5r"
+  ],
+  "max_severity": "3.7",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to downstream response splitting via retry interceptor"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rfgv-xxqx-mfg5"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.28.1",
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unrequested WebSocket subprotocol"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-rx4f-c7p8-82vq"
+  ],
+  "max_severity": "5.9",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via WebSocketStream unclean close"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-v3r7-h72x-cjcm"
+  ],
+  "max_severity": "4.8",
+  "analysis": {},
+  "fixed": [
+   "6.28.0",
+   "7.29.0",
+   "8.9.0"
+  ],
+  "summary": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-w293-vg96-wgc3"
+  ],
+  "max_severity": "7.4",
+  "analysis": {},
+  "fixed": [
+   "7.29.1",
+   "8.10.2"
+  ],
+  "summary": "undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "undici",
+  "version": "7.28.0",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-xjj6-f33q-929c"
+  ],
+  "max_severity": "7.5",
+  "analysis": {},
+  "fixed": [
+   "6.29.1",
+   "7.30.1",
+   "8.12.2"
+  ],
+  "summary": "undici vulnerable to Denial of Service via unhandled error on excessive content-encodings"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "zod",
+  "version": "3.25.76",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ },
+ {
+  "source": "~/artex-audit/ruoji6/web/package-lock.json",
+  "package": "zod",
+  "version": "4.4.3",
+  "ecosystem": "npm",
+  "ids": [
+   "GHSA-mrhx-c7xc-m3w5"
+  ],
+  "max_severity": "8.2",
+  "analysis": {},
+  "fixed": [
+   "4.6.6"
+  ],
+  "summary": "Zod can exhaust memory while validating oversized constrained collections"
+ }
+]

@@ -1,0 +1,8 @@
+# caller_addr	caller	callee_addr	callee
+100000460	_check_token	100000560	_strcmp
+100000484	_run_command	100000554	_snprintf
+100000484	_run_command	10000053c	___stack_chk_fail
+100000484	_run_command	10000056c	_system
+1000004f4	entry	100000460	_check_token
+1000004f4	entry	100000548	_puts
+1000004f4	entry	100000484	_run_command

@@ -1,0 +1,12 @@
+program=vuln_target.stripped
+executable_path=/Users/flan/artex-audit/artex-pentest/evidence/re/target/vuln_target.stripped
+executable_sha256=c6d08935b8d0d67ba57ebf13831a309e5c5b1916ea405a6f5d7f8ec93c3157d3
+executable_format=Mac OS X Mach-O
+language=AARCH64:LE:64:AppleSilicon
+compiler=default
+image_base=100000000
+function_count=9
+functions_decompiled=9
+defined_strings_over_3_chars=29
+ghidra_version=12.0.4
+ghidra_build=PUBLIC

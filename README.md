@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.4 |
+| Revision | 1.5 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -18,6 +18,7 @@
 | 1.2 | 2026-11-09 | Added the authenticated CORS-allowlist and future-dated-signature chain patterns and the S65 conditional field-test summary |
 | 1.3 | 2026-11-09 | Corrected the replay model for stateful time-vars, added exact-replay/CORS chain T18, and recorded S66 |
 | 1.4 | 2026-11-09 | Replaced the skill's blanket restrictions with an operator-owned charter; added Strix, Shannon, sapper-v2, Ghidra, OSV-Scanner, source pins, and the recursive improvement loop |
+| 1.5 | 2026-11-09 | Exercised the OSV and Ghidra packs; added the SBOM round-trip, the reviewed Ghidra artifact script, script integrity manifest, exact pin/URL validation, and the F-001 validator-to-execution chain fix |
 
 ## 1 Scope
 
@@ -406,6 +407,10 @@ The upstream projects are linked, not bundled. Pin the commit actually used and
 re-check the commands against the installed version. Licences and source URLs are
 in `references/tool-sources.md`.
 
+Command and pin validation on 2026-11-09 used osv-scanner 2.7.0 and Ghidra
+12.0.4. The OSV direct scan, the generated CycloneDX SBOM, and the SBOM rescan
+agreed on all 130 advisory IDs; see Annex H.
+
 ## Annex G — Operator charter and recursive improvement
 
 The skill no longer carries target-class or technique bans. The operator records
@@ -418,6 +423,28 @@ The recursive loop is documented in `references/recursive-improvement.md`:
 Observe → Classify → Distill → Validate → Review → Version → Re-read. Every
 change should preserve the charter as the sole boundary source and should pass
 `scripts/validate_skill.sh`.
+
+## Annex H — Pack exercise and chain finding (2026-11-09)
+
+OSV-Scanner 2.7.0 was installed and run against every manifest in the skill's
+arsenal (`baarai`, `hinln`, `ruoji6`, `norma`). The campaign tree and this skill
+repository contain no package sources; both were scanned and recorded as empty.
+The scan flagged 130 unique advisories. A CycloneDX SBOM was generated and
+rescanned to the same 130 IDs. Triage is in `evidence/osv/TRIAGE.md`; the
+per-advisory ledger is `evidence/osv/baarai-advisories.tsv`. Reachable
+candidates: the Go zstd panic (vulnerable symbol called on the archive import
+path) and the Next middleware/proxy bypass (middleware present, not
+demonstrated). Everything else is CLI/build-time or not imported.
+
+Ghidra 12.0.4 headless produced decompiled functions, a call graph, and a
+strings/xref sweep for a deliberately vulnerable local fixture. The fixture
+source, build command, hashes, and artifacts are in `evidence/re/`.
+
+F-001 chains two weak controls: the validator accepted any file under `scripts/`
+and the RE pack pointed `-scriptPath` at that directory, so a validator-green
+repository could execute code as the analyst. It was reproduced with a benign
+marker and fixed by exact pin checks, a script integrity manifest, and an
+executor warning. Details: `findings/f001-ghidra-scriptpath-rce-chain.md`.
 
 ## Bibliography
 

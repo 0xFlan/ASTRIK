@@ -150,8 +150,11 @@ Collect before the first request:
 - **OSV-Scanner:** `osv-scanner scan source -r .` and `osv-scanner scan image
   <image>` produce dependency candidates, not exploits. Confirm reachability.
 - **Ghidra:** `analyzeHeadless <project> <name> -import <bin> -overwrite
-  -scriptPath <scripts> -postScript Decompile.java <out>`; record the project
-  path, version, and output hash.
+  -scriptPath scripts/ghidra -postScript ReportArtifacts.java <out>`; record the
+  project path, version, and output hash. Ghidra compiles and executes
+  postScripts with the analyst's privileges: run only scripts pinned in
+  `scripts/MANIFEST.sha256`, and never point `-scriptPath` at an untrusted
+  repository or target artifact.
 
 ## 4. Chain doctrine
 

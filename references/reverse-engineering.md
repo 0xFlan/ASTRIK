@@ -43,9 +43,20 @@ mkdir -p /tmp/ghidra-proj
 analyzeHeadless /tmp/ghidra-proj MyProj \
   -import "$BIN" \
   -overwrite \
-  -scriptPath /path/to/your/ghidra/scripts \
-  -postScript Decompile.java /tmp/ghidra-decompile.c
+  -scriptPath scripts/ghidra \
+  -postScript ReportArtifacts.java /tmp/ghidra-out
 ```
+
+`scripts/ghidra/ReportArtifacts.java` writes `decompiled/`, `callgraph.txt`,
+`strings_xrefs.txt`, `decompiled_index.txt`, and `summary.txt` (program hash,
+language, Ghidra version, function and string counts).
+
+**Ghidra scripts are code execution.** The headless launcher compiles and runs
+Java/Groovy/Python postScripts with the privileges of the user running Ghidra.
+Point `-scriptPath` only at this repository's reviewed `scripts/ghidra`
+directory, verify `scripts/MANIFEST.sha256`, and never load a script from a
+cloned target, a downloaded project, or an unreviewed pull request. Decompiled
+output is data; a script is not.
 
 - Use `-noanalysis` only when you intentionally want to inspect the raw import.
 - `-postScript` needs a script that exists; a simple decompiler script should
@@ -87,3 +98,18 @@ The graph is prompt-injected into dispatched agents, so treat a repo-supplied
 
 Do not blur these. A decompiled function is not proof of a remote exploit; it is
 a code path. Dynamic validation follows the operator charter.
+
+## 5. Field notes (2026-11-09, Ghidra 12.0.4)
+
+- `Program.getReferenceManager().getReferencesTo()` returns a
+  `ReferenceIterator` in 12.x, not an array; iterate it with `hasNext()`/`next()`.
+- `Data` and `DataIterator` live in `ghidra.program.model.listing`, not
+  `ghidra.program.model.data`.
+- Close every `PrintWriter` before the script returns. A missing `close()` left
+  `callgraph.txt` at 0 bytes while the decompiler artifacts looked complete; the
+  file is only flushed on close. Check artifact sizes, not just exit status.
+- The stripped Mach-O fixture's `main` appears as `entry` and imported libc
+  calls appear as `_system`, `_puts`, `_strcmp`; the decompiled call edges are
+  still recoverable.
+- Ghidra 12.0.4 bundles a JDK, so `analyzeHeadless` works even when `java` is not
+  on `PATH`.

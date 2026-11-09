@@ -15,6 +15,9 @@ required=(
   "references/recursive-improvement.md"
   "references/tool-sources.md"
   "scripts/validate_skill.sh"
+  "scripts/test_validate_skill.sh"
+  "scripts/ghidra/ReportArtifacts.java"
+  "findings/f001-ghidra-scriptpath-rce-chain.md"
 )
 
 for f in "${required[@]}"; do
@@ -24,8 +27,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.4 |' README.md; then
-  echo "README revision is not 1.4" >&2
+if ! grep -q '| Revision | 1.5 |' README.md; then
+  echo "README revision is not 1.5" >&2
   exit 1
 fi
 
@@ -36,21 +39,72 @@ for token in operator-charter agentic-pentest reverse-engineering supply-chain r
   fi
 done
 
+# The source registry is an exact set: one canonical URL and one 40-hex pin per
+# upstream. Substring matches are not enough; a typosquat or extra row must fail.
+expected_urls=(
+  'https://github.com/usestrix/strix'
+  'https://github.com/KeygraphHQ/shannon'
+  'https://github.com/N1nEmAn/sapper-v2'
+  'https://github.com/NationalSecurityAgency/ghidra'
+  'https://github.com/google/osv-scanner'
+)
+expected_shas=(
+  '215482eb2204cd30ac6b87520e3f5c6511e2e2e8'
+  '4cef63e5900c9eda0b259a44f89458c7f8b1e10d'
+  'd4de0770ae1fba706f00b7e29197ce739adbea94'
+  'e45e5a62fd66c2e48514931f6e356aff33a79fcb'
+  '02f96a40691c2d155fdda799af436e111231e365'
+)
+
+got_urls="$(grep -oE '<https://[^>]+>' references/tool-sources.md | sort -u | tr '\n' ' ')"
+want_urls="$(for u in "${expected_urls[@]}"; do printf '<%s>\n' "$u"; done | sort -u | tr '\n' ' ')"
+if [ "$got_urls" != "$want_urls" ]; then
+  echo "source registry URLs are not the exact expected set" >&2
+  echo "expected: $want_urls" >&2
+  echo "found:    $got_urls" >&2
+  exit 1
+fi
+
+got_shas="$(grep -oE '`[0-9a-f]{40}`' references/tool-sources.md | tr -d '`' | sort -u | tr '\n' ' ')"
+want_shas="$(printf '%s\n' "${expected_shas[@]}" | sort -u | tr '\n' ' ')"
+if [ "$got_shas" != "$want_shas" ]; then
+  echo "source pins are not the exact expected set" >&2
+  echo "expected: $want_shas" >&2
+  echo "found:    $got_shas" >&2
+  exit 1
+fi
+
+for sha in "${expected_shas[@]}"; do
+  if ! grep -q "$sha" README.md; then
+    echo "README does not repeat pin $sha" >&2
+    exit 1
+  fi
+done
+
+# Everything executable in this repo is code execution on the analyst's machine
+# (notably Ghidra postScripts). The manifest is the reviewed set; any added,
+# removed or modified script fails until the manifest itself is reviewed.
+if [ ! -s scripts/MANIFEST.sha256 ]; then
+  echo "missing scripts/MANIFEST.sha256" >&2
+  exit 1
+fi
+if ! ( cd scripts && shasum -a 256 -c MANIFEST.sha256 >/dev/null 2>&1 ); then
+  echo "scripts/ integrity check failed" >&2
+  ( cd scripts && shasum -a 256 -c MANIFEST.sha256 >&2 ) || true
+  exit 1
+fi
+listed="$(awk '{print $2}' scripts/MANIFEST.sha256 | sort | tr '\n' ' ')"
+actual="$(cd scripts && find . -type f ! -name MANIFEST.sha256 | sed 's|^\./||' | sort | tr '\n' ' ')"
+if [ "$listed" != "$actual" ]; then
+  echo "scripts/ contains files not in MANIFEST.sha256 (or is missing listed files)" >&2
+  echo "listed: $listed" >&2
+  echo "actual: $actual" >&2
+  exit 1
+fi
+
 if grep -RInE 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' . --exclude-dir=.git --exclude='validate_skill.sh' 2>/dev/null; then
   echo "private-key material found" >&2
   exit 1
 fi
-
-for url in \
-  'https://github.com/usestrix/strix' \
-  'https://github.com/KeygraphHQ/shannon' \
-  'https://github.com/N1nEmAn/sapper-v2' \
-  'https://github.com/NationalSecurityAgency/ghidra' \
-  'https://github.com/google/osv-scanner'; do
-  if ! grep -q "$url" references/tool-sources.md; then
-    echo "source registry missing $url" >&2
-    exit 1
-  fi
-done
 
 echo "skill validation: OK"

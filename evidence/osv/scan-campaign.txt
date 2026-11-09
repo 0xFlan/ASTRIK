@@ -1,0 +1,6 @@
+Scanning dir /Users/flan/synology-bounty
+Starting filesystem walk for root: /
+End status: 81 dirs visited, 653 inodes visited, 0 Extract calls, 3.567042ms elapsed, 3.568ms wall time
+No package sources found
+
+No issues found

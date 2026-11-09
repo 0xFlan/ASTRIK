@@ -1,0 +1,123 @@
+@hono/node-server	1.19.14	GHSA-frvp-7c67-39w9	5.9	1.19.15,2.0.5	Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)	{}
+@hono/node-server	1.19.14	GHSA-rmxm-3fg6-px4f	5.3	2.1.3	@hono/node-server: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths	{}
+@modelcontextprotocol/sdk	1.29.0	GHSA-22jm-h49p-29qw	8.6	1.32.0	MCP TypeScript SDK: Experimental tasks were not tied to the session that created them	{}
+@modelcontextprotocol/sdk	1.29.0	GHSA-46jr-4wx8-v453	7.5	1.32.0,2.3.0	MCP TypeScript SDK: One HTTP request within the default size limit could exhaust server memory during validation	{}
+@modelcontextprotocol/sdk	1.29.0	GHSA-6prh-2h8m-c8cw	6.5	1.32.0,2.3.0	MCP TypeScript client SDK: HTTP client transports and OAuth requests followed cross-origin redirects and re-sent custom headers and request bodies	{}
+@modelcontextprotocol/sdk	1.29.0	GHSA-6qxp-vccf-f47h	7.5	1.31.0,2.2.0	MCP TypeScript SDK: OAuth client could send credentials to an authorization server chosen by the MCP server	{}
+@modelcontextprotocol/sdk	1.29.0	GHSA-f897-62hf-6gxq	7.5	1.30.1,2.0.1,2.1.0	MCP TypeScript SDK: HTTP server transports and handlers did not limit request body size or JSON-RPC batch length	{}
+@modelcontextprotocol/sdk	1.29.0	GHSA-rvq5-wwqv-78pq	6.8	1.32.0,2.0.2,2.3.0,2.3.1	MCP TypeScript SDK: Server bearer authentication accepted tokens issued for another service	{}
+baseline-browser-mapping	2.10.40	GHSA-w5vr-8v7q-w6rv	6.6	2.11.0	baseline-browser-mapping process termination on invalid input causes denial of service	{}
+basic-ftp	5.3.1	GHSA-c475-qrg2-pj4r	8.2	6.2.1	basic-ftp: Quadratic-time CPU denial of service in Client.list() Unix directory-listing parser (RE_LINE backtracking)	{}
+body-parser	2.3.0	GHSA-27r3-jxmh-p828	7.5	1.20.9,2.4.0	body-parser vulnerable to Denial of Service via trailing bytes after a compressed request body	{}
+brace-expansion	5.0.7	GHSA-6j4f-fj2g-mc7p	7.5	1.1.19,2.1.5,3.0.7,5.0.10	brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion	{}
+brace-expansion	5.0.7	GHSA-mh99-v99m-4gvg	7.5	1.1.17,2.1.3,3.0.3,5.0.8	brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash	{}
+brace-expansion	5.0.7	GHSA-q2hr-2g5m-vwhr	5.3	1.1.21,2.1.7,3.0.9,5.0.12	brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service	{}
+brace-expansion	5.0.7	GHSA-qhr7-859c-m2p7	7.5	1.1.20,2.1.6,3.0.8,5.0.11	brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion	{}
+brace-expansion	5.0.7	GHSA-rgw5-rvv9-x895	7.5	1.1.18,2.1.4,3.0.6,5.0.9	brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation	{}
+browserslist	4.28.4	GHSA-73wf-gq98-2v4g	7.5	4.28.7	Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)	{}
+browserslist	4.28.4	GHSA-c83g-rgw3-j3cx	7.5	4.28.7	Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM	{}
+deepmerge	4.3.1	GHSA-gcqx-w48m-w2h4	5.3		deepmerge mergeObject() allows prototype poisoning of returned objects	{}
+extract-zip	2.0.1	GHSA-7pqw-9j4j-h8q3	8.1		extract-zip allows arbitrary file writes through symlink archive entries	{}
+extract-zip	2.0.1	GHSA-jmr9-qjv8-65gv	8.6		extract-zip unvalidated symlink path traversal	{}
+fast-uri	3.1.3	GHSA-333x-w4r6-6crp	3.7	2.4.8,3.1.9,4.2.3	fast-uri vulnerable to scheme injection via an unescaped first-segment colon in suffix references	{}
+fast-uri	3.1.3	GHSA-5jgf-p345-68v8	7.5	2.4.5,3.1.6,4.1.3	fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references	{}
+fast-uri	3.1.3	GHSA-7p8r-x3mc-p8w7	7.5	2.4.4,3.1.5,4.1.2	fast-uri vulnerable to host confusion via backslash authority introducer	{}
+fast-uri	3.1.3	GHSA-f65p-4m7j-42xc	7.5	2.4.5,3.1.6,4.1.3	fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization	{}
+fast-uri	3.1.3	GHSA-fph4-wmhf-6fwf	7.5	2.4.5,3.1.6,4.1.3	fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding	{}
+fast-uri	3.1.3	GHSA-hrr3-gc8f-f4qj	4.8	2.4.7,3.1.8,4.1.5	fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets	{}
+fast-uri	3.1.3	GHSA-jqff-g426-hqxp	7.5	2.4.5,3.1.6,4.1.3	fast-uri vulnerable to host confusion via percent-encoded scheme normalization	{}
+fast-uri	3.1.3	GHSA-qw65-cvwx-89v3	7.5	2.4.6,3.1.7,4.1.4	fast-uri vulnerable to authority injection via an unvalidated port in serialize	{}
+fast-uri	3.1.3	GHSA-v2hh-gcrm-f6hx	7.5	2.4.3,3.1.4,4.1.1	fast-uri vulnerable to host confusion via literal backslash authority delimiter	{}
+fast-uri	3.1.3	GHSA-w74x-v6f9-j3xg	6.1	2.4.8,3.1.9,4.2.3	fast-uri vulnerable to URI scheme spoofing via percent-encoded scheme decoding	{}
+fast-uri	3.1.3	GHSA-wjr9-j795-jxcr	4.8	2.4.8,3.1.9,4.2.3	fast-uri vulnerable to host confusion via unchecked WHATWG host canonicalization	{}
+fast-uri	3.1.3	GHSA-xhq7-xmqj-769h	3.7	2.4.8,3.1.9,4.2.3	fast-uri vulnerable to improper path equivalence in relative reference normalization	{}
+github.com/andybalholm/brotli	1.2.1	GO-2026-6888		1.2.7	Excessive memory allocation when decompressing crafted streams in github.com/andybalholm/brotli	{"GO-2026-6888": {"called": false, "unimportant": false}}
+github.com/klauspost/compress	1.18.6	GO-2026-5841	7.5	1.18.7	OOB read in github.com/klauspost/compress/s2	{"GO-2026-5841": {"called": false, "unimportant": false}}
+github.com/klauspost/compress	1.18.6	GO-2026-6865		1.20.2	Panic on two-block frames in github.com/klauspost/compress	{"GO-2026-6865": {"called": true, "unimportant": false}}
+golang.org/x/crypto	0.58.0	GO-2026-5932		0.58.1-0.20261009181718-2f1f834330b2	The golang.org/x/crypto/openpgp package is unmaintained, unsafe by design, and has known security issues	{"GO-2026-5932": {"called": false, "unimportant": false}}
+hono	4.12.27	GHSA-54fx-42gc-7vw4	5.3	4.12.34	Hono: Algorithmic Complexity DoS in Language Middleware	{}
+hono	4.12.27	GHSA-5r4p-p66f-jhc7	5.3	4.13.11	Hono: `serveStatic` decodes the request path a second time, leading to bypass of middleware on static paths	{}
+hono	4.12.27	GHSA-79qm-7rj5-m7r9	3.7	4.12.34	Hono: Proxy Helper does not remove response headers listed in the `Connection` header	{}
+hono	4.12.27	GHSA-8j4g-w8fx-2239	5.3	4.12.34	Hono: ReDoS in CORS middleware via Access-Control-Request-Headers	{}
+hono	4.12.27	GHSA-crvj-82cr-hjcx	5.9	4.13.5	Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials	{}
+hono	4.12.27	GHSA-f23p-vx2j-j53r	4.8	4.12.34	Hono: `memo()` retains SSR output across requests, leading to cross-user data disclosure	{}
+hono	4.12.27	GHSA-g6gw-c38x-mqfc	5.3	4.13.5	Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion	{}
+hono	4.12.27	GHSA-gqvv-2mrq-wpjv	6.5	4.13.5	Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory	{}
+hono	4.12.27	GHSA-hxh3-vqpv-xpqv	4.7	4.13.7	hono/jsx renders plain strings unescaped in boundary components, leading to XSS	{}
+ip-address	10.2.0	GHSA-22jq-vg5j-6vgg	6.9	10.2.1	ip-address: misclassification of IPv4-mapped/NAT64 IPv6 addresses can bypass SSRF and trust-boundary checks	{}
+ip-address	10.2.0	GHSA-2vr4-cq9g-pvrc	6.9	10.5.1	ip-address: no classifier recognizes the NAT64 local-use range 64:ff9b:1::/48, allowing SSRF and trust-boundary bypass	{}
+ip-address	10.2.0	GHSA-4xrf-jv44-h6hh	6.9	10.2.2	ip-address: a CIDR suffix on the parsed address suppresses special-use classification and can bypass SSRF and trust-boundary checks	{}
+ip-address	10.2.0	GHSA-h3mg-xc3c-68pw	6.3	10.7.1	ip-address: Address6 builds a parse diagnostic proportional to the input with no length bound, allowing a single long string to stall or crash the process	{}
+ip-address	10.2.0	GHSA-j6r3-76f7-8jcv	6.3	10.7.1	ip-address: isInSubnet() and isHostInSubnet() compare addresses of different families as if they shared an address space, allowing an allowlist check to admit an address outside its range	{}
+ip-address	10.2.0	GHSA-mwp4-54f8-5fhr	7.7	10.3.1	ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass	{}
+ip-address	10.2.0	GHSA-rpw4-54j3-4h4q	6.3	10.5.1	ip-address: Address6.isLinkLocal() recognizes fe80::/64 rather than fe80::/10, allowing SSRF and trust-boundary bypass to on-link hosts	{}
+ip-address	10.2.0	GHSA-rxp7-6hxx-x8q5	6.3	10.7.4	ip-address: Address6 matches a zone identifier in quadratic time ahead of its length limit, allowing a single long string to stall the process	{}
+js-yaml	4.3.0	GHSA-2883-xcg3-v3hh	7.5	3.15.2,4.3.2	js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources	{}
+js-yaml	4.3.0	GHSA-5p4m-2wfm-xmqj	7.5	3.15.1,4.3.1	JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported	{}
+minimatch	10.2.5	GHSA-g3hv-75wg-m249	6.9	11.0.1	minimatch has potential denial of service via globparts amplification	{}
+nanoid	3.3.15	GHSA-28wg-ghj8-5hjv	8.2	3.3.16,5.1.16	nanoid: non-secure generators can loop indefinitely with negative size	{}
+nanoid	3.3.15	GHSA-2v37-7h3g-55p8	8.2	3.3.18,5.1.6	nanoid: custom generators can loop indefinitely when size is zero	{}
+next	16.2.9	GHSA-2464-fhr4-w9xw	9.5	15.5.28,16.4.1	Next.js: Unauthenticated Remote Code Execution in Image Optimization API when SVG files are used	{}
+next	16.2.9	GHSA-2xp9-vwfh-vxw4	9.5	15.5.24,16.3.3	Next.js: Unauthenticated Remote Code Execution in Image Optimization API when AVIF files are used	{}
+next	16.2.9	GHSA-39w2-rjm5-chcv	5.4	16.3.8	Next.js has information disclosure in development server's Model Context Protocol endpoint	{}
+next	16.2.9	GHSA-4633-3j49-mh5q	6.3	15.5.21,16.2.11	Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences	{}
+next	16.2.9	GHSA-4c39-4ccg-62r3	6.3	15.5.21,16.2.11	Next.js: Unbounded Server Action payload in Edge runtime	{}
+next	16.2.9	GHSA-4jqv-mc3x-m676	6.3	15.5.27,16.3.8	Next.js has cache poisoning of SSG and ISR pages in self-hosted applications	{}
+next	16.2.9	GHSA-673q-mjm6-r5xr	9.5	16.4.1	Next.js: Unauthenticated Remote Code Execution in `use cache` functions returning typed arrays	{}
+next	16.2.9	GHSA-68g3-v927-f742	6.0	15.5.21,16.2.11	Next.js: Cache confusion of response bodies for requests with bodies	{}
+next	16.2.9	GHSA-6gpp-xcg3-4w24	8.3	16.2.11	Next.js: Middleware / Proxy bypass in App Router applications using Turbopack and single locale	{}
+next	16.2.9	GHSA-89xv-2m56-2m9x	8.3	15.5.21,16.2.11	Next.js: Server-Side Request Forgery in Server Actions on custom servers	{}
+next	16.2.9	GHSA-955p-x3mx-jcvp	6.3	15.5.21,16.2.11	Next.js: Unauthenticated disclosure of internal Server Function endpoints	{}
+next	16.2.9	GHSA-cjq9-62q9-8jv4	8.3	16.3.8	Next.js has Server-Side Request Forgery in Image Optimization	{}
+next	16.2.9	GHSA-f87g-xv8r-7p7x	6.3	16.3.8	Next.js has information disclosure in App Router metadata image routes via dynamicParams bypass	{}
+next	16.2.9	GHSA-m99w-x7hq-7vfj	8.2	15.5.21,16.2.11	Next.js: Denial of Service in App Router using Server Actions	{}
+next	16.2.9	GHSA-mcj8-r9mp-w47p	6.3	15.5.27,16.3.8	Next.js has cache poisoning in SSG/ISR rendering that leads to cross-user content substitution and persistent denial of service	{}
+next	16.2.9	GHSA-p293-qw3h-jr36	9.0	15.5.24,16.3.3	Next.js: Unauthenticated Remote Code Execution on windows-hosted servers	{}
+next	16.2.9	GHSA-p3m5-59mp-jv5r	8.2	15.5.28,16.4.1	Next.js: Denial of Service in App Router using Server Actions	{}
+next	16.2.9	GHSA-p9j2-gv94-2wf4	8.3	15.5.21,16.2.11	Next.js: Server-Side Request Forgery in rewrites via attacker-controlled destination hostname	{}
+next	16.2.9	GHSA-q8wf-6r8g-63ch	6.3	15.5.21,16.2.11	Next.js: Denial of Service in the Image Optimization API using SVGs	{}
+next	16.2.9	GHSA-vcvr-r3jv-pc5j	9.5	16.3.6	Next.js: Remote Code Execution in next/og ImageResponse	{}
+postcss	8.4.31	GHSA-6g55-p6wh-862q	7.5	8.5.12	PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments	{}
+postcss	8.4.31	GHSA-fxqj-rqcc-2cmp	6.3	8.5.23	PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset	{}
+postcss	8.4.31	GHSA-qx2v-qp2m-jg93	6.1	8.5.10	PostCSS has XSS via Unescaped </style> in its CSS Stringify Output	{}
+postcss	8.4.31	GHSA-r28c-9q8g-f849	7.5	8.5.18	PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure	{}
+postcss	8.5.16	GHSA-fxqj-rqcc-2cmp	6.3	8.5.23	PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset	{}
+postcss	8.5.16	GHSA-r28c-9q8g-f849	7.5	8.5.18	PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure	{}
+postcss-selector-parser	7.1.4	GHSA-rj75-hqrm-r3gf	5.9	6.1.5,7.1.6	PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion	{}
+proxy-addr	2.0.7	GHSA-jqcg-44mw-7w3h	9.1	2.0.8	proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet	{}
+qs	6.15.3	GHSA-4mjr-xmp4-gh2g	6.3	6.16.0	qs: Denial of Service via Attacker Controlled isBuffer	{}
+qs	6.15.3	GHSA-6pq8-jhm2-2vcw	6.3	6.16.1	qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS)	{}
+qs	6.15.3	GHSA-x5fp-wj9c-mxmx	6.3	6.16.0	qs array-limit bypass via bracket-key comma parsing	{}
+sharp	0.34.5	GHSA-f88m-g3jw-g9cj	7.0	0.35.0	sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591	{}
+sharp	0.34.5	GHSA-rgj7-g3m4-5g8c	8.9	0.35.4	sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545	{}
+sharp	0.34.5	GHSA-wq5f-xc86-pv6w	8.9	0.35.5	sharp : Vulnerability in librsvg dependency CVE-2026-96889	{}
+source-map-js	1.2.1	GHSA-68fv-2mgg-jv7q	8.7	1.2.2	source-map-js allows event-loop denial of service through indexed source-map section offsets	{}
+systeminformation	5.31.11	GHSA-3f7j-7jwc-fxfj	7.8	5.33.16	systeminformation vulnerable to Windows command injection in services() through Unicode quotation marks	{}
+systeminformation	5.31.11	GHSA-4vjg-vx72-qq4g	3.3	5.33.14	systeminformation has path traversal in Linux networkStats() that allows symlink-based file disclosure outside /sys/class/net	{}
+systeminformation	5.31.11	GHSA-7648-jmwf-vw7j	6.5	5.33.13	systeminformation has prototype pollution in `networkStats()` via the interface name	{}
+undici	7.28.0	GHSA-2gqq-gqf2-x968	3.7	7.29.1,8.10.2	undici vulnerable to response truncation via oversized chunked responses in the dump interceptor	{}
+undici	7.28.0	GHSA-2jfj-6hjv-fm6j	6.5	7.29.1,8.10.2	undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches	{}
+undici	7.28.0	GHSA-2m5v-pch6-74hx	7.4	6.29.1,7.30.1,8.12.2	undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent	{}
+undici	7.28.0	GHSA-3wwx-pv8p-q78v	5.9	6.28.1,7.29.1,8.10.2	undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression	{}
+undici	7.28.0	GHSA-3xpg-4rpp-hhhm	5.9	7.29.1,8.10.2	undici vulnerable to Denial of Service via unbounded decompression of compressed responses	{}
+undici	7.28.0	GHSA-4cwx-7wf7-3272	7.4	7.29.0,8.9.0	undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives	{}
+undici	7.28.0	GHSA-4qv8-2p9j-2685	5.9	6.29.1,7.30.1,8.12.2	undici vulnerable to Denial of Service via unbounded memory in the EventSource parser	{}
+undici	7.28.0	GHSA-4w7w-5xrc-9h26	7.4	7.30.1,8.12.2	undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects	{}
+undici	7.28.0	GHSA-55wc-3pg8-jfw6	5.9	7.30.1,8.12.2	undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor	{}
+undici	7.28.0	GHSA-8436-99hf-9mmv	3.7	7.29.1,8.10.2	undici vulnerable to caching and replay of unsafe HTTP method responses	{}
+undici	7.28.0	GHSA-8xcm-r25x-g524	4.8	6.28.0,7.29.0,8.9.0	undici vulnerable to downstream response desynchronization via retry interceptor	{}
+undici	7.28.0	GHSA-9fm3-97px-rjf6	5.9	6.29.1,7.30.1,8.12.2	undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering	{}
+undici	7.28.0	GHSA-f72v-6w45-q472	5.9	7.30.1,8.12.2	undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens	{}
+undici	7.28.0	GHSA-jr45-8vmc-qm54	5.9	7.29.0,8.9.0	undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives	{}
+undici	7.28.0	GHSA-m8rv-5g2x-5cg5	4.2	6.28.0,7.29.0,8.9.0	undici vulnerable to CRLF Injection via blob-like body 'type' property	{}
+undici	7.28.0	GHSA-pmjh-fq2x-6v4x	5.9	7.29.1,8.10.2	undici vulnerable to Denial of Service via orphaned RetryHandler response body	{}
+undici	7.28.0	GHSA-qrxm-fqhp-jwvm	7.5	6.29.1,7.30.1,8.12.2	undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation	{}
+undici	7.28.0	GHSA-r53p-7pc4-xj5r	3.7	6.28.1,7.29.1,8.10.2	undici vulnerable to downstream response splitting via retry interceptor	{}
+undici	7.28.0	GHSA-rfgv-xxqx-mfg5	7.5	6.28.1,7.29.1,8.10.2	undici vulnerable to Denial of Service via unrequested WebSocket subprotocol	{}
+undici	7.28.0	GHSA-rx4f-c7p8-82vq	5.9	7.29.1,8.10.2	undici vulnerable to Denial of Service via WebSocketStream unclean close	{}
+undici	7.28.0	GHSA-v3r7-h72x-cjcm	4.8	6.28.0,7.29.0,8.9.0	undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields	{}
+undici	7.28.0	GHSA-w293-vg96-wgc3	7.4	7.29.1,8.10.2	undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool	{}
+undici	7.28.0	GHSA-xjj6-f33q-929c	7.5	6.29.1,7.30.1,8.12.2	undici vulnerable to Denial of Service via unhandled error on excessive content-encodings	{}
+zod	3.23.8	GHSA-mrhx-c7xc-m3w5	8.2	4.6.6	Zod can exhaust memory while validating oversized constrained collections	{}
+zod	3.25.76	GHSA-mrhx-c7xc-m3w5	8.2	4.6.6	Zod can exhaust memory while validating oversized constrained collections	{}
+zod	4.4.3	GHSA-mrhx-c7xc-m3w5	8.2	4.6.6	Zod can exhaust memory while validating oversized constrained collections	{}
