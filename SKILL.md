@@ -1,9 +1,9 @@
 ---
-name: artex-pentest
-description: "Operator-chartered pentest and bounty skill built on ARTEX, with chain doctrine, agentic tools (Strix, Shannon, sapper-v2), Ghidra reverse engineering, OSV-Scanner supply-chain checks, and a recursive improvement loop. Use for engagements, bounty targets, reviews of agentic/AI-tooling platforms, and authorized binary or dependency analysis."
+name: astrik
+description: "ASTRIK: operator-chartered pentest and bounty skill built on ARTEX, with chain doctrine, agentic tools (Strix, Shannon, sapper-v2), Ghidra reverse engineering, OSV-Scanner supply-chain checks, and a recursive improvement loop. Use for engagements, bounty targets, reviews of agentic/AI-tooling platforms, and authorized binary or dependency analysis."
 ---
 
-# ARTEX Pentest Operator
+# ASTRIK
 
 Use this skill for a penetration test, bug-bounty hunt, red-team exercise, or
 security review that the operator has authorized. The skill supplies method,

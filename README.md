@@ -1,8 +1,10 @@
-# ARTEX Pentest Operator Skill
+# ASTRIK
+
+ASTRIK is the operator-chartered pentest and bounty skill built on ARTEX.
 
 | Item | Value |
 |---|---|
-| Document identifier | ARTEX-PENTEST-SKILL-001 |
+| Document identifier | ASTRIK-001 |
 | Revision | 1.14 |
 | Date | 2026-11-09 |
 | Status | Released |
@@ -31,7 +33,7 @@
 
 ## 1 Scope
 
-This document specifies the **ARTEX Pentest Operator Skill**, a portable
+This document specifies **ASTRIK**, a portable
 methodology for operator-authorized penetration testing, bug-bounty work, and
 security review of web applications, APIs, binaries, dependencies, and agentic or
 AI-tooling platforms.
