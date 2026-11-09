@@ -1,0 +1,27 @@
+ok  	github.com/Autumn-27/artex/agent	0.946s
+ok  	github.com/Autumn-27/artex/cmd/artex	0.421s
+ok  	github.com/Autumn-27/artex/config	2.458s
+--- FAIL: TestCompanyScopeAttribution (0.03s)
+    company_scope_test.go:371: in-CIDR ip (insert-time) company_id = 26, want 57
+--- FAIL: TestPoolProfilesOrder (0.02s)
+    config_test.go:28: ERROR: duplicate key value violates unique constraint "llm_profiles_name_key" (SQLSTATE 23505)
+--- FAIL: TestProfileRetryRoundTrip (0.02s)
+    llmretry_test.go:28: ERROR: duplicate key value violates unique constraint "llm_profiles_name_key" (SQLSTATE 23505)
+--- FAIL: TestProfileRetryClampedOnSave (0.02s)
+    llmretry_test.go:81: ERROR: duplicate key value violates unique constraint "llm_profiles_name_key" (SQLSTATE 23505)
+2026/11/09 12:26:51 [notify] failed to write delivery event finding=1 (finding record unaffected): ERROR: new row for relation "notification_events" violates check constraint "notify_test_never" (SQLSTATE 23514)
+FAIL
+FAIL	github.com/Autumn-27/artex/db	6.260s
+?   	github.com/Autumn-27/artex/enrich	[no test files]
+ok  	github.com/Autumn-27/artex/evidence	1.385s
+ok  	github.com/Autumn-27/artex/guard	2.206s
+ok  	github.com/Autumn-27/artex/intercept	1.703s
+ok  	github.com/Autumn-27/artex/llmpool	2.665s
+ok  	github.com/Autumn-27/artex/llmrec	1.978s
+ok  	github.com/Autumn-27/artex/mcphttp	8.177s
+ok  	github.com/Autumn-27/artex/notify	0.977s
+?   	github.com/Autumn-27/artex/report	[no test files]
+ok  	github.com/Autumn-27/artex/server	22.002s
+ok  	github.com/Autumn-27/artex/sidequestion	2.237s
+ok  	github.com/Autumn-27/artex/traffic	7.302s
+FAIL

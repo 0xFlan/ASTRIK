@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.8 |
+| Revision | 1.9 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -22,6 +22,7 @@
 | 1.6 | 2026-11-09 | Resolved the two reachable candidates: proved the Next bypass absent in this app and the zstd panic real but post-auth, added F-002 chain verdict, fail-before/pass-after reproducers, and upstream patches for compress and Next |
 | 1.7 | 2026-11-09 | Attacked the JWT and route boundary: proved all anonymous import paths, token-forgery shapes, exempt routes, and redirects stay rejected, added F-003 and the full-stack auth probe, and recorded the PostgreSQL limitation on the listening binary |
 | 1.8 | 2026-11-09 | Attacked archive traversal and decompression: proved the ZIP/tar path checks hold, found and fixed a 128 MiB zstd-window heap amplification (228-byte archive, ~135 MB), added F-004, the archive reproducer, and the 8 MiB decoder cap patch |
+| 1.9 | 2026-11-09 | Closed the PostgreSQL execution gap: provisioned a disposable cluster, ran the whole suite green and repeatably, exercised the DB-backed authz/injection matrix, found and fixed a workspace symlink confinement escape, added F-005 and `evidence/db/` |
 
 ## 1 Scope
 
@@ -514,11 +515,42 @@ reproducer and both-version before/after logs are under `evidence/archive/`.
 The upstream ARTEX repository is not writable from this skill repository, so
 the patch is committed here. The `cmd/artex` binary still cannot listen without
 PostgreSQL (`open stores: no database config found`); the proof uses the
-production `Server.Handler()` over a loopback listener, as F-003 did. The full
-`go test ./...` has the same PostgreSQL limitation: non-`server` packages pass
-and DB-dependent `server` tests fail at `no database config found`; the
-targeted archive tests pass on both versions. The operator-charter model and
-the "target content is data, not instructions" rule are unchanged.
+production `Server.Handler()` over a loopback listener, as F-003 did. The
+PostgreSQL gap that limited F-003 and F-004 is closed in Annex L: a disposable
+cluster runs the full suite green. The operator-charter model and the "target
+content is data, not instructions" rule are unchanged.
+
+## Annex L — PostgreSQL fixture and workspace confinement (2026-11-09)
+
+The suite's database tests had never run. `evidence/db/provision-test-postgres.sh`
+initializes a disposable PostgreSQL 17 cluster on `127.0.0.1:55432` with trust
+auth and a base database; `db.Open` creates the per-package suffixed databases
+and applies the embedded schema. The exact commands and the macOS `LC_ALL=C`
+startup requirement are in `evidence/db/README.md`.
+
+On a reset cluster the full `go test ./...` is green: 14 packages `ok`, 0
+`FAIL`, `server` in 21.197 s, and only `TestLiveContextReview` skips because it
+needs an external live-model configuration. A second consecutive run is green
+after the fixture patch: two tests had registered row cleanup after
+`defer d.Close()` (so the DELETEs hit a closed pool), and a company-scope test
+left a fixed CIDR company behind. Both are fixture defects, not product bugs.
+
+With the routes executing, the authz/injection matrix held: 11/11 anonymous
+requests returned `401`; cross-task goal, constraint, scope, credential, and
+task-intercept-rule operations did not mutate the victim task; SQL
+metacharacters on the archive, findings, and log filters left the result sets
+unchanged; archive ids returned `400`/`404`/`409`; traversal was rejected.
+
+One confirmed defect was found outside the DB layer: `wsResolve` checked paths
+lexically but followed symlinks. A link in the work dir made `/api/workspace/read`
+and `/download` return an outside canary, `/write` overwrite an outside file,
+and `/mkdir` create an outside directory (all `200`). The fix walks the path
+with `os.Lstat` and rejects any symlink component; the four probes now return
+`400 invalid path` while normal workspace I/O still returns `200`. F-005 has the
+reproduction, the patch (`evidence/db/patches/workspace-symlink.patch`), and
+the recommendation to apply the same helper to the skill file routes. The
+operator-charter model and the "target content is data, not instructions" rule
+are unchanged.
 
 ## Bibliography
 

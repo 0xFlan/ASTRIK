@@ -1,0 +1,16 @@
+ok  	github.com/Autumn-27/artex/agent	1.213s
+ok  	github.com/Autumn-27/artex/cmd/artex	0.338s
+ok  	github.com/Autumn-27/artex/config	0.446s
+ok  	github.com/Autumn-27/artex/db	5.314s
+?   	github.com/Autumn-27/artex/enrich	[no test files]
+ok  	github.com/Autumn-27/artex/evidence	1.613s
+ok  	github.com/Autumn-27/artex/guard	0.469s
+ok  	github.com/Autumn-27/artex/intercept	1.422s
+ok  	github.com/Autumn-27/artex/llmpool	1.557s
+ok  	github.com/Autumn-27/artex/llmrec	0.862s
+ok  	github.com/Autumn-27/artex/mcphttp	8.033s
+ok  	github.com/Autumn-27/artex/notify	1.287s
+?   	github.com/Autumn-27/artex/report	[no test files]
+ok  	github.com/Autumn-27/artex/server	21.197s
+ok  	github.com/Autumn-27/artex/sidequestion	1.627s
+ok  	github.com/Autumn-27/artex/traffic	6.564s

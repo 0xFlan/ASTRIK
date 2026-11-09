@@ -119,3 +119,21 @@ intentionally small and can itself be improved by the same loop.
   regression test asserts `400 window size exceeded` after the fix and still
   accepts a normal zstd archive. For any `io.LimitReader` or output-size cap,
   inspect the decoder's own window, dictionary, and metadata allocations.
+- **Lexical containment is not containment.** F-005's `wsResolve` collapsed
+  `..` and checked a string prefix, but `ReadFile`/`WriteFile`/`MkdirAll` resolve
+  symlinks in the kernel. A planted link turned the browser file manager into a
+  host read/write primitive. For any path-confinement check, walk the existing
+  components with `Lstat` (or use `openat`/`O_NOFOLLOW`) and test with a link
+  that points outside the root; a positive control on a normal path catches a
+  fix that simply rejects everything.
+- **Provision the fixture before trusting the suite.** The same suite that hid
+  all DB-backed routes behind `no database config found` also hid fixture
+  defects. After closing the environment gap, run the suite twice: F-005's
+  second run found `defer d.Close()` running before `t.Cleanup` DELETEs and a
+  company scope that survived into the next run. A green first run is a data
+  point; a green repeat is the evidence.
+- **Report a misleading success even when nothing changed.** A cross-task
+  intercept-rule toggle returned `200 {"ok":true}` while the row stayed
+  untouched. The authorization invariant held, but the response would make an
+  operator believe the rule changed. Record it as an API-semantics defect rather
+  than inflating it into an IDOR.

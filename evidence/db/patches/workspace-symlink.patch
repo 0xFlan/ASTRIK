@@ -1,0 +1,59 @@
+diff --git a/server/workspace.go b/server/workspace.go
+index df78e3e..b9d4de6 100644
+--- a/server/workspace.go
++++ b/server/workspace.go
+@@ -26,6 +26,12 @@ const (
+ // wsResolve maps a user-supplied relative path to an absolute path INSIDE the work
+ // dir. It returns ok=false if the path would escape the root. filepath.Clean on a
+ // rooted copy collapses any ".." so nothing can climb above the root.
++//
++// The lexical check cannot see symlinks: a link planted inside the work dir (by an
++// agent, a cloned repository, or a downloaded archive) can point anywhere, and every
++// caller below follows it through Stat/ReadFile/WriteFile/MkdirAll. A path that
++// crosses a symlink under the root is therefore refused, so the file manager cannot
++// read, download, overwrite, or create entries outside the workspace through one.
+ func (s *Server) wsResolve(rel string) (string, bool) {
+ 	base := filepath.Clean(s.m.dir)
+ 	rel = strings.TrimPrefix(strings.TrimSpace(rel), "/")
+@@ -34,9 +40,41 @@ func (s *Server) wsResolve(rel string) (string, bool) {
+ 	if abs != base && !strings.HasPrefix(abs, base+string(os.PathSeparator)) {
+ 		return "", false
+ 	}
++	if pathCrossesSymlink(base, abs) {
++		return "", false
++	}
+ 	return abs, true
+ }
+ 
++// pathCrossesSymlink reports whether any existing component of abs below root is a
++// symlink. A missing component ends the walk: nothing below it exists yet, and
++// MkdirAll/WriteFile create regular entries there. The root itself may be a symlink
++// (macOS /var → /private/var); only components below it are inspected.
++func pathCrossesSymlink(root, abs string) bool {
++	rel, err := filepath.Rel(root, abs)
++	if err != nil {
++		return true
++	}
++	current := root
++	for _, part := range strings.Split(rel, string(os.PathSeparator)) {
++		if part == "" || part == "." {
++			continue
++		}
++		current = filepath.Join(current, part)
++		info, err := os.Lstat(current)
++		if os.IsNotExist(err) {
++			return false
++		}
++		if err != nil {
++			return true
++		}
++		if info.Mode()&os.ModeSymlink != 0 {
++			return true
++		}
++	}
++	return false
++}
++
+ // wsRel renders an absolute path back as a workspace-relative path (forward slashes).
+ func (s *Server) wsRel(abs string) string {
+ 	base := filepath.Clean(s.m.dir)

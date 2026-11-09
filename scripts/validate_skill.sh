@@ -21,6 +21,16 @@ required=(
   "findings/f002-chain-next-bypass-to-zstd-panic.md"
   "findings/f003-jwt-route-bypass-does-not-hold.md"
   "findings/f004-zstd-window-memory-amplification.md"
+  "findings/f005-workspace-symlink-escape.md"
+  "evidence/db/README.md"
+  "evidence/db/provision-test-postgres.sh"
+  "evidence/db/repro/zz_evidence_dbfixture_test.go"
+  "evidence/db/patches/workspace-symlink.patch"
+  "evidence/db/patches/test-idempotency.patch"
+  "evidence/db/logs/f005-probe-before.log"
+  "evidence/db/logs/f005-probe-after.log"
+  "evidence/db/logs/go-test-fresh.log"
+  "evidence/db/logs/go-test-rerun.log"
 )
 
 for f in "${required[@]}"; do
@@ -30,8 +40,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.8 |' README.md; then
-  echo "README revision is not 1.8" >&2
+if ! grep -q '| Revision | 1.9 |' README.md; then
+  echo "README revision is not 1.9" >&2
   exit 1
 fi
 

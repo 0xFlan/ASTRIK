@@ -90,15 +90,56 @@ backslashes, doubled separators, `%2e%2e`, drive/colon, NUL, absolute path) with
 the task package is server-generated and checksummed, so this is defense-in-depth.
 Details: `findings/f004-zstd-window-memory-amplification.md`.
 
+### PostgreSQL-backed routes and workspace confinement (F-005)
+
+The suite's database tests had never executed: `go test ./...` failed at
+`no database config found: ARTEX_PG_DSN is not set`. A disposable PostgreSQL 17
+cluster on `127.0.0.1:55432` (`evidence/db/provision-test-postgres.sh`, exact
+commands in `evidence/db/README.md`) now runs them for real. On a reset cluster
+the full suite is green: 14 packages `ok`, 0 `FAIL`, `server` in 21.197 s, and
+the only skip is `TestLiveContextReview`, which needs
+`ARTEX_REVIEW_LIVE_CONFIG` and an external model (environment-only). A second
+consecutive run is green after the fixture patch
+(`evidence/db/patches/test-idempotency.patch`); before that patch the rerun
+failed on fixed-name rows because `defer d.Close()` ran before the cleanup
+DELETEs, and on a company scope that survived into the next run.
+
+The production `Server.Handler()` was driven over loopback with a valid JWT and
+two tasks created through the public API. The DB-backed authz/injection matrix
+held: 11/11 anonymous requests to task, archive, credential, goal, log, LLM,
+skill-upload, and workspace routes returned `401`; cross-task goal/constraint/
+scope/credential operations returned `404`/`500` and left the victim task
+unchanged; cross-task task-intercept-rule toggle/update/delete changed nothing
+(the toggle returns a misleading `200 ok` — an API-semantics defect, not a
+mutation); SQL metacharacters in `task-archives?q=`, `?state=`, `findings?query=`,
+`?severity=`, and `logs/history?q=` left the result sets identical to the
+baseline; non-numeric, unknown, and negative archive ids returned `400`/`404`/`409`.
+
+The confirmed defect is outside the DB layer: `wsResolve` confined workspace
+paths lexically but followed symlinks. A link planted in the work dir made
+`/api/workspace/read` and `/download` return an outside canary (`200`), `/write`
+overwrite an outside file (`200`), and `/mkdir` create an outside directory
+(`200`). After `pathCrossesSymlink`, all four return `400 invalid path`, while a
+normal write/read control still returns `200`. Details:
+`findings/f005-workspace-symlink-escape.md`.
+
 ## What this does and does not prove
 
 - F-004 is a confirmed authenticated memory-exhaustion primitive (L2→availability
   impact): the 20 MiB upload cap does not bound the decoder window. The 8 MiB
   server patch closes it; it is not an unauthenticated chain.
-- The full `go test ./...` is not green on this host because PostgreSQL is
-  absent; all non-`server` packages pass and DB-dependent `server` tests fail at
-  `no database config found`. The targeted F-004 tests pass on 1.18.6 and 1.20.2.
-  This is the same execution-layer limitation recorded in F-003.
+- The PostgreSQL gap recorded in F-003/F-004 is closed. A disposable cluster
+  runs the full `go test ./...` green (14 packages, `server` 21.197 s); only the
+  live-model test skips, and it is skipped because its external configuration is
+  absent, not because the database is. The suite is repeatable: a second run is
+  green after the fixture patch, and both logs are under `evidence/db/logs/`.
+- F-005 is a confirmed authenticated confinement escape (L2→host file
+  read/write), not privilege escalation from the agent: the agent's Bash can
+  already reach the host. It breaks the browser file manager's documented
+  "inside the work dir" boundary and turns any symlink in a cloned repo or task
+  workspace into an operator-session read/write primitive. The fix rejects paths
+  that cross a symlink; the check-then-use race remains for a multi-tenant
+  deployment, where `openat`/`O_NOFOLLOW` is the right primitive.
 - The Go panic is a reachable code path (L2): the vulnerable symbol is compiled
   in and called on an archive path. F-003 exercised its authentication boundary
   with the full route stack: anonymous requests do not reach it, and a valid JWT

@@ -1,0 +1,69 @@
+diff --git a/db/company_scope_test.go b/db/company_scope_test.go
+index 11c8ca4..bb93213 100644
+--- a/db/company_scope_test.go
++++ b/db/company_scope_test.go
+@@ -331,8 +331,15 @@ func TestCompanyScopeAttribution(t *testing.T) {
+ 		d.Close()
+ 		t.Fatalf("startMax: %v", err)
+ 	}
++	var companyID int64
+ 	t.Cleanup(func() {
+ 		_, _ = d.Exec(`DELETE FROM assets WHERE id > $1`, startMax)
++		if companyID > 0 {
++			// Scope rows cascade with the company. Removing the company matters:
++			// its fixed 198.51.100.0/24 scope otherwise survives into the next run
++			// and wins attribution over the company this run creates.
++			_, _ = d.Exec(`DELETE FROM companies WHERE id=$1`, companyID)
++		}
+ 		d.Close()
+ 	})
+ 
+@@ -347,6 +354,7 @@ func TestCompanyScopeAttribution(t *testing.T) {
+ 	if err != nil {
+ 		t.Fatalf("UpsertCompany: %v", err)
+ 	}
++	companyID = cid
+ 
+ 	// a pre-existing asset (inserted BEFORE any scope) — must be back-filled.
+ 	preID, err := as.UpsertSubdomain(UpsertSubdomainReq{Domain: sub})
+diff --git a/db/config_test.go b/db/config_test.go
+index f0e93a3..7520fa7 100644
+--- a/db/config_test.go
++++ b/db/config_test.go
+@@ -17,7 +17,10 @@ func TestPoolProfilesOrder(t *testing.T) {
+ 	if err != nil {
+ 		t.Skipf("postgres unavailable (%v) — skipping", err)
+ 	}
+-	defer d.Close()
++	// Close last (t.Cleanup is LIFO): the per-profile DELETEs below must run
++	// while the pool is open, otherwise the fixed t-pool-* names survive and the
++	// next run fails on the unique name constraint.
++	t.Cleanup(func() { d.Close() })
+ 
+ 	mk := func(name string, priority int, exclude bool, key string) int64 {
+ 		id, err := d.SaveProfile(&LLMProfile{
+diff --git a/db/llmretry_test.go b/db/llmretry_test.go
+index 5633b3f..82821c8 100644
+--- a/db/llmretry_test.go
++++ b/db/llmretry_test.go
+@@ -14,7 +14,10 @@ func TestProfileRetryRoundTrip(t *testing.T) {
+ 	if err != nil {
+ 		t.Skipf("postgres unavailable (%v) — skipping", err)
+ 	}
+-	defer d.Close()
++	// Register the close first so the row-deletion cleanups below (LIFO) run
++	// while the pool is still open; with defer the DELETE ran after Close and
++	// silently failed, leaving a fixed-name row that broke every re-run.
++	t.Cleanup(func() { d.Close() })
+ 
+ 	want := RetryOverride{
+ 		Connect: RetryRule{Attempts: 5, IntervalMS: 2000},
+@@ -71,7 +74,7 @@ func TestProfileRetryClampedOnSave(t *testing.T) {
+ 	if err != nil {
+ 		t.Skipf("postgres unavailable (%v) — skipping", err)
+ 	}
+-	defer d.Close()
++	t.Cleanup(func() { d.Close() })
+ 
+ 	id, err := d.SaveProfile(&LLMProfile{
+ 		Name: "t-retry-clamp", Format: "openai", Model: "m", APIKey: "k",

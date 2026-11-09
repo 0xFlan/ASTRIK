@@ -212,7 +212,7 @@ Ask these of any AI pentest/agent product:
 - `authInit` uses `InsertSettingIfAbsent` plus a constant-time setup-token comparison; the first-run race is handled (`server/auth.go:260`).
 - Login is rate-limited per client IP with `Retry-After`; `ARTEX_TRUSTED_PROXIES` is empty by default, so `X-Forwarded-For` is ignored unless explicitly trusted (`server/auth.go:385`).
 - New passwords are 12 runes minimum / 72 bytes maximum, bcrypt-hashed; login still accepts legacy shorter passwords, which is intentional.
-- `wsResolve` correctly rejects `..` and absolute-path escapes at the lexical layer; only symlink resolution is missing.
+- **F-005 correction:** `wsResolve` rejects `..` and absolute paths lexically, but it did not resolve symlinks. A link planted in the work dir made `/api/workspace/read` and `/download` return an outside canary (`200`), `/write` overwrite an outside file (`200`), and `/mkdir` create an outside directory (`200`). After `pathCrossesSymlink`, all four return `400 invalid path`; a normal write/read still returns `200`. The same lexical pattern remains in the skill file routes and needs the same helper.
 - Upload strips path components with `filepath.Base` and rejects `.`/`..`.
 - `verifyJWT` rejects non-HMAC signing methods, so `alg:none` does not work.
 - Task archive restore validates paths and uses a checksum (`server/task_archive_package.go`).
@@ -225,8 +225,7 @@ Ask these of any AI pentest/agent product:
 ## 7. What is still unverified
 
 - No runtime test of A1/A4/A5/A7 (no Docker/Postgres on the audit host).
-- No full route-by-route authorization review beyond the global `requireAuth`.
-- No SQL-injection review of the `pgx` call sites.
+- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The non-DB management modules remain route-by-route unverified.
 - No review of `mcphttp/`, `llmrec/`, `enrich/`, or the browser extension's message handling beyond permissions.
 - No CORS/CSRF browser test; the analysis is header-level only.
 - `guard.New()` is documented as the pentest-task guard, but current non-test call sites all use `NewWithInterceptor`; confirm per version before claiming a rule-less mode.
