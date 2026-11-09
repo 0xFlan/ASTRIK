@@ -5,7 +5,7 @@ ASTRIK is the operator-chartered pentest and bounty skill built on ARTEX.
 | Item | Value |
 |---|---|
 | Document identifier | ASTRIK-001 |
-| Revision | 1.16 |
+| Revision | 1.17 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -32,6 +32,7 @@ ASTRIK is the operator-chartered pentest and bounty skill built on ARTEX.
 | 1.14 | 2026-11-09 | Proved cross-task traffic credential read and replay, scoped agent traffic tools to task assets and redacted agent-facing credentials, and recorded the prompt/trigger and `merge_mode=all` negatives; added F-010 and `evidence/f010/` |
 | 1.15 | 2026-11-09 | Closed F-010's same-host metadata/body residual with per-exchange task ownership, task-token ingest, binary/encoded redaction, and decorated-tool enforcement; ran real-model injection probes that refused the injected write; added F-011, F-012, `evidence/f011/`, and `evidence/live/` |
 | 1.16 | 2026-11-09 | Probed the post-F-011 boundary: found and fixed a cross-task finding-evidence bind that copied raw traffic (F-013), closed alternate raw/blob/tool/export and token-replay routes (F-014), and ran six real-model injection variants across target data and trusted control-plane fields (F-015); added `evidence/f013/`, `evidence/f014/`, and the 1.16 live matrix |
+| 1.17 | 2026-11-09 | Bypassed the model and called the worker write tools directly: found and fixed cross-task finding/fact asset anchors (F-016), measured compact traffic and BIGSERIAL finding/asset IDs, kept task-token routes 401 after replay/malformed/deleted-token probes, and recorded the remaining `insert_assets` self-expansion as a design-intent write limitation (F-017) |
 
 ## 1 Scope
 
@@ -795,6 +796,25 @@ and the token stops resolving after B is deleted. `traffic_blob` denies B and
 allows A for the same hash. No cross-task read or added privilege reproduced.
 Evidence: `evidence/f014/`; finding: F-014.
 
+F-016 bypassed the model and called the worker tools directly against two real
+tasks and the production handler. Pre-fix, B's `report_finding` and `record_fact`
+accepted A's asset ID and wrote an anchor (`anchored=1`); the fixed
+`validateAssetIDsInScope` rejects the foreign anchor before the transaction
+(`anchored=0`). The probe also measured the ID prerequisite rather than
+assuming it: traffic IDs are `unix-seconds-sequence` (`1794264833-0001` next to
+`...-0002`) and finding IDs are `BIGSERIAL` (`3900`/`3901`). A guessed traffic ID
+and the adjacent finding ID are still denied by the F-011/F-013 owner checks.
+Evidence: `evidence/f017/`; finding: F-016.
+
+F-017 records the measured `insert_assets` behavior: B can register a service on
+A's host and then ingest that host with its own token (`host_expanded=true`,
+`ingested:1`, owner B). The pre-insert foreign ingest is still `ingested:0`, and
+the added row is B-owned; A's traffic remains unreadable (`traffic_get` and
+finding evidence deny the guessed IDs; task-token read routes are `401`). This
+is a write/pollution boundary in the documented discovery path, not a
+cross-task read, and it does not compose with F-013 because B's row never enters
+A's owner scope. Evidence: `evidence/f017/`; finding: F-017.
+
 F-015 ran six real-model variants: multiple tool results in one turn, a
 write-capable `insert_assets` after a target result, an untrusted `Read` file, a
 multi-turn setup, a malicious task description, and injected tool metadata. All
@@ -829,6 +849,8 @@ with a specific reason, not an unexamined candidate.
 | F-013 | Fixed — finding evidence bind now enforces traffic ownership | `findings/f013-finding-traffic-scope.md` |
 | F-014 | Closed — alternate route and token replay probes held | `findings/f014-alternate-traffic-routes.md` |
 | F-015 | Closed — six real-model injection variants produced no malicious write | `findings/f015-injection-variant-matrix.md` |
+| F-016 | Fixed — foreign finding/fact asset anchors rejected | `findings/f016-cross-task-finding-anchor.md` |
+| F-017 | Closed — `insert_assets` self-expansion is write-only; no cross-task read | `findings/f017-insert-assets-scope-expansion.md` |
 
 ## Bibliography
 

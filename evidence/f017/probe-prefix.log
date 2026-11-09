@@ -1,0 +1,20 @@
+=== RUN   TestF017DirectBackendAuthorization
+2026/11/09 14:53:53 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 14:53:53 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 14:53:53 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF017DirectBackendAuthorization1370562254/004/jwt.key
+2026/11/09 14:53:53 [auth] no admin password is set. Setup token for the /setup page: db96b3f7e16fced9dd1ca171f12b8ea7
+2026/11/09 14:53:53 [btw] recover: context canceled
+2026/11/09 14:53:53 [engine] built provider for LLM profile 254 (anthropic / claude-x)
+2026/11/09 14:53:53 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 14:53:53 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 14:53:53 [manager] reloaded 188 task(s) from PG
+2026/11/09 14:53:53 [task-archive] worker: context canceled
+2026/11/09 14:53:53 [mcp] browser MCP now has the capture proxy http://127.0.0.1:0 attached (CA /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF017DirectBackendAuthorization1370562254/001/traffic/_ca/mitmproxy-ca-cert.pem)
+F017 report_foreign_asset=false anchored=1 fact_foreign_asset=false pre_ingest=200 post_ingest=200 host_expanded=true post_owner=2244 own_ingest=200/true routes=map[chat:401 exchange:401 finding:401 finding_traf:401 tasks:401 tools:401] malformed=401 cookie=401 operator=200 traffic_id_A=1794264833-0001 traffic_id_B=1794264833-0002 traffic_guess=1794264833-0001 traffic_guess_denied=true finding_A2=3900 finding_B2=3901 finding_guess=3900 finding_guess_denied=true replay=401
+    zz_evidence_f017_test.go:239: report_finding accepted a foreign asset anchor: finding recorded: 5120
+        {"finding_id":"3899","finding_node_id":"5120","traffic":{"finding_id":"3899","version":0,"report_version":0,"bindings":[]},"evidence_status":"not_bound","evidence_note":"Finding saved. Automatic agent traffic binding is off; you can link traffic manually on the page."}
+2026/11/09 14:53:53 [mcp] browser MCP capture proxy configuration removed
+--- FAIL: TestF017DirectBackendAuthorization (0.21s)
+FAIL
+FAIL	github.com/Autumn-27/artex/server	0.695s
+FAIL

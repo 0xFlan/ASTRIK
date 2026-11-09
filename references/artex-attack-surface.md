@@ -23,13 +23,13 @@ State the model in the report. "Critical" for M2 is often "by design" for M1.
 | A2 | 7-day JWT, no revocation, weak claim checks | Medium | static | `server/auth.go:171,322` |
 | A3 | Token in localStorage, non-HttpOnly cookie, query param | Medium | static | `web/src/lib/auth.ts:23`, `server/auth.go:183` |
 | A4 | Workspace path confinement follows symlinks | High (M2) | static | `server/workspace.go:29,105,225` |
-| A5 | Traffic store is global, not task-scoped | High (M2) | confirmed (F-010; per-exchange ownership F-011; finding-snapshot scope F-013 fixed) | `traffic/traffic.go:134`, `server/manager.go:400` |
+| A5 | Traffic store is global, not task-scoped | High (M2) | confirmed (F-010; per-exchange ownership F-011; finding-snapshot scope F-013 fixed; foreign finding/fact anchors F-016 fixed) | `traffic/traffic.go:134`, `server/manager.go:400`, `agent/tools.go` (`validateAssetIDsInScope`) |
 | A6 | CORS wildcard | Low | static; field-negative (analog) | `server/server.go:4045` |
 | A7 | Destructive-action gating is deletable DB config | High (M4) | static | `guard/guard.go:1-6`, `db/asset_intercept.go:70` |
 | A8 | Browser extension has debugger + all-URLs + plaintext capture | High (M1 host) | static | `extension/manifest.json`, `extension/background.js:36,140` |
 | A9 | Build downloads unverified binaries and `@latest` packages | Medium | static | `Dockerfile:55,71,81,87,115` |
 | A10 | Setup token printed to logs | Low | static | `server/auth.go` (`initSetupToken`) |
-| A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | closed for task tokens (F-011); alternate routes closed (F-014); operator-only owner 0 | `server/traffic_ingest.go:22` |
+| A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | closed for direct task tokens (F-011); alternate routes closed (F-014); `insert_assets` self-expansion recorded as write-only (F-017); operator-only owner 0 | `server/traffic_ingest.go:22`, `agent/tools_insert.go` |
 | A12 | Agent-facing MCP write installs a stdio launcher that executes outside the MCP approval gate | Medium (approval/persistence bypass; F-008 correction) | confirmed (F-007) | `server/platform_tools.go` (`toolCreateMCP`), `server/mcpdiscover.go` (`discoverEmptyMCPsOnStartup`) |
 | A13 | Agent-created command/script/http custom tools bypass Bash's approval gate | High (M1/M2) | confirmed (F-008) | `server/customtool.go` (`buildCustomTool`), `server/platform_tools.go` (`toolCreateCustomTool`) |
 | A14 | Auto-triggered reporter reads/overwrites another task's evidence; global delete is Allowed | High (authenticated-agent cross-task write; delete is operator-assisted) | confirmed (F-009) | `server/conversations.go` (`runTriggeredRun`), `agent/chat.go` (`RunInfo`), `server/orchestration.go` (`delegateToTask`, `toolUpdateFindingReport`), `server/platform_tools.go` (`toolDeleteAssetsByHost`) |
