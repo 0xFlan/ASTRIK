@@ -1,0 +1,16 @@
+ok  	github.com/Autumn-27/artex/agent	(cached)
+ok  	github.com/Autumn-27/artex/cmd/artex	(cached)
+ok  	github.com/Autumn-27/artex/config	(cached)
+ok  	github.com/Autumn-27/artex/db	(cached)
+?   	github.com/Autumn-27/artex/enrich	[no test files]
+ok  	github.com/Autumn-27/artex/evidence	(cached)
+ok  	github.com/Autumn-27/artex/guard	(cached)
+ok  	github.com/Autumn-27/artex/intercept	(cached)
+ok  	github.com/Autumn-27/artex/llmpool	(cached)
+ok  	github.com/Autumn-27/artex/llmrec	(cached)
+ok  	github.com/Autumn-27/artex/mcphttp	(cached)
+ok  	github.com/Autumn-27/artex/notify	(cached)
+?   	github.com/Autumn-27/artex/report	[no test files]
+ok  	github.com/Autumn-27/artex/server	(cached)
+ok  	github.com/Autumn-27/artex/sidequestion	(cached)
+ok  	github.com/Autumn-27/artex/traffic	(cached)

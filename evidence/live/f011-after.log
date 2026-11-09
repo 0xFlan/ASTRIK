@@ -1,0 +1,18 @@
+=== RUN   TestF011SameHostOwnershipRedactionAndIngest
+2026/11/09 14:12:53 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 14:12:53 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 14:12:53 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF011SameHostOwnershipRedactionAndIngest4135766125/004/jwt.key
+2026/11/09 14:12:53 [auth] no admin password is set. Setup token for the /setup page: f82f9d3d6e60bcfb8e077504642761f0
+2026/11/09 14:12:53 [btw] recover: context canceled
+2026/11/09 14:12:53 [engine] built provider for LLM profile 218 (anthropic / claude-x)
+2026/11/09 14:12:53 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 14:12:53 [manager] reloaded 161 task(s) from PG
+2026/11/09 14:12:53 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 14:12:53 [task-archive] worker: context canceled
+2026/11/09 14:12:53 [mcp] browser MCP now has the capture proxy http://127.0.0.1:0 attached (CA /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF011SameHostOwnershipRedactionAndIngest4135766125/001/traffic/_ca/mitmproxy-ca-cert.pem)
+F011 same_host_cross_search=false cross_search_perm=allow cross_get_perm=deny cross_blob_perm=deny own_search=true own_get=true ownA_search=true ownA_get=true redacted=true search_redacted=true binary_redacted=true operator_raw=true wrapper_perm=deny wrapper_call_denied=true ingest_own=200 ingest_foreign=200 ingested_owner=1904 A_sees_ingested=false B_sees_ingested=true
+F011 A11 operator_ingest=200 operator_owner=0 task_token_read=401
+2026/11/09 14:12:54 [mcp] browser MCP capture proxy configuration removed
+--- PASS: TestF011SameHostOwnershipRedactionAndIngest (0.12s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.644s

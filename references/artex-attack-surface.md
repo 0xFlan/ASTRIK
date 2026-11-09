@@ -1,6 +1,6 @@
 # ARTEX Attack Surface (Static Map)
 
-Code-anchored review of `artex-audit/baarai` at `fbe78395d5712aa775acd911a5e6c523c69e1419`. **Nothing here was runtime-proven on this host** (no Docker/PostgreSQL available during the audit). Treat every item as a static hypothesis with a test recipe, not a confirmed vulnerability. Severity depends on the deployment model, stated per item.
+Code-anchored review of `artex-audit/baarai` at `fbe78395d5712aa775acd911a5e6c523c69e1419`. Items marked `confirmed` below were runtime-proven on the disposable PostgreSQL fixture or with the production `Server.Handler()`; unmarked items remain static hypotheses with a test recipe. Severity depends on the deployment model, stated per item.
 
 ## 0. Threat models that decide severity
 
@@ -23,13 +23,13 @@ State the model in the report. "Critical" for M2 is often "by design" for M1.
 | A2 | 7-day JWT, no revocation, weak claim checks | Medium | static | `server/auth.go:171,322` |
 | A3 | Token in localStorage, non-HttpOnly cookie, query param | Medium | static | `web/src/lib/auth.ts:23`, `server/auth.go:183` |
 | A4 | Workspace path confinement follows symlinks | High (M2) | static | `server/workspace.go:29,105,225` |
-| A5 | Traffic store is global, not task-scoped | High (M2) | static | `traffic/traffic.go:134`, `server/manager.go:400` |
+| A5 | Traffic store is global, not task-scoped | High (M2) | confirmed (F-010; per-exchange ownership F-011) | `traffic/traffic.go:134`, `server/manager.go:400` |
 | A6 | CORS wildcard | Low | static; field-negative (analog) | `server/server.go:4045` |
 | A7 | Destructive-action gating is deletable DB config | High (M4) | static | `guard/guard.go:1-6`, `db/asset_intercept.go:70` |
 | A8 | Browser extension has debugger + all-URLs + plaintext capture | High (M1 host) | static | `extension/manifest.json`, `extension/background.js:36,140` |
 | A9 | Build downloads unverified binaries and `@latest` packages | Medium | static | `Dockerfile:55,71,81,87,115` |
 | A10 | Setup token printed to logs | Low | static | `server/auth.go` (`initSetupToken`) |
-| A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | static | `server/traffic_ingest.go:22` |
+| A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | closed for task tokens (F-011); operator-only owner 0 | `server/traffic_ingest.go:22` |
 | A12 | Agent-facing MCP write installs a stdio launcher that executes outside the MCP approval gate | Medium (approval/persistence bypass; F-008 correction) | confirmed (F-007) | `server/platform_tools.go` (`toolCreateMCP`), `server/mcpdiscover.go` (`discoverEmptyMCPsOnStartup`) |
 | A13 | Agent-created command/script/http custom tools bypass Bash's approval gate | High (M1/M2) | confirmed (F-008) | `server/customtool.go` (`buildCustomTool`), `server/platform_tools.go` (`toolCreateCustomTool`) |
 | A14 | Auto-triggered reporter reads/overwrites another task's evidence; global delete is Allowed | High (authenticated-agent cross-task write; delete is operator-assisted) | confirmed (F-009) | `server/conversations.go` (`runTriggeredRun`), `agent/chat.go` (`RunInfo`), `server/orchestration.go` (`delegateToTask`, `toolUpdateFindingReport`), `server/platform_tools.go` (`toolDeleteAssetsByHost`) |
@@ -120,14 +120,21 @@ referencing exchange. Agent-facing `traffic_get`/`traffic_blob` redact credentia
 headers and secret-shaped body fields; the operator `Traffic.Get` and Traffic
 page remain raw. Evidence: `evidence/f010/`.
 
-**Residual.** The recorder still has no per-exchange `task_id`, so tasks that
-attach the same host share that host's non-credential traffic. A capture-level
-task/owner column and task-scoped ingest token are the durable fix; do not
-describe the current reader-side scope as full tenant partitioning.
+**Residual (closed by F-011).** The recorder now stores `task_id` on every
+exchange. Proxy connections authenticate with a per-task bearer in the proxy URL
+userinfo, the token is consumed by the proxy and never forwarded, and ingest
+validates the URL host against the task's assets. Queries filter by owner and
+host; `get`/`blob` require an exact owner match. Two tasks sharing one host can
+therefore read only their own rows, while operator owner-0 traffic stays
+operator-only. The F-011 probe covers same-host search/get/blob, decorated-tool
+denial, own-task reads, operator raw reads, binary redaction, and A11 task-token
+ingest. Evidence: `evidence/f011/`.
 
-**Negative controls.** A5's earlier browser-extension/ingest path (A11) remains
-an evidence-integrity candidate; F-010 did not test fabricated-exchange
-poisoning.
+**Negative controls.** A11 is closed for task tokens: a task token cannot ingest
+a foreign host and cannot authenticate a read/management route. Operator JWT
+ingest still writes arbitrary owner-0 rows for the single-admin extension path;
+that is not a cross-task primitive unless the deployment introduces mutually
+untrusted operators.
 
 ### A6 — CORS wildcard
 
@@ -187,7 +194,16 @@ poisoning.
 
 **Mechanism.** A finding binds `traffic_refs` as proof. If any authenticated principal (or a compromised agent) can inject an exchange for an arbitrary host, it can manufacture "evidence" that a later finding or report cites. This is an integrity issue, not confidentiality; it matters for M2 and for any workflow where the report is trusted downstream.
 
-**Fix.** Scope ingest to a task/session, sign captures, and mark extension-ingested traffic as a distinct provenance class.
+**Result (closed for task tokens).** F-011 adds `EnsureTaskTrafficToken` and
+accepts the token only on `POST /api/traffic/ingest`. Ingest resolves the token
+to a live task, validates the URL hostname against
+`HostsByTaskWithSources(taskID)`, and records the owner. The probe observed
+`ingested:1` for B's own host, `ingested:0, failed:1` for a foreign host, the
+ownership column stamped with B, and `401` when the same token was sent to
+`/api/tasks`. Operator JWT ingest still accepts arbitrary hosts and writes owner
+`0`, which task-scoped readers never see. A multi-operator deployment would
+still need signed provenance; the current single-admin model does not expose a
+second principal.
 
 ### A12 — Agent-facing MCP write installs a stdio launcher
 
@@ -335,8 +351,8 @@ Ask these of any AI pentest/agent product:
 
 ## 7. What is still unverified
 
-- No runtime test of A1/A4/A7 (no Docker/Postgres on the audit host).
-- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request; no live-model prompt-injection probe was run, so remote Auto reachability remains unproven. F-009 covered the auto-triggered reporter and the remaining destructive platform tool: the reporter's cross-task reads and `update_finding_report` writes are now scoped to the triggering task, and `delete_assets_by_host` is `AskUser`-gated. F-010 covered A5: task B's worker read task A's captured bearer credential, blob, and replayed the token; agent-facing traffic tools now enforce the caller task's asset hosts and redact credentials, while the operator raw view and own-task reads remain. Prompt-template and trigger-configuration routes were probed as authenticated operator routes with a non-persisting preview and no agent management tool; `merge_mode=all` keeps the first task's scope. The capture store still lacks a per-exchange task id (same-host residual), and no live-model injection test was run.
+- No runtime test of A1/A4/A7 (A1/A4 were later exercised by F-005/F-006; A7 remains static because it needs database-client access inside the agent container).
+- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request. F-009 covered the auto-triggered reporter and the remaining destructive platform tool: the reporter's cross-task reads and `update_finding_report` writes are now scoped to the triggering task, and `delete_assets_by_host` is `AskUser`-gated. F-010 covered A5 cross-host reads; F-011 added per-exchange ownership and task-token ingest, closing the same-host residual and A11 task-token path. Prompt-template and trigger-configuration routes were probed as authenticated operator routes with a non-persisting preview and no agent management tool; `merge_mode=all` keeps the first task's scope. F-012 ran the real local model and observed a refusal of the injected Bash write; a different model remains an open question, but no live-model compromise is claimed here.
 - No review of `mcphttp/`, `llmrec/`, `enrich/`, or the browser extension's message handling beyond permissions.
 - No CORS/CSRF browser test; the analysis is header-level only.
 - `guard.New()` is documented as the pentest-task guard, but current non-test call sites all use `NewWithInterceptor`; confirm per version before claiming a rule-less mode.

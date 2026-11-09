@@ -81,6 +81,17 @@ required=(
   "evidence/f010/logs/f010-after.log"
   "evidence/f010/logs/go-test-run1.log"
   "evidence/f010/logs/go-test-run2.log"
+  "findings/f011-same-host-traffic-ownership-and-ingest.md"
+  "evidence/f011/README.md"
+  "evidence/f011/repro/zz_evidence_f011_test.go"
+  "evidence/f011/patches/traffic-ownership-and-task-scoped-ingest.patch"
+  "evidence/f011/logs/f011-after.log"
+  "evidence/f011/logs/go-test-run1.log"
+  "findings/f012-live-model-prompt-injection.md"
+  "evidence/live/README.md"
+  "evidence/live/probe.log"
+  "evidence/live/probe.json"
+  "evidence/live/repro/zz_evidence_live_injection_test.go"
 )
 
 for f in "${required[@]}"; do
@@ -90,8 +101,15 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.14 |' README.md; then
-  echo "README revision is not 1.14" >&2
+if ! grep -q '| Revision | 1.15 |' README.md; then
+  echo "README revision is not 1.15" >&2
+  exit 1
+fi
+
+# A finding may be open, but it must not be left as an unowned placeholder in
+# the register or the attack-surface map.
+if grep -RInE 'not started|TODO[[:space:]]*finding|unstarted' findings README.md references/artex-attack-surface.md 2>/dev/null; then
+  echo "unstarted finding marker present" >&2
   exit 1
 fi
 
