@@ -1,0 +1,81 @@
+diff --git a/server/customtool_permission_test.go b/server/customtool_permission_test.go
+new file mode 100644
+index 0000000..0c03928
+--- /dev/null
++++ b/server/customtool_permission_test.go
+@@ -0,0 +1,75 @@
++package server
++
++import (
++	"context"
++	"encoding/json"
++	"strings"
++	"testing"
++
++	"github.com/Autumn-27/artex/db"
++	"github.com/Autumn-27/norma/permission"
++)
++
++// A custom tool may be created by an agent and bound to another agent, so its own
++// permission decision is the last gate before the executor runs. Command tools
++// must inherit Bash's safety floor and AskUser decision; script and http tools are
++// executable/network-facing and must ask as well. A regression to a blanket
++// Allowed here re-opens the F-008 approval bypass.
++func TestCustomToolPermissionsMatchExecutor(t *testing.T) {
++	cases := []struct {
++		name    string
++		key     string
++		kind    string
++		exec    string
++		input   string
++		want    permission.Behavior
++		wantMsg string
++	}{
++		{
++			name: "command asks",
++			key:  "t_cmd_ask", kind: "command",
++			exec: `{"command":"echo hi"}`, input: `{}`,
++			want: permission.Ask, wantMsg: "run shell command: echo hi",
++		},
++		{
++			name: "command renders quoted params into the prompt",
++			key:  "t_cmd_param", kind: "command",
++			exec: `{"command":"echo {target}"}`, input: `{"target":"x; id"}`,
++			want: permission.Ask, wantMsg: "echo 'x; id'",
++		},
++		{
++			name: "command safety floor",
++			key:  "t_cmd_deny", kind: "command",
++			exec: `{"command":"rm -rf /"}`, input: `{}`,
++			want: permission.Deny, wantMsg: "safety floor",
++		},
++		{
++			name: "script asks",
++			key:  "t_script_ask", kind: "script",
++			exec: `{"code":"print(1)"}`, input: `{}`,
++			want: permission.Ask, wantMsg: "run python custom tool: t_script_ask",
++		},
++		{
++			name: "http asks",
++			key:  "t_http_ask", kind: "http",
++			exec: `{"url":"http://127.0.0.1/"}`, input: `{}`,
++			want: permission.Ask, wantMsg: "run http custom tool: t_http_ask",
++		},
++	}
++
++	for _, tc := range cases {
++		t.Run(tc.name, func(t *testing.T) {
++			s := &Server{}
++			tool := s.buildCustomTool(&db.Tool{
++				Key: tc.key, Kind: tc.kind, Exec: json.RawMessage(tc.exec),
++			})
++			dec := tool.CheckPermissions(context.Background(), json.RawMessage(tc.input), permission.Context{Mode: permission.ModeDefault})
++			if dec.Behavior != tc.want {
++				t.Fatalf("behavior = %s, want %s (message %q)", dec.Behavior, tc.want, dec.Message)
++			}
++			if !strings.Contains(dec.Message, tc.wantMsg) {
++				t.Fatalf("message = %q, want substring %q", dec.Message, tc.wantMsg)
++			}
++		})
++	}
++}

@@ -30,7 +30,8 @@ State the model in the report. "Critical" for M2 is often "by design" for M1.
 | A9 | Build downloads unverified binaries and `@latest` packages | Medium | static | `Dockerfile:55,71,81,87,115` |
 | A10 | Setup token printed to logs | Low | static | `server/auth.go` (`initSetupToken`) |
 | A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | static | `server/traffic_ingest.go:22` |
-| A12 | Agent-facing MCP write installs a stdio launcher that executes outside the MCP approval gate | High (M1/M2 when the agent can be steered) | confirmed (F-007) | `server/platform_tools.go` (`toolCreateMCP`), `server/mcpdiscover.go` (`discoverEmptyMCPsOnStartup`) |
+| A12 | Agent-facing MCP write installs a stdio launcher that executes outside the MCP approval gate | Medium (approval/persistence bypass; F-008 correction) | confirmed (F-007) | `server/platform_tools.go` (`toolCreateMCP`), `server/mcpdiscover.go` (`discoverEmptyMCPsOnStartup`) |
+| A13 | Agent-created command/script/http custom tools bypass Bash's approval gate | High (M1/M2) | confirmed (F-008) | `server/customtool.go` (`buildCustomTool`), `server/platform_tools.go` (`toolCreateCustomTool`) |
 
 Sound areas are listed in §6. Do not report those as gaps.
 
@@ -191,6 +192,34 @@ row. Operator `POST /api/mcp` keeps stdio. Confirmed by F-007: the pre-fix probe
 executed the command on discovery, the post-fix probe is rejected before
 persistence, and the HTTP control still succeeds.
 
+### A13 — Custom tools bypass the Bash approval gate
+
+**Anchor.** `server/customtool.go:289` (`buildCustomTool` permissions),
+`server/customtool.go:331` (`runCommandTool`), `server/platform_tools.go:213`
+(`toolCreateCustomTool`), `server/orchestration.go:134` (`wrTool` returns
+`permission.Allowed()`).
+
+**Mechanism.** `create_custom_tool`/`update_custom_tool` are Allowed platform
+writes bound to Auto and accept `kind=command` with an arbitrary
+`exec.command`, `kind=script`, and `kind=http`. The built tool returned
+`Allowed` for every kind, while the command executor called
+`actool.NewBash().Call` directly. The harness checks only the outer custom
+tool's decision, so Bash's `AskUser` and catastrophic-command floor never ran;
+a custom tool bound to a worker executed without the approval Bash requires.
+F-008's probe reproduced `allow` + command execution pre-fix and `ask` + no
+execution post-fix, with the operator executor and Bash control intact.
+
+**Fix.** `buildCustomTool` now renders the command from the call parameters and
+delegates to `actool.NewBash().CheckPermissions`; script and http return
+`AskUser`; unknown/empty kinds return `Denied`. Creation stays Allowed because
+it is not execution. `delete_assets_by_host` is still Allowed and remains the
+next candidate.
+
+**F-007 correction.** Auto's ChatAgent base is `actool.DefaultTools()` (including
+Bash), and its only turn entries are operator conversation/side questions, so
+the MCP stdio launch was an approval/persistence bypass, not remote code
+execution. The reachability answer is operator-assisted.
+
 ## 3. Chain: symlink → key → admin (the one to prove first)
 
 | # | Stage | Action | Artifact | Confidence |
@@ -250,7 +279,7 @@ Ask these of any AI pentest/agent product:
 ## 7. What is still unverified
 
 - No runtime test of A1/A4/A5/A7 (no Docker/Postgres on the audit host).
-- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update: agent stdio is rejected, HTTP is accepted, and the operator route still creates stdio. The remaining non-DB management modules (custom tools, prompt templates) remain route-by-route unverified, and no probe shows target content reaching the Auto agent unprompted.
+- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update and F-008 covered custom-tool create/update and execution permission; the remaining non-DB management modules (prompt templates, trigger configuration) remain route-by-route unverified. F-008 also established that Auto's ChatAgent base includes Bash, that its only turn entries are operator conversation/side questions, and that target content reaches its read tools only after an operator request; no live-model prompt-injection probe was run, so remote Auto reachability remains unproven.
 - No review of `mcphttp/`, `llmrec/`, `enrich/`, or the browser extension's message handling beyond permissions.
 - No CORS/CSRF browser test; the analysis is header-level only.
 - `guard.New()` is documented as the pentest-task guard, but current non-test call sites all use `NewWithInterceptor`; confirm per version before claiming a rule-less mode.

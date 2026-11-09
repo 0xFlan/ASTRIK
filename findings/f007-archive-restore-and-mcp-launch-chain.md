@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | Confirmed, fixed in the upstream audit copy; patch not pushed upstream |
-| Severity | High (agent tool authority bypass to persistent host command execution; CVSS 3.1 7.5, `AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H`). Archive restore is Medium on its own (authenticated host write during restore) |
+| Severity | Medium (agent MCP approval/persistence bypass; corrected in revision 1.12 — Auto already has Bash, so this is not new host command execution). Archive restore is Medium on its own (authenticated host write during restore) |
 | Affected | `server/task_archive_package.go`, `server/task_archives.go`, `server/workspace.go` (residual race) at BaaRai/ARTEX `fbe7839` + F-006; `server/platform_tools.go` (agent MCP tools) |
 | Trigger | A restore destination link swapped after the pre-fix check; an agent tool call to `create_mcp` with `transport=stdio` and a command |
 | Evidence | `evidence/f007/logs/`, `evidence/f007/repro/zz_evidence_f007_test.go` |
@@ -174,6 +174,19 @@ task, which is the part the MCP `AskUser` gate was supposed to prevent.
 - **Restore extraction outside the data dir.** The single-root install refuses
   it; this closes the "source is outside the root" variant rather than adding a
   new check on the destination alone.
+
+## Impact correction (revision 1.12)
+
+F-008's reachability pass found that `agent/chat.go` builds the ChatAgent base
+from `actool.DefaultTools()`, which already includes `Bash` (gated by
+`bashPermissions`, an `AskUser` decision). The stdio MCP launch therefore did
+not add host command execution to Auto; it bypassed the MCP-specific approval
+gate and persisted a launcher that retries at startup. The MCP tool calls were
+`AskUser`-gated while the launch configuration was not, so the authority bypass
+is real, but the correct impact is an approval/persistence bypass (Medium), not
+a new code-execution capability. The fix remains correct: stdio is operator-only
+and HTTP is still accepted. F-008 separately covers the Bash approval bypass in
+custom tools, where the inner executor's `AskUser` decision was skipped.
 
 ## Residual limits
 

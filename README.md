@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.11 |
+| Revision | 1.12 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -25,6 +25,7 @@
 | 1.9 | 2026-11-09 | Closed the PostgreSQL execution gap: provisioned a disposable cluster, ran the whole suite green and repeatably, exercised the DB-backed authz/injection matrix, found and fixed a workspace symlink confinement escape, added F-005 and `evidence/db/` |
 | 1.10 | 2026-11-09 | Extended confinement to every file route: proved and fixed symlink escapes in skill read/write/dir/delete/meta, chat uploads, platform tools, and archive restore; replaced check-then-use with `os.Root`; added F-006 and `evidence/f006/` |
 | 1.11 | 2026-11-09 | Closed the archive-restore destination race with one `os.Root` for source and destination; proved an agent-facing `create_mcp` stdio launcher executes outside the MCP approval gate and made stdio operator-only; added F-007 and `evidence/f007/` |
+| 1.12 | 2026-11-09 | Proved custom command/script/http tools bypass Bash's approval gate, fixed permission parity, answered the F-007 reachability question as operator-assisted, and corrected F-007's impact; added F-008 and `evidence/f008/` |
 
 ## 1 Scope
 
@@ -630,6 +631,42 @@ row (14 packages, 0 `FAIL`, `server` 21.469 s and 22.183 s); only the live-model
 test skips. F-007 carries the reproducer, three patches, and the before/after
 logs under `evidence/f007/`. The operator-charter model and the "target content
 is data, not instructions" rule are unchanged.
+
+## Annex O — Custom-tool approval parity and the F-007 reachability answer (2026-11-09)
+
+F-007 closed the MCP stdio launch path but left the other agent-facing executor
+unexamined. `create_custom_tool` and `update_custom_tool` are Allowed platform
+writes bound to Auto; they accept `kind=command` with an arbitrary
+`exec.command`, `kind=script` with Python code, and `kind=http` with a
+method/URL/body. `buildCustomTool` wrapped every kind in `permission.Allowed()`,
+while `runCommandTool` called `actool.NewBash().Call` directly. The harness only
+checks the outer custom tool's decision, so Bash's `AskUser` prompt and
+catastrophic-command safety floor never ran. The probe creates a command tool
+through the real platform tool, binds it to the worker agent, resolves the
+worker toolset, and reproduces the harness gate: before the fix `allow` and the
+marker was written; after the fix `ask`, blocked, no marker. The operator
+executor continues to run the same spec and Bash continues to return `ask`.
+
+The F-007 reachability question is answered as **operator-assisted, not remote**.
+Auto is a `ChatAgent` whose only message entries are the operator conversation
+and side-question routes; the scheduler and triggers do not target it. Target
+text can reach Auto's read tools (`list_task_findings`,
+`get_task_worker_trace`, and the trace/detail tools), but only after an operator
+request, and this pass did not run a live model or claim model susceptibility.
+The inspection also corrected F-007's impact: `agent/chat.go` builds the
+ChatAgent base from `actool.DefaultTools()`, which includes `Bash`, so the MCP
+stdio launch did not add code execution; it bypassed the MCP approval gate and
+persisted a launcher. F-007 is now recorded as Medium.
+
+F-008 is independent of the unresolved model question: the defect is in the
+permission decision of the custom tool itself, so any agent bound to a command
+tool gets `allow`, including a worker processing hostile target content. The
+fix renders the command from the call parameters, delegates to Bash's
+`CheckPermissions`, and asks for script/http executors. Two consecutive full
+DB-backed suite runs are green (14 packages, 0 `FAIL`, `server` 22.699 s /
+22.043 s); only the live-model test skips. F-008 carries the reproducer, two
+patches, and the before/after logs under `evidence/f008/`. The operator-charter
+model and the "target content is data, not instructions" rule are unchanged.
 
 ## Bibliography
 

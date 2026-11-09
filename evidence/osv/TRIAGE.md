@@ -185,6 +185,40 @@ packages, `server` 21.469 s / 22.183 s) after fixing a `TestF007AgentMCPStdioCha
 fixture cleanup-order defect (row DELETEs now run while the pool is open).
 Details: `findings/f007-archive-restore-and-mcp-launch-chain.md`.
 
+### Custom-tool approval parity and the F-007 reachability answer (F-008)
+
+F-007 left the custom-tool executor unexamined. `create_custom_tool` and
+`update_custom_tool` are Allowed platform writes bound to Auto and accept
+`kind=command` with an arbitrary `exec.command`, `kind=script`, and `kind=http`.
+`buildCustomTool` returned `permission.Allowed()` for every kind while
+`runCommandTool` called `actool.NewBash().Call` directly, so the harness only saw
+the outer tool's `allow` and Bash's `AskUser`/safety-floor decision never ran.
+The probe created a command tool through the real platform tool, bound it to
+worker, resolved the worker toolset, and applied `CheckPermissions`: before the
+fix it was `allow` and `ARTEX-F008` was written; after the fix it is `ask`, the
+probe does not call it, and no marker exists. The operator executor still runs
+the same spec and Bash still returns `ask`. The product fix renders the command
+from the call parameters and delegates to `Bash.CheckPermissions`; script and
+http kinds ask; unknown kinds deny. Two full DB-backed suite runs are green (14
+packages, `server` 22.699 s / 22.043 s) and both patches apply to the F-007
+baseline `2e3c8f8`.
+
+The F-007 reachability question is answered: Auto is operator-assisted, not
+remotely autonomous. Its ChatAgent base is `actool.DefaultTools()` (including
+Bash), the only entries to an Auto turn are the operator conversation and
+side-question routes, and the scheduler/triggers do not target Auto. Target
+text reaches Auto's read tools only after an operator request; no live-model
+prompt-injection test was run. F-007's impact is corrected to Medium: the MCP
+stdio launch bypassed the MCP approval gate and persisted a launcher, but did
+not add host command execution because Auto already has Bash. F-008's bypass is
+independent and applies to any agent bound to a custom command tool.
+
+Negative results: no autonomous Auto entry point, no new cross-task read (traffic
+is still instance-global and archive restore acts on the archive's own task), no
+new JWT primitive, and custom HTTP tools are gated rather than removed. The
+`delete_assets_by_host` Allowed write remains the next authority-boundary
+candidate. Details: `findings/f008-custom-tool-approval-bypass.md`.
+
 ## What this does and does not prove
 
 - F-004 is a confirmed authenticated memory-exhaustion primitive (L2→availability
@@ -213,7 +247,16 @@ Details: `findings/f007-archive-restore-and-mcp-launch-chain.md`.
   `AskUser` gate. The bypass is demonstrated at the tool boundary; steering the
   Auto agent is the remaining precondition, so it is not claimed as an
   unauthenticated chain. Agent stdio is now rejected while HTTP and the operator
-  route still work.
+  route still work. F-008 corrects the impact: Auto's ChatAgent base includes
+  `Bash`, so the MCP launch was an approval/persistence bypass (Medium), not new
+  code execution; the reachability answer is operator-assisted.
+- F-008 finds a separate, deterministic approval bypass: `buildCustomTool`
+  returned `Allowed` for command/script/http while the command executor called
+  Bash directly, so an agent-bound custom tool ran without Bash's `AskUser` or
+  safety floor. The fix delegates command checks to Bash and asks for
+  script/http. The probe binds a real `create_custom_tool` command tool to
+  worker and shows `allow` + marker before, `ask` + no marker after, with the
+  operator executor and Bash controls intact.
 - The Go panic is a reachable code path (L2): the vulnerable symbol is compiled
   in and called on an archive path. F-003 exercised its authentication boundary
   with the full route stack: anonymous requests do not reach it, and a valid JWT

@@ -52,6 +52,15 @@ required=(
   "evidence/f007/logs/f007-after.log"
   "evidence/f007/logs/go-test-run1.log"
   "evidence/f007/logs/go-test-run2.log"
+  "findings/f008-custom-tool-approval-bypass.md"
+  "evidence/f008/README.md"
+  "evidence/f008/repro/zz_evidence_f008_test.go"
+  "evidence/f008/patches/custom-tool-permission-parity.patch"
+  "evidence/f008/patches/tests.patch"
+  "evidence/f008/logs/f008-before.log"
+  "evidence/f008/logs/f008-after.log"
+  "evidence/f008/logs/go-test-run1.log"
+  "evidence/f008/logs/go-test-run2.log"
 )
 
 for f in "${required[@]}"; do
@@ -61,8 +70,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.11 |' README.md; then
-  echo "README revision is not 1.11" >&2
+if ! grep -q '| Revision | 1.12 |' README.md; then
+  echo "README revision is not 1.12" >&2
   exit 1
 fi
 

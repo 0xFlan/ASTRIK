@@ -1,0 +1,51 @@
+diff --git a/server/customtool.go b/server/customtool.go
+index ba29f7f..5bb350f 100644
+--- a/server/customtool.go
++++ b/server/customtool.go
+@@ -284,12 +284,42 @@ func (s *Server) buildCustomTool(t *db.Tool) actool.CoreTool {
+ 			return actool.Errorf("unknown custom tool kind: " + kind), nil
+ 		}
+ 	}
++	// A custom tool is an executor, so it must not be more permissive than the
++	// executor it wraps. Bash asks before every command (and denies the safety
++	// floor); this wrapper used to return Allowed for every kind, which let an
++	// agent-bound command/script/http tool run without the approval Bash would
++	// have required. Delegate command checks to Bash with the rendered command so
++	// the operator sees the real command line, not the raw template.
++	permissions := func(ctx context.Context, in json.RawMessage, pc permission.Context) permission.Decision {
++		var params map[string]any
++		if len(in) > 0 {
++			_ = json.Unmarshal(in, &params)
++		}
++		if params == nil {
++			params = map[string]any{}
++		}
++		switch kind {
++		case "command":
++			var spec commandExec
++			_ = json.Unmarshal(execRaw, &spec)
++			if strings.TrimSpace(spec.Command) == "" {
++				return permission.Denied("denied: custom tool " + key + " has an empty command")
++			}
++			cmd := renderTemplate(spec.Command, params, shellQuote)
++			bashIn, _ := json.Marshal(map[string]any{"command": cmd})
++			return actool.NewBash().CheckPermissions(ctx, bashIn, pc)
++		case "script":
++			return permission.AskUser("run python custom tool: " + key)
++		case "http":
++			return permission.AskUser("run http custom tool: " + key)
++		default:
++			return permission.Denied("denied: unknown custom tool kind: " + kind)
++		}
++	}
+ 	return actool.Build(actool.Spec{
+ 		Name: key, Description: t.Description, Schema: schema,
+-		Permissions: func(context.Context, json.RawMessage, permission.Context) permission.Decision {
+-			return permission.Allowed()
+-		},
+-		Run: run,
++		Permissions: permissions,
++		Run:         run,
+ 	})
+ }
+ 

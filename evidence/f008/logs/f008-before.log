@@ -1,0 +1,21 @@
+=== RUN   TestF008AgentCustomToolApprovalBypass
+2026/11/09 13:20:55 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 13:20:55 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 13:20:55 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF008AgentCustomToolApprovalBypass1292914719/004/jwt.key
+2026/11/09 13:20:55 [auth] no admin password is set. Setup token for the /setup page: [redacted]
+2026/11/09 13:20:55 [engine] built provider for LLM profile 134 (anthropic / claude-x)
+2026/11/09 13:20:55 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 13:20:55 [manager] reloaded 98 task(s) from PG
+2026/11/09 13:20:55 [mcp] startup auto-discovery of f007-chain-55674 failed: mcp: connection closed
+    zz_evidence_f008_test.go:59: Auto base DefaultTools includes Bash: true
+    zz_evidence_f008_test.go:76: create_custom_tool is bound to auto; permission: allow
+    zz_evidence_f008_test.go:103: create_custom_tool accepted: custom tool created: f008_cmd_67374
+    zz_evidence_f008_test.go:126: worker toolset received f008_cmd_67374
+    zz_evidence_f008_test.go:129: agent-installed command tool permission: allow
+    zz_evidence_f008_test.go:135: F-008 GAP: agent-installed command tool executed without approval
+    zz_evidence_f008_test.go:157: positive control: operator executor ran the same command spec
+    zz_evidence_f008_test.go:164: Bash permission control: ask
+--- FAIL: TestF008AgentCustomToolApprovalBypass (0.07s)
+FAIL
+FAIL	github.com/Autumn-27/artex/server	0.558s
+FAIL

@@ -184,3 +184,26 @@ intentionally small and can itself be improved by the same loop.
   Use a LIFO `defer` before the close (or pre-delete the fixed-name rows) and
   rerun the suite; the F-007 second run is what exposed it. Fix the fixture, not
   the assertion.
+- **A wrapper must inherit the wrapped executor's permission.** F-008's custom
+  tool called `actool.NewBash().Call` but returned `Allowed` from its own
+  `CheckPermissions`. The harness checks the outer tool, so the inner Bash gate
+  never ran. When a tool re-exposes another executor, delegate the permission
+  decision to that executor with the rendered input; do not re-declare it.
+- **Creation and invocation are separate authority decisions.** Creating a tool
+  writes a row; invoking it executes code. F-008's fix leaves creation Allowed
+  (the Auto workflow needs it) and moves the approval to invocation. Review both
+  verbs together, and do not assume a gate on one covers the other.
+- **Check the assembled base toolset before claiming a new capability.** F-007
+  treated the MCP stdio launch as new host execution, but `agent/chat.go` builds
+  Auto from `actool.DefaultTools()`, which already includes Bash. The launch was
+  an approval/persistence bypass, not escalation. Read the actual assembly path
+  (`ChatAgent` base + `AugmentTools` + `ToolResolve`) before assigning severity.
+- **A probe must test the decision, not only the command.** The F-008 probe
+  calls `CheckPermissions` exactly as the harness does and only calls the tool
+  when the decision is Allow. A probe that invokes `.Call` directly would pass
+  on both trees and prove nothing about the gate.
+- **Answer reachability with entry points, not intuition.** F-008 enumerated
+  Auto's message entries and confirmed the scheduler/triggers do not target it;
+  that converted "maybe remotely reachable" into "operator-assisted only" and
+  made the F-007 correction evidence-based. When a model is in the loop and no
+  live model is available, say so instead of simulating a compliant model.
