@@ -1,0 +1,31 @@
+=== RUN   TestAuthBoundaryAnonymousImportRoutesRejected
+    zz_evidence_auth_boundary_test.go:168: archive_sha256=df24672c03596d295ae4a000940ecd11ef0c6268fa4660629f372c4bb69a0461 bytes=27681
+    zz_evidence_auth_boundary_test.go:204: canonical upload                 POST /api/skills/upload                         -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: dot-dot auth prefix              POST /api/auth/../api/skills/upload             -> 307 location="/api/api/skills/upload" content-type="" body=""
+    zz_evidence_auth_boundary_test.go:204: dot-dot to skills                POST /api/auth/../skills/upload                 -> 307 location="/api/skills/upload" content-type="" body=""
+    zz_evidence_auth_boundary_test.go:204: encoded dot-dot                  POST /api/auth/%2e%2e/skills/upload             -> 404 location="" content-type="text/plain; charset=utf-8" body="404 page not found\n"
+    zz_evidence_auth_boundary_test.go:204: encoded dot-dot and slash        POST /api/auth/%2e%2e%2fskills%2fupload         -> 404 location="" content-type="text/plain; charset=utf-8" body="404 page not found\n"
+    zz_evidence_auth_boundary_test.go:204: health prefix my traversal       POST /api/health/../skills/upload               -> 307 location="/api/skills/upload" content-type="" body=""
+    zz_evidence_auth_boundary_test.go:204: double slash                     POST /api//skills/upload                        -> 307 location="/api/skills/upload" content-type="" body=""
+    zz_evidence_auth_boundary_test.go:204: trailing slash                   POST /api/skills/upload/                        -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: uppercase api                    POST /API/skills/upload                         -> 404 location="" content-type="text/plain; charset=utf-8" body="Frontend is not embedded in this binary (use next dev for development; build with -tags embedui for release)\n"
+    zz_evidence_auth_boundary_test.go:204: empty query token                POST /api/skills/upload?token=                  -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: empty bearer                     POST /api/skills/upload                         -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: empty cookie                     POST /api/skills/upload                         -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: alg none                         POST /api/skills/upload                         -> 401 location="" content-type="application/json" body="{\"error\":\"token is invalid or expired\"}\n"
+    zz_evidence_auth_boundary_test.go:204: RS256 header                     POST /api/skills/upload                         -> 401 location="" content-type="application/json" body="{\"error\":\"token is invalid or expired\"}\n"
+    zz_evidence_auth_boundary_test.go:204: wrong-key HS256                  POST /api/skills/upload                         -> 401 location="" content-type="application/json" body="{\"error\":\"token is invalid or expired\"}\n"
+    zz_evidence_auth_boundary_test.go:204: task archive restore             POST /api/task-archives/1/restore               -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: task archive batch restore       POST /api/task-archives/restore/batch           -> 401 location="" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:204: options preflight                OPTIONS /api/skills/upload                         -> 204 location="" content-type="" body=""
+    zz_evidence_auth_boundary_test.go:204: public health                    GET /api/health                                -> 200 location="" content-type="application/json" body="{\"ok\":true}\n"
+    zz_evidence_auth_boundary_test.go:204: auth status exempt               GET /api/auth/status                           -> 503 location="" content-type="application/json" body="{\"error\":\"management console data source (PostgreSQL) is not connected\"}\n"
+    zz_evidence_auth_boundary_test.go:228: follow-redirect /api/auth/../skills/upload       -> 401 final="/api/skills/upload" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:228: follow-redirect /api/health/../skills/upload     -> 401 final="/api/skills/upload" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+    zz_evidence_auth_boundary_test.go:228: follow-redirect /api//skills/upload              -> 401 final="/api/skills/upload" content-type="application/json" body="{\"error\":\"Unauthorized\"}\n"
+--- PASS: TestAuthBoundaryAnonymousImportRoutesRejected (0.00s)
+=== RUN   TestAuthenticatedCraftedZipReachesUpload
+    zz_evidence_auth_boundary_test.go:277: authenticated upload -> 400 content-type="application/json" body="{\"error\":\"failed to read SKILL.md: corrupt input: weights tableLog too big\"}\n"
+--- PASS: TestAuthenticatedCraftedZipReachesUpload (0.00s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.490s

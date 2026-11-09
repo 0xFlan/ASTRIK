@@ -46,7 +46,7 @@ influence in this deployment, not that the CVE is fake.
 
 | Package | Version | Adv. | Dependency path | Reachability verdict |
 |---|---|---|---|---|
-| `github.com/klauspost/compress` | 1.18.6 | 2 | direct Go | **Confirmed L2 DoS, post-auth (F-002).** `zstd` imported in `server/skill_zip.go` and `server/task_archive_package.go`; the advisory frame wrapped in a ZIP method-93 entry panics through `fsUploadSkill → readZipEntry` on 1.18.6 (`index out of range [33077]`) and returns `400 corrupt input: weights tableLog too big` on 1.20.2. The upload route is behind `requireAuth`, so the crash requires a JWT. GO-2026-5841 is `s2` (not called). Fix: 1.20.2; patch in `evidence/zstd/patches/`. |
+| `github.com/klauspost/compress` | 1.18.6 | 2 | direct Go | **Confirmed L2 DoS, post-auth (F-002/F-003).** `zstd` imported in `server/skill_zip.go` and `server/task_archive_package.go`; the advisory frame wrapped in a ZIP method-93 entry panics through `fsUploadSkill → readZipEntry` on 1.18.6 (`index out of range [33077]`) and returns `400 corrupt input: weights tableLog too big` on 1.20.2. The upload route is behind `requireAuth`, so the crash requires a JWT. GO-2026-5841 is `s2` (not called). Fix: 1.20.2; patch in `evidence/zstd/patches/`. |
 | `github.com/andybalholm/brotli` | 1.2.1 | 1 | indirect Go | Not reachable: not imported by application code; OSV `called:false`. Fix: 1.2.7. |
 | `golang.org/x/crypto` | 0.58.0 | 1 | direct Go | Not reachable: advisory is `openpgp`, which is not imported; `called:false`. Bump on maintenance. |
 | `next` | 16.2.9 | 20 | direct runtime | **Middleware bypass disproven for this app (F-002).** The advisory requires a single `config.i18n.locales` entry; `web/next.config.mjs` has no `i18n` block, and the matcher covers locale-prefixed paths. A real 16.2.9 build redirected `/function/tasks`, `/en/function/tasks`, RSC, prefetch, and `x-middleware-subrequest` probes to `/login` (all 307). The upstream class was reproduced in a single-locale fixture: `/en/protected` returned 200 on 16.2.9 and 307 on 16.2.11. Rewrites SSRF is not reachable (static env destination); image RCE is config-gated; Server Actions/`use cache`/`next/og` are unused. Fix: 16.2.11; patch in `evidence/next/patches/`. |
@@ -60,11 +60,25 @@ influence in this deployment, not that the CVE is fake.
 No `basic-ftp` or `extract-zip` import exists in the recon scripts; both are
 transitive setup dependencies. No SBOM-only advisory exists.
 
+### Auth boundary (F-003)
+
+The production `Server.Handler()` was served on a loopback listener and probed
+with the crafted zstd archive and every anonymous credential/route shape: no
+token, empty bearer/cookie/query token, `alg:none`, RS256, wrong-key HS256,
+dot-dot and encoded-dot-dot paths, repeated slashes, trailing slash, uppercase
+`/API`, `/api/auth/*` and `/api/health` exemptions, task-archive restore routes,
+and `OPTIONS`. All import attempts were rejected (`401`) or redirected to
+`/api/skills/upload`, where a redirect-following client also got `401`; encoded
+traversal returned `404`; no request panicked. The valid-token control reached
+`fsUploadSkill` (1.18.6 panic, 1.20.2 bounded 400). The auth boundary holds; the
+crash remains post-auth. Details: `findings/f003-jwt-route-bypass-does-not-hold.md`.
+
 ## What this does and does not prove
 
 - The Go panic is a reachable code path (L2): the vulnerable symbol is compiled
-  in and called on an archive path. It is not a demonstrated remote crash; the
-  import handler's authentication and size limits were not exercised.
+  in and called on an archive path. F-003 exercised its authentication boundary
+  with the full route stack: anonymous requests do not reach it, and a valid JWT
+  does. The 10 MiB multipart size limit was not separately exercised.
 - The Next middleware bypass is reachable in principle (middleware is present),
   but no running instance was built or tested. It is a candidate, not a finding.
 - Everything else is an L1 version match with no observed path from target input.

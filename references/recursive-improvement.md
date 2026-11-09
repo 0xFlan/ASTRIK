@@ -104,3 +104,12 @@ intentionally small and can itself be improved by the same loop.
   before the bump and passes after (the single-locale Next fixture: 200 on
   16.2.9, 307 on 16.2.11) and keep the real-handler reproducer for the component
   that does apply (zstd through `fsUploadSkill`).
+- **A 401 wall needs a positive control.** F-003 sent 20 anonymous shapes at the
+  upload route (traversal, encoded traversal, exempt prefixes, empty tokens,
+  alg:none/RS256/wrong-key, redirects) and all were rejected; a valid token then
+  reached the same handler and produced the 1.18.6 panic. Without the control,
+  the 401s would not prove the sink was reachable at all.
+- **Build the binary, then state the startup limit.** `cmd/artex` built cleanly
+  but exited at `open stores` because PostgreSQL was absent. The request proof
+  used the production `Handler()`; recording that limitation is better than
+  calling a test harness a full server run.

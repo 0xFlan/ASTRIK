@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.6 |
+| Revision | 1.7 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -20,6 +20,7 @@
 | 1.4 | 2026-11-09 | Replaced the skill's blanket restrictions with an operator-owned charter; added Strix, Shannon, sapper-v2, Ghidra, OSV-Scanner, source pins, and the recursive improvement loop |
 | 1.5 | 2026-11-09 | Exercised the OSV and Ghidra packs; added the SBOM round-trip, the reviewed Ghidra artifact script, script integrity manifest, exact pin/URL validation, and the F-001 validator-to-execution chain fix |
 | 1.6 | 2026-11-09 | Resolved the two reachable candidates: proved the Next bypass absent in this app and the zstd panic real but post-auth, added F-002 chain verdict, fail-before/pass-after reproducers, and upstream patches for compress and Next |
+| 1.7 | 2026-11-09 | Attacked the JWT and route boundary: proved all anonymous import paths, token-forgery shapes, exempt routes, and redirects stay rejected, added F-003 and the full-stack auth probe, and recorded the PostgreSQL limitation on the listening binary |
 
 ## 1 Scope
 
@@ -464,6 +465,30 @@ is a confirmed authenticated DoS, not an unauthenticated one.
 Reproducers are under `evidence/zstd/` and `evidence/next/`; exact upstream
 patches are under each evidence directory's `patches/` subdirectory. Both ARTEX
 manifests are upstream copies and were not pushed to the upstream repository.
+
+## Annex J — Auth-boundary resolution (2026-11-09)
+
+F-003 tested the credential and route layer that F-002 left as a black box. The
+production `Server.Handler()` was served on a loopback listener and fed the same
+crafted method-93 archive with no credential, empty bearer/cookie/query tokens,
+`alg:none`, RS256, a wrong-key HS256 token, dot-dot and encoded-dot-dot paths,
+repeated slashes, a trailing slash, an uppercase API prefix, and paths using the
+`/api/auth/` and `/api/health` exemptions. Every anonymous import shape was
+rejected (`401`) or redirected to `/api/skills/upload`, where a redirect-following
+client also received `401`; encoded traversal returned `404`, and no request
+panicked. `OPTIONS` returned `204` from CORS without invoking a handler.
+
+A valid `signJWT` token reached `fsUploadSkill` with the same archive: compress
+1.18.6 panicked with `index out of range [33077]` through
+`readZipEntry → fsUploadSkill`, while 1.20.2 returned the bounded `400 corrupt
+input: weights tableLog too big`. The auth boundary therefore holds; the crash
+remains an authenticated Medium DoS, not an unauthenticated chain.
+
+The `cmd/artex` binary builds but cannot listen on this host without PostgreSQL
+(`open stores: no database config found`). The request proof uses the production
+`Handler()` rather than a listening full binary; this is stated in F-003 and is
+the only unclosed execution-layer limitation. Evidence and reproducer are in
+`evidence/auth/`.
 
 ## Bibliography
 

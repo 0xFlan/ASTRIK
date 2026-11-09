@@ -70,7 +70,10 @@ Even a page-level middleware bypass would not authenticate an API call:
 
 `TestSkillUploadRejectsMissingJWT` drives the real wrapper: the handler is not
 reached and the response is `401`. Log:
-`evidence/zstd/logs/auth-missing-jwt.log`.
+`evidence/zstd/logs/auth-missing-jwt.log`. The full route/token matrix is in
+**F-003** (`findings/f003-jwt-route-bypass-does-not-hold.md`): traversal, exempt
+prefixes, redirect following, `alg:none`, RS256, and wrong-key tokens all fail
+before `fsUploadSkill`, while a valid-token control reaches it.
 
 ## Link 3 — zstd panic: confirmed on the real handler
 

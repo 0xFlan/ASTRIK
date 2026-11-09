@@ -196,3 +196,24 @@ Then test the cheapest candidate. A chain usually dies because the operator stop
 - **PII hoard**: exporting 1,000 records to prove an IDOR. One is enough.
 - **Victim-dependent chain**: requiring the victim to click a link that the program forbids testing.
 - **Model-said-so**: accepting an agent's claim that a tool call succeeded without the raw output.
+- **Auth as a footnote**: treating "the upload route is behind requireAuth" as a
+  reason to skip the link. The wrapper is a link; test its exemptions, path
+  normalization, token extraction, and every route registration. F-003 found no
+  bypass, but only after 20 anonymous requests and a valid-token control.
+
+## 9. Auth-boundary link template
+
+When a chain's missing link is "get past authentication":
+
+1. List the sink's route registrations and the wrapper around each one.
+2. List every exemption and every auth entry point (login, init, status, health).
+3. Send the sink's real body to each exemption and path alias; classify the
+   response as sink-reached (`400`/`409`/`500`/panic) or rejected (`401`/`403`/
+   `404`/`405`/redirect).
+4. Follow redirects with a default client; a 307 is not a bypass if it lands on
+   the protected route.
+5. Prove a valid credential reaches the same sink. No positive control, no
+   negative finding.
+
+Report the chain as disproven only with the request matrix, statuses, headers,
+and the code line where the wrapper encloses the sink.

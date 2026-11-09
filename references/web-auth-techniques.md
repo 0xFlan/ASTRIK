@@ -194,3 +194,29 @@ No finding. The test demonstrates two useful negatives: a cookie-write primitive
 [ ] Negative result recorded, not promoted
 [ ] Evidence stored with request count and timestamps
 ```
+
+## 12. Route-level auth checks that survive a CVE chain (F-003)
+
+A dependency panic is not an unauthenticated finding until the route actually
+accepts an anonymous archive. Test the auth boundary as its own link:
+
+- Enumerate every registration site for the sink (`rg 'skills/upload|archive'`),
+  then check which wrapper encloses each one. A handler on a raw mux beside the
+  wrapped API is the defect; a handler under the wrapper is not.
+- Exercise the exemption prefixes (`/api/auth/*`, `/api/health`) with the sink's
+  body. A `404`/`503` from the exempt handler is fine; a `400`/`409`/`500` from
+  the sink is a bypass.
+- Try dot-dot, encoded dot-dot, repeated slash, trailing slash, and case changes.
+  Go's `ServeMux` redirects normalized paths; a client that follows the 307 must
+  land on the canonical route and still receive `401`.
+- Try `alg:none`, the asymmetric algorithm in the header, a token signed with a
+  different key, an empty bearer, an empty cookie, and an empty query token.
+  Each must be `401`, not a handler response.
+- Treat `OPTIONS` as a preflight, not an import: a `204` from CORS with no
+  handler invocation is expected.
+- Prove the positive control: a valid token must reach the sink. Without that,
+  a wall of 401s could simply mean the route is misnamed or the test is broken.
+
+F-003 used all of these against ARTEX's `POST /api/skills/upload`: anonymous
+requests never reached `fsUploadSkill`; a valid token did, and only then did the
+1.18.6 compress panic fire. The negative result is the finding.
