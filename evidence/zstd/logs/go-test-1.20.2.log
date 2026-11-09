@@ -1,0 +1,6 @@
+=== RUN   TestUploadCraftedZstdSkillZip
+    zz_evidence_zstd_panic_test.go:88: bounded rejection: status=400 body={"error":"failed to read SKILL.md: corrupt input: weights tableLog too big"}
+         frame_sha256=a69f3585-08fa077d
+--- PASS: TestUploadCraftedZstdSkillZip (0.00s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.520s

@@ -1,0 +1,51 @@
+=== RUN   TestUploadCraftedZstdSkillZip
+--- FAIL: TestUploadCraftedZstdSkillZip (0.00s)
+panic: runtime error: index out of range [33077] with length 32768 [recovered, repanicked]
+
+goroutine 65 [running]:
+testing.tRunner.func1.2({0x1047a0788, 0x508b1faf2000})
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/testing/testing.go:2128 +0x2c8
+panic({0x1047a0788?, 0x508b1faf2000?})
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/runtime/panic.go:859 +0x120
+github.com/klauspost/compress/fse.(*decoder).nextFast(...)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/fse/decompress.go:372
+github.com/klauspost/compress/fse.(*Scratch).decompress(0x508b1f482808)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/fse/decompress.go:280 +0x9ec
+github.com/klauspost/compress/fse.Decompress({0x508b1fae4006?, 0x0?, 0x0?}, 0x102c2bfd8?)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/fse/decompress.go:33 +0x64
+github.com/klauspost/compress/huff0.ReadTable({0x508b1fae4005, 0x6acf, 0x6ae0}, 0x102bdd108?)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/huff0/decompress.go:61 +0x138
+github.com/klauspost/compress/zstd.(*blockDec).decodeLiterals(0x508b1f8042d0, {0x508b1fae4000?, 0x508b1f9ed2f8?, 0x103308af0?}, 0x508b1f4d7018)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/blockdec.go:445 +0x548
+github.com/klauspost/compress/zstd.(*blockDec).decodeCompressed(0x508b1f8042d0, 0x508b1f4d7018)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/blockdec.go:479 +0x34
+github.com/klauspost/compress/zstd.(*blockDec).decodeBuf(0x508b1f8042d0, 0x508b1f4d7018)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/blockdec.go:256 +0x208
+github.com/klauspost/compress/zstd.(*Decoder).nextBlockSync(0x508b1f8041e0)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/decoder.go:517 +0x3bc
+github.com/klauspost/compress/zstd.(*Decoder).nextBlock(0x508b1f8041e0, 0x58?)
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/decoder.go:429 +0x3c
+github.com/klauspost/compress/zstd.(*Decoder).Read(0x508b1f8041e0, {0x508b1fae2084?, 0x508b1f9ed4e8?, 0x508b1fae2000?})
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/decoder.go:140 +0x11c
+github.com/klauspost/compress/zstd.(*pooledZipReader).Read(0x508b1eef2390, {0x508b1fae2084?, 0x84?, 0x508b1f3e0a00?})
+	/Users/flan/go/pkg/mod/github.com/klauspost/compress@v1.18.6/zstd/zip.go:67 +0xc8
+archive/zip.(*checksumReader).Read(0x508b1ef34640, {0x508b1fae2084, 0x180?, 0xfc})
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/archive/zip/reader.go:298 +0x3c
+io.(*LimitedReader).Read(0x508b1eef23a8, {0x508b1fae2084?, 0x508b1f9ed5c8?, 0x102bc2764?})
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/io/io.go:479 +0x48
+io.ReadAll({0x1047f20e8, 0x508b1eef23a8})
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/io/io.go:722 +0xe8
+github.com/Autumn-27/artex/server.readZipEntry(0x508b1f7fc7d8?)
+	/Users/flan/artex-audit/baarai/server/server_mgmt.go:1516 +0x10c
+github.com/Autumn-27/artex/server.(*Server).fsUploadSkill(0x508b1ef2fce0, {0x1047fa218, 0x508b1f1c9680}, 0x508b1f50d400)
+	/Users/flan/artex-audit/baarai/server/server_mgmt.go:1403 +0x5b0
+github.com/Autumn-27/artex/server.TestUploadCraftedZstdSkillZip(0x508b1f4d66c8)
+	/Users/flan/artex-audit/baarai/server/zz_evidence_zstd_panic_test.go:83 +0x5a4
+testing.tRunner(0x508b1f4d66c8, 0x104802c10)
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.27.3/libexec/src/testing/testing.go:2260 +0x3b8
+FAIL	github.com/Autumn-27/artex/server	0.488s
+FAIL

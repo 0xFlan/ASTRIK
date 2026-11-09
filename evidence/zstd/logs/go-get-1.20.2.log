@@ -1,0 +1,2 @@
+go: downloading github.com/klauspost/compress v1.20.2
+go: upgraded github.com/klauspost/compress v1.18.6 => v1.20.2

@@ -18,6 +18,7 @@ required=(
   "scripts/test_validate_skill.sh"
   "scripts/ghidra/ReportArtifacts.java"
   "findings/f001-ghidra-scriptpath-rce-chain.md"
+  "findings/f002-chain-next-bypass-to-zstd-panic.md"
 )
 
 for f in "${required[@]}"; do
@@ -27,8 +28,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.5 |' README.md; then
-  echo "README revision is not 1.5" >&2
+if ! grep -q '| Revision | 1.6 |' README.md; then
+  echo "README revision is not 1.6" >&2
   exit 1
 fi
 

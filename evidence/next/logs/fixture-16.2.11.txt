@@ -1,0 +1,42 @@
+=== Next 16.2.11 single-locale fixture ===
+--- /protected (matcher target, no cookie)
+HTTP/1.1 307 Temporary Redirect
+location: /login
+Date: Mon, 09 Nov 2026 19:44:49 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+--- /en/protected (locale-prefixed, no cookie)
+HTTP/1.1 307 Temporary Redirect
+location: /login
+Date: Mon, 09 Nov 2026 19:44:49 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Transfer-Encoding: chunked
+
+body=/login
+--- middleware matcher manifest
+{
+  "version": 3,
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/node_modules_next_dist_esm_build_templates_edge-wrapper_0h-u1c1.js",
+        "server/edge/chunks/[root-of-the-server]__1q9nw-8._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_1pjtva3.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_1pjtva3.js",
+      "matchers": [
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next\\/)[^/.]{1,}))\\/protected(\\.json|\\.rsc|\\.segments\\/.+\\.segment\\.rsc)?[\\/#\\?]?$",
+          "originalSource": "/protected"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "kknxNf2fBf6u6868JiaCZ",
+        "NEXT_SERVER_ACTIONS_ENCRYPTI

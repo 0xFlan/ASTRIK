@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.5 |
+| Revision | 1.6 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -19,6 +19,7 @@
 | 1.3 | 2026-11-09 | Corrected the replay model for stateful time-vars, added exact-replay/CORS chain T18, and recorded S66 |
 | 1.4 | 2026-11-09 | Replaced the skill's blanket restrictions with an operator-owned charter; added Strix, Shannon, sapper-v2, Ghidra, OSV-Scanner, source pins, and the recursive improvement loop |
 | 1.5 | 2026-11-09 | Exercised the OSV and Ghidra packs; added the SBOM round-trip, the reviewed Ghidra artifact script, script integrity manifest, exact pin/URL validation, and the F-001 validator-to-execution chain fix |
+| 1.6 | 2026-11-09 | Resolved the two reachable candidates: proved the Next bypass absent in this app and the zstd panic real but post-auth, added F-002 chain verdict, fail-before/pass-after reproducers, and upstream patches for compress and Next |
 
 ## 1 Scope
 
@@ -445,6 +446,24 @@ and the RE pack pointed `-scriptPath` at that directory, so a validator-green
 repository could execute code as the analyst. It was reproduced with a benign
 marker and fixed by exact pin checks, a script integrity manifest, and an
 executor warning. Details: `findings/f001-ghidra-scriptpath-rce-chain.md`.
+
+## Annex I — Chain resolution: Next bypass to zstd panic (2026-11-09)
+
+The proposed unauthenticated chain was tested end to end and does not hold
+(F-002). Link 1: the real 16.2.9 web build redirected every protected probe
+(`/function/tasks`, `/en/function/tasks`, RSC, prefetch, and
+`x-middleware-subrequest`) to `/login`; the app has no `i18n` config and its
+matcher covers locale prefixes. The upstream class was still reproduced in a
+single-locale Turbopack fixture (`/en/protected`: 200 on 16.2.9, 307 on
+16.2.11). Link 2: `/api/*` is wrapped in `requireAuth`, and the page proxy
+excludes `/api/`, so a page bypass would not authenticate the upload API.
+Link 3: the crafted zstd frame does panic `fsUploadSkill` on compress 1.18.6
+and returns a bounded 400 on 1.20.2, but only after a valid JWT. The zstd crash
+is a confirmed authenticated DoS, not an unauthenticated one.
+
+Reproducers are under `evidence/zstd/` and `evidence/next/`; exact upstream
+patches are under each evidence directory's `patches/` subdirectory. Both ARTEX
+manifests are upstream copies and were not pushed to the upstream repository.
 
 ## Bibliography
 

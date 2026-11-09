@@ -1,0 +1,20 @@
+
+added 715 packages, and audited 716 packages in 8s
+
+225 packages are looking for funding
+  run `npm fund` for details
+
+26 vulnerabilities (1 low, 8 moderate, 15 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New minor version of npm available! 11.9.0 -> 11.21.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.2
+npm notice To update run: npm install -g npm@11.21.2
+npm notice

@@ -113,3 +113,6 @@ a code path. Dynamic validation follows the operator charter.
   still recoverable.
 - Ghidra 12.0.4 bundles a JDK, so `analyzeHeadless` works even when `java` is not
   on `PATH`.
+- A decompiled call edge is not a reachable path. The fixture showed
+  `entry → _run_command → _system`, but the dynamic proof came from building the
+  binary and controlling the input; keep static and dynamic claims separate.

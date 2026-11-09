@@ -96,3 +96,11 @@ intentionally small and can itself be improved by the same loop.
   validator plus a documented `-scriptPath` path composed into analyst code
   execution. Review the join between a green gate and the next privileged
   action, not only each control alone.
+- **A disproven chain is a deliverable.** F-002 failed on the app's missing
+  single-locale `i18n` precondition and again on the API's `requireAuth`
+  boundary. Record the exact request/response and the code line that breaks the
+  link; do not report the CVE as if the chain worked.
+- **Reproduce the patch, not just the bug.** Build a minimal fixture that fails
+  before the bump and passes after (the single-locale Next fixture: 200 on
+  16.2.9, 307 on 16.2.11) and keep the real-handler reproducer for the component
+  that does apply (zstd through `fsUploadSkill`).

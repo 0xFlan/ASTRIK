@@ -103,3 +103,14 @@ operator charter.
 - Do not scan the evidence directory back into the report. A generated SBOM sits
   in the tree and will be picked up by a later `-r .` run; exclude it or record
   the difference.
+- **An advisory's trigger conditions are part of the finding.** Read the patch
+  diff, not only the severity. GHSA-6gpp-xcg3-4w24 requires a single
+  `config.i18n.locales` entry; the app had no `i18n` config, so the CVE did not
+  apply. Fetching the fix commit is how you learn the precondition.
+- **Drive the patched component through the real handler.** The zstd panic was
+  only proven when the advisory frame was wrapped in a ZIP method-93 entry and
+  sent through `fsUploadSkill`; a direct `DecodeAll` test would not show that
+  the upload path decodes zstd or that the API boundary is separate.
+- **A reachable CVE is not automatically a chain link.** The zstd panic was real
+  but the handler sits behind `requireAuth`; the middleware candidate sat behind
+  a missing `i18n` precondition. Record every link's precondition and boundary.

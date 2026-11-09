@@ -1,0 +1,5 @@
+=== RUN   TestSkillUploadRejectsMissingJWT
+    zz_evidence_zstd_panic_test.go:109: anonymous upload rejected before handler: status=401 body={"error":"Unauthorized"}
+--- PASS: TestSkillUploadRejectsMissingJWT (0.00s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.542s
