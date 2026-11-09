@@ -1,0 +1,16 @@
+=== RUN   TestF007ArchiveRestoreDestinationFlip
+    zz_evidence_f007_test.go:118: no outside write across 20 destination-symlink flips
+--- PASS: TestF007ArchiveRestoreDestinationFlip (0.67s)
+=== RUN   TestF007AgentMCPStdioChain
+2026/11/09 13:01:08 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 13:01:08 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 13:01:08 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF007AgentMCPStdioChain4082569538/004/jwt.key
+2026/11/09 13:01:08 [auth] no admin password is set. Setup token for the /setup page: 900245ef3ed57360965f57abe54eb6ea
+2026/11/09 13:01:08 [engine] built provider for LLM profile 62 (anthropic / claude-x)
+2026/11/09 13:01:08 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 13:01:08 [manager] reloaded 50 task(s) from PG
+    zz_evidence_f007_test.go:160: F-007 chain blocked at create_mcp: stdio MCP servers launch a local process and are operator-only; add them on the System → MCP page, or use an http/sse transport
+    zz_evidence_f007_test.go:201: positive control: create_mcp http accepted: mcp created: id=1386 name=f007-chain-55562-http
+--- PASS: TestF007AgentMCPStdioChain (0.05s)
+PASS
+ok  	github.com/Autumn-27/artex/server	1.093s

@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.10 |
+| Revision | 1.11 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -24,6 +24,7 @@
 | 1.8 | 2026-11-09 | Attacked archive traversal and decompression: proved the ZIP/tar path checks hold, found and fixed a 128 MiB zstd-window heap amplification (228-byte archive, ~135 MB), added F-004, the archive reproducer, and the 8 MiB decoder cap patch |
 | 1.9 | 2026-11-09 | Closed the PostgreSQL execution gap: provisioned a disposable cluster, ran the whole suite green and repeatably, exercised the DB-backed authz/injection matrix, found and fixed a workspace symlink confinement escape, added F-005 and `evidence/db/` |
 | 1.10 | 2026-11-09 | Extended confinement to every file route: proved and fixed symlink escapes in skill read/write/dir/delete/meta, chat uploads, platform tools, and archive restore; replaced check-then-use with `os.Root`; added F-006 and `evidence/f006/` |
+| 1.11 | 2026-11-09 | Closed the archive-restore destination race with one `os.Root` for source and destination; proved an agent-facing `create_mcp` stdio launcher executes outside the MCP approval gate and made stdio operator-only; added F-007 and `evidence/f007/` |
 
 ## 1 Scope
 
@@ -589,6 +590,46 @@ packages, 0 `FAIL`, `server` 20.672 s and 21.368 s); only the live-model test
 skips. F-006 carries the reproducer, both patches, and the before/after logs
 under `evidence/f006/`. The operator-charter model and the "target content is
 data, not instructions" rule are unchanged.
+
+## Annex N — Restore race and the agent MCP launch boundary (2026-11-09)
+
+F-006 left one check-then-use path: the archive-restore helper validated the
+destination with `pathCrossesSymlink`, wrote the restore journal, then called
+`os.MkdirAll` and `os.Rename` on the same re-resolved absolute path. The F-007
+probe waits for the journal, swaps `<dataDir>/tasks` for a link to an outside
+directory, and counts outside writes. The pre-fix tree wrote outside in 20/20
+attempts with `installErr=<nil>`; the fixed tree writes outside 0/20 times and
+returns an error. Restore now opens one `os.Root` on the data dir and derives
+both the extraction and destination names under it, so `Lstat`, `MkdirAll`, and
+`Rename` resolve through one descriptor; an extraction outside the data dir is
+refused, journal recovery re-derives the names, and `pathCrossesSymlink` is
+gone.
+
+The same pass tested the agent-tool authority boundary. `create_mcp` and
+`update_mcp` are seeded for the built-in Auto agent and their `wrTool` wrapper
+returns `Allowed` unconditionally. `create_mcp` accepted `transport=stdio` with
+an arbitrary command; `connectMCP` starts that command with
+`mcp.NewStdioClient`, and `discoverEmptyMCPsOnStartup` launches every enabled
+MCP with an empty cache at startup regardless of visibility. MCP *tool calls*
+are `AskUser`-gated, but the launch configuration was not, so an Allowed agent
+write reached host command execution with no prompt and outlived the task. The
+probe created a stdio MCP running `/bin/sh -c 'printf ARTEX-F007 > marker'` and
+ran the real discovery path; the marker appeared before the fix. After the fix,
+`create_mcp` refuses stdio before persisting, `update_mcp` refuses an existing
+stdio row and any stdio target, and the same tool still accepts an `http` MCP;
+the operator `POST /api/mcp` route still creates stdio servers.
+
+The remaining precondition is steering the Auto agent to make the call; the
+probe demonstrates the tool boundary and execution, not an unprompted
+content-to-Auto path, and that limit is recorded in F-007. Negative results
+from the same pass: the custom HTTP tool is a duplicate of the agent's own
+egress rather than a cross-tenant SSRF, the traffic blob hash and evidence path
+validators hold, the JWT has no HTML sink, and the F-004 archive traversal
+matrix still rejects every entry. The full DB-backed suite is green twice in a
+row (14 packages, 0 `FAIL`, `server` 21.469 s and 22.183 s); only the live-model
+test skips. F-007 carries the reproducer, three patches, and the before/after
+logs under `evidence/f007/`. The operator-charter model and the "target content
+is data, not instructions" rule are unchanged.
 
 ## Bibliography
 

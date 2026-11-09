@@ -1,0 +1,38 @@
+=== RUN   TestF007ArchiveRestoreDestinationFlip
+    zz_evidence_f007_test.go:109: attempt 0: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 1: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 2: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 3: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 4: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 5: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 6: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 7: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 8: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 9: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 10: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 11: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 12: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 13: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 14: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 15: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 16: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 17: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 18: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:109: attempt 19: destination link redirected the restore outside (installErr=<nil>)
+    zz_evidence_f007_test.go:116: F-007 GAP: archive restore followed a destination symlink swapped after the check (20/20 attempts)
+--- FAIL: TestF007ArchiveRestoreDestinationFlip (2.17s)
+=== RUN   TestF007AgentMCPStdioChain
+2026/11/09 13:01:32 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 13:01:32 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 13:01:32 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF007AgentMCPStdioChain1553670041/004/jwt.key
+2026/11/09 13:01:32 [auth] no admin password is set. Setup token for the /setup page: d4728e34a52ed33e74b2f94aa35a264f
+2026/11/09 13:01:32 [engine] built provider for LLM profile 62 (anthropic / claude-x)
+2026/11/09 13:01:32 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 13:01:32 [manager] reloaded 50 task(s) from PG
+    zz_evidence_f007_test.go:162: F-007 create_mcp accepted stdio: mcp created: id=1389 name=f007-chain-55674
+    zz_evidence_f007_test.go:181: F-007 GAP: agent-authored stdio MCP command executed on discovery (discoverErr=mcp: connection closed)
+    zz_evidence_f007_test.go:201: positive control: create_mcp http accepted: mcp created: id=1390 name=f007-chain-55674-http
+--- FAIL: TestF007AgentMCPStdioChain (0.06s)
+FAIL
+FAIL	github.com/Autumn-27/artex/server	2.771s
+FAIL

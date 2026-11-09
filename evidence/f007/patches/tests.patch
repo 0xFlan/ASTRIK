@@ -1,0 +1,230 @@
+diff --git a/server/mcp_tool_boundary_test.go b/server/mcp_tool_boundary_test.go
+new file mode 100644
+index 0000000..59eab52
+--- /dev/null
++++ b/server/mcp_tool_boundary_test.go
+@@ -0,0 +1,161 @@
++package server
++
++import (
++	"bytes"
++	"context"
++	"encoding/json"
++	"net/http"
++	"net/http/httptest"
++	"os"
++	"path/filepath"
++	"testing"
++
++	"github.com/Autumn-27/artex/db"
++	actool "github.com/Autumn-27/norma/tool"
++)
++
++func mcpToolByName(t *testing.T, s *Server, name string) actool.CoreTool {
++	t.Helper()
++	for _, tool := range s.platformTools() {
++		if tool.Name() == name {
++			return tool
++		}
++	}
++	t.Fatalf("platform tool %q not found", name)
++	return nil
++}
++
++func mcpRowByName(t *testing.T, m *Manager, name string) *db.MCPServer {
++	t.Helper()
++	rows, err := m.pg.ListMCP()
++	if err != nil {
++		t.Fatal(err)
++	}
++	for _, row := range rows {
++		if row.Name == name {
++			return row
++		}
++	}
++	return nil
++}
++
++// An agent-facing MCP write must not be able to install a stdio command. MCP
++// calls are AskUser-gated, but connectMCP starts a stdio server (and startup
++// discovery does so for every enabled cache-empty server), so accepting a stdio
++// command here would reach process execution without that gate.
++func TestAgentMCPToolsRejectStdio(t *testing.T) {
++	m, err := NewManager(t.TempDir(), "")
++	if err != nil {
++		t.Skipf("postgres unavailable (%v) — skipping", err)
++	}
++	defer m.Close()
++	s := New(context.Background(), m, t.TempDir(), t.TempDir(), t.TempDir())
++	create := mcpToolByName(t, s, "create_mcp")
++	update := mcpToolByName(t, s, "update_mcp")
++
++	marker := filepath.Join(t.TempDir(), "stdio-ran")
++	name := "t-f007-stdio"
++	httpName := name + "-http"
++	operatorName := name + "-operator"
++	for _, n := range []string{name, httpName, operatorName} {
++		_, _ = m.pg.Exec(`DELETE FROM mcp_servers WHERE name=$1`, n)
++	}
++	// Registered after defer m.Close, so LIFO runs this while the pool is open.
++	defer func() {
++		for _, n := range []string{name, httpName, operatorName} {
++			_, _ = m.pg.Exec(`DELETE FROM mcp_servers WHERE name=$1`, n)
++		}
++	}()
++	stdlibInput := map[string]any{
++		"name": name, "transport": "stdio", "command": "/bin/sh",
++		"args": []string{"-c", "printf ran > " + marker}, "enabled": true,
++	}
++	raw, _ := json.Marshal(stdlibInput)
++	res, err := create.Call(context.Background(), raw, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if !res.IsError {
++		t.Fatalf("agent create_mcp accepted stdio: %s", res.Flatten())
++	}
++	if row := mcpRowByName(t, m, name); row != nil {
++		t.Fatalf("rejected stdio MCP was still persisted: %+v", row)
++	}
++	if _, err := os.Stat(marker); !os.IsNotExist(err) {
++		t.Fatalf("stdio command ran during create: %v", err)
++	}
++
++	// Positive control: the same agent tool still creates an http MCP.
++	httpRaw, _ := json.Marshal(map[string]any{
++		"name": httpName, "transport": "http", "url": "http://127.0.0.1:1/mcp", "enabled": false,
++	})
++	res, err = create.Call(context.Background(), httpRaw, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if res.IsError {
++		t.Fatalf("agent create_mcp rejected http: %s", res.Flatten())
++	}
++	httpRow := mcpRowByName(t, m, httpName)
++	if httpRow == nil || httpRow.Transport != "http" {
++		t.Fatalf("http MCP row = %+v", httpRow)
++	}
++
++	// Positive control: an existing http MCP is still updatable.
++	updateRaw, _ := json.Marshal(map[string]any{
++		"id": httpRow.ID, "name": httpName, "transport": "http", "url": "http://127.0.0.1:2/mcp", "enabled": false,
++	})
++	res, err = update.Call(context.Background(), updateRaw, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if res.IsError {
++		t.Fatalf("agent update_mcp rejected http: %s", res.Flatten())
++	}
++
++	// A stdio row remains operator-managed even if the requested new transport is http.
++	stdioID, err := m.pg.SaveMCP(&db.MCPServer{Name: operatorName, Transport: "stdio", Command: "/bin/sh", Enabled: false})
++	if err != nil {
++		t.Fatal(err)
++	}
++	operatorRaw, _ := json.Marshal(map[string]any{
++		"id": stdioID, "name": operatorName, "transport": "http", "url": "http://127.0.0.1:3/mcp", "enabled": false,
++	})
++	res, err = update.Call(context.Background(), operatorRaw, nil)
++	if err != nil {
++		t.Fatal(err)
++	}
++	if !res.IsError {
++		t.Fatalf("agent update_mcp rewrote an operator stdio MCP: %s", res.Flatten())
++	}
++}
++
++// The operator path keeps stdio: POST /api/mcp is the explicit UI action.
++func TestOperatorMCPRouteStillAcceptsStdio(t *testing.T) {
++	m, err := NewManager(t.TempDir(), "")
++	if err != nil {
++		t.Skipf("postgres unavailable (%v) — skipping", err)
++	}
++	defer m.Close()
++	s := New(context.Background(), m, t.TempDir(), t.TempDir(), t.TempDir())
++	token, err := signJWT(s.jwtKey)
++	if err != nil {
++		t.Fatal(err)
++	}
++	name := "t-f007-operator"
++	_, _ = m.pg.Exec(`DELETE FROM mcp_servers WHERE name=$1`, name)
++	// Registered after defer m.Close, so LIFO runs this while the pool is open.
++	defer func() { _, _ = m.pg.Exec(`DELETE FROM mcp_servers WHERE name=$1`, name) }()
++	body, _ := json.Marshal(map[string]any{"name": name, "transport": "stdio", "command": "x", "enabled": false})
++	req := httptest.NewRequest(http.MethodPost, "/api/mcp", bytes.NewReader(body))
++	req.Header.Set("Authorization", "Bearer "+token)
++	req.Header.Set("Content-Type", "application/json")
++	w := httptest.NewRecorder()
++	s.Handler().ServeHTTP(w, req)
++	if w.Code != http.StatusOK {
++		t.Fatalf("operator stdio create = %d: %s", w.Code, w.Body.String())
++	}
++	if row := mcpRowByName(t, m, name); row == nil || row.Transport != "stdio" {
++		t.Fatalf("operator stdio row = %+v", row)
++	}
++}
+diff --git a/server/task_archive_package_test.go b/server/task_archive_package_test.go
+index e3af4ea..845b14e 100644
+--- a/server/task_archive_package_test.go
++++ b/server/task_archive_package_test.go
+@@ -194,7 +194,10 @@ func TestTaskArchiveRestoreJournalRollsBackInterruptedInstall(t *testing.T) {
+ 	if journal.ArchiveID != 11 || len(journal.Moves) != 1 {
+ 		t.Fatalf("unexpected restore journal: %+v", journal)
+ 	}
+-	recovered := &taskArchiveRestoreFiles{extracted: extracted, moves: journal.Moves}
++	recovered, openErr := openTaskArchiveRestoreFiles(dataDir, extracted, journal.Moves)
++	if openErr != nil {
++		t.Fatal(openErr)
++	}
+ 	if err := recovered.rollback(); err != nil {
+ 		t.Fatal(err)
+ 	}
+@@ -206,6 +209,46 @@ func TestTaskArchiveRestoreJournalRollsBackInterruptedInstall(t *testing.T) {
+ 	}
+ }
+ 
++func TestTaskArchiveRestoreRejectsExtractionOutsideDataDir(t *testing.T) {
++	dataDir := t.TempDir()
++	outside := t.TempDir()
++	source := filepath.Join(outside, "files", "tasks", "42", "evidence.txt")
++	if err := os.MkdirAll(filepath.Dir(source), 0o700); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(source, []byte("outside"), 0o600); err != nil {
++		t.Fatal(err)
++	}
++	if _, err := installTaskArchiveFiles(dataDir, outside, "42", 1); err == nil {
++		t.Fatal("restore accepted an extraction directory outside the data dir")
++	}
++	if _, err := os.Stat(filepath.Join(dataDir, "tasks", "42", "evidence.txt")); !os.IsNotExist(err) {
++		t.Fatalf("outside extraction still produced a destination: %v", err)
++	}
++}
++
++func TestTaskArchiveRestoreRefusesSymlinkedDestination(t *testing.T) {
++	dataDir := t.TempDir()
++	outside := t.TempDir()
++	extracted := filepath.Join(dataDir, "archives", "tasks", ".restore", "f007-link")
++	source := filepath.Join(extracted, "files", "tasks", "42", "evidence.txt")
++	if err := os.MkdirAll(filepath.Dir(source), 0o700); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.WriteFile(source, []byte("evidence"), 0o600); err != nil {
++		t.Fatal(err)
++	}
++	if err := os.Symlink(outside, filepath.Join(dataDir, "tasks")); err != nil {
++		t.Skipf("symlink unsupported: %v", err)
++	}
++	if _, err := installTaskArchiveFiles(dataDir, extracted, "42", 1); err == nil {
++		t.Fatal("restore followed a symlinked tasks parent")
++	}
++	if _, err := os.Stat(filepath.Join(outside, "42", "evidence.txt")); !os.IsNotExist(err) {
++		t.Fatalf("restore wrote through the symlink outside the data dir: %v", err)
++	}
++}
++
+ func TestTaskArchiveDeletePackageCanResumeFromStagedPath(t *testing.T) {
+ 	dataDir := t.TempDir()
+ 	archivePath := taskArchivePath(dataDir, 21, "42")

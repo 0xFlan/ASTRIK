@@ -148,6 +148,43 @@ suite runs are green (14 packages, `server` 20.672 s / 21.368 s) after fixing a
 second-run `TestSkillGapsReport` isolation defect (the report aggregates the
 whole disposable DB). Details: `findings/f006-file-route-confinement.md`.
 
+### Archive restore and the agent MCP launch boundary (F-007)
+
+F-006 left the archive restore on a check-then-rename: `pathCrossesSymlink`
+validated the destination, the restore journal was written, and `os.MkdirAll` /
+`os.Rename` resolved the path again. The F-007 probe waits for the journal and
+swaps `<dataDir>/tasks` for a link to an outside directory. On the F-006 tree it
+wrote `<outside>/42/artifact.txt` in 20/20 attempts with `installErr=<nil>`; on
+the fixed tree 0/20 attempts escape and the rooted mkdir/rename returns an
+error. Restore now opens one `os.Root` on the data dir, derives the extraction
+and destination names under it, and uses `root.Lstat`/`root.MkdirAll`/
+`root.Rename` for install, rollback, and recovery; an extraction outside the
+data dir is refused and `pathCrossesSymlink` is removed.
+
+The chain pass found an authority bypass at the agent-tool boundary.
+`create_mcp`/`update_mcp` are bound to the built-in Auto agent and their
+`wrTool` wrapper returns `Allowed` unconditionally. `create_mcp` accepted
+`transport=stdio` with an arbitrary command, and `connectMCP` starts it with
+`mcp.NewStdioClient`; `discoverEmptyMCPsOnStartup` then launches every enabled
+MCP with an empty cache at startup regardless of visibility. MCP *tool calls*
+are `AskUser`-gated, but the launch configuration was not. The probe created a
+stdio MCP running `/bin/sh -c 'printf ARTEX-F007 > marker'` and ran the real
+discovery path; the marker appeared (`discoverErr=mcp: connection closed`). After
+the fix `create_mcp` refuses stdio before persisting, `update_mcp` refuses an
+existing stdio row and any stdio target, the HTTP control still succeeds, and
+the operator `POST /api/mcp` route still creates stdio servers. The remaining
+precondition is steering the Auto agent to make the call; that is recorded as a
+limit, not claimed as an unprompted content-to-Auto chain.
+
+Negative results in the same pass: the custom HTTP tool duplicates the agent's
+own egress rather than exposing cross-tenant data; the traffic blob hash and
+evidence path validators hold; the JWT in browser storage has no HTML sink; and
+the F-004 archive traversal matrix still rejects every traversal, absolute,
+link, hardlink, and FIFO entry. Two consecutive full suite runs are green (14
+packages, `server` 21.469 s / 22.183 s) after fixing a `TestF007AgentMCPStdioChain`
+fixture cleanup-order defect (row DELETEs now run while the pool is open).
+Details: `findings/f007-archive-restore-and-mcp-launch-chain.md`.
+
 ## What this does and does not prove
 
 - F-004 is a confirmed authenticated memory-exhaustion primitive (L2→availability
@@ -170,6 +207,13 @@ whole disposable DB). Details: `findings/f006-file-route-confinement.md`.
   chain. The archive restore keeps a source-root/destination-root check because
   `os.Root` cannot rename across roots; that path is server-controlled and is
   recorded as defense-in-depth.
+- F-007 closes that last restore race with a single root (20/20 pre-fix escapes,
+  0/20 after) and confirms an agent-tool authority bypass: an Allowed
+  `create_mcp` stdio target executes on startup discovery without the MCP
+  `AskUser` gate. The bypass is demonstrated at the tool boundary; steering the
+  Auto agent is the remaining precondition, so it is not claimed as an
+  unauthenticated chain. Agent stdio is now rejected while HTTP and the operator
+  route still work.
 - The Go panic is a reachable code path (L2): the vulnerable symbol is compiled
   in and called on an archive path. F-003 exercised its authentication boundary
   with the full route stack: anonymous requests do not reach it, and a valid JWT

@@ -1,0 +1,349 @@
+diff --git a/server/task_archive_package.go b/server/task_archive_package.go
+index 4d9f402..7be5caf 100644
+--- a/server/task_archive_package.go
++++ b/server/task_archive_package.go
+@@ -51,14 +51,21 @@ type taskArchiveFileStage struct {
+ }
+ 
+ type restoredArchivePath struct {
+-	Source      string
+-	Destination string
++	Source      string `json:"source"`
++	Destination string `json:"destination"`
++	// SourceRel/DestRel are derived from Source/Destination under dataDir and
++	// resolved by the stage's single os.Root. They are not journaled: recovery
++	// re-derives them from the persisted absolute paths.
++	SourceRel string `json:"-"`
++	DestRel   string `json:"-"`
+ }
+ 
+ type taskArchiveRestoreFiles struct {
+-	extracted string
+-	moves     []restoredArchivePath
+-	done      bool
++	extracted    string
++	extractedRel string
++	root         *os.Root
++	moves        []restoredArchivePath
++	done         bool
+ }
+ 
+ func writeArchiveJournal(path string, value any) error {
+@@ -227,53 +234,124 @@ func (s *taskArchiveFileStage) commit() error {
+ 	return os.RemoveAll(s.root)
+ }
+ 
++// restoreRel maps an absolute path under dataDir to a name that os.Root can
++// resolve. A path outside the data dir is refused rather than handed to a second
++// root: extraction and destination must be reached through the same descriptor,
++// so no component is re-resolved between a check and a write.
++func restoreRel(dataDir, abs string) (string, error) {
++	rel, err := filepath.Rel(dataDir, abs)
++	if err != nil {
++		return "", err
++	}
++	if rel == "." || rel == ".." || filepath.IsAbs(rel) ||
++		strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
++		return "", fmt.Errorf("archive restore path escapes the data dir: %s", abs)
++	}
++	return rel, nil
++}
++
++func newRestoredArchivePath(dataDir, source, destination string) (restoredArchivePath, error) {
++	sourceRel, err := restoreRel(dataDir, source)
++	if err != nil {
++		return restoredArchivePath{}, err
++	}
++	destRel, err := restoreRel(dataDir, destination)
++	if err != nil {
++		return restoredArchivePath{}, err
++	}
++	return restoredArchivePath{Source: source, Destination: destination, SourceRel: sourceRel, DestRel: destRel}, nil
++}
++
++// openTaskArchiveRestoreFiles adopts an existing restore journal. The journal
++// keeps absolute paths for backward compatibility; recovery re-derives their
++// root-relative names and refuses a journal whose paths leave dataDir.
++func openTaskArchiveRestoreFiles(dataDir, extractedDir string, moves []restoredArchivePath) (*taskArchiveRestoreFiles, error) {
++	extractedRel, err := restoreRel(dataDir, extractedDir)
++	if err != nil {
++		return nil, err
++	}
++	root, err := os.OpenRoot(dataDir)
++	if err != nil {
++		return nil, err
++	}
++	stage := &taskArchiveRestoreFiles{extracted: extractedDir, extractedRel: extractedRel, root: root, moves: make([]restoredArchivePath, 0, len(moves))}
++	for _, move := range moves {
++		derived, err := newRestoredArchivePath(dataDir, move.Source, move.Destination)
++		if err != nil {
++			_ = root.Close()
++			return nil, err
++		}
++		stage.moves = append(stage.moves, derived)
++	}
++	return stage, nil
++}
++
+ func installTaskArchiveFiles(dataDir, extractedDir, taskID string, archiveID int64) (*taskArchiveRestoreFiles, error) {
+-	stage := &taskArchiveRestoreFiles{extracted: extractedDir}
+ 	numericTaskID, err := strconv.ParseInt(taskID, 10, 64)
+ 	if err != nil || numericTaskID <= 0 {
+ 		return nil, fmt.Errorf("invalid restore task id %q", taskID)
+ 	}
++	extractedRel, err := restoreRel(dataDir, extractedDir)
++	if err != nil {
++		return nil, fmt.Errorf("restore extraction is outside the data dir: %w", err)
++	}
++	root, err := os.OpenRoot(dataDir)
++	if err != nil {
++		return nil, err
++	}
++	stage := &taskArchiveRestoreFiles{extracted: extractedDir, extractedRel: extractedRel, root: root}
++	fail := func(err error) (*taskArchiveRestoreFiles, error) {
++		_ = root.Close()
++		return nil, err
++	}
+ 	sources := []restoredArchivePath{}
++	add := func(source, destination string) error {
++		move, err := newRestoredArchivePath(dataDir, source, destination)
++		if err != nil {
++			return err
++		}
++		sources = append(sources, move)
++		return nil
++	}
+ 	workspace := filepath.Join(extractedDir, "files", "tasks", taskID)
+ 	if _, err := os.Lstat(workspace); err == nil {
+-		sources = append(sources, restoredArchivePath{Source: workspace, Destination: filepath.Join(dataDir, "tasks", taskID)})
++		if err := add(workspace, filepath.Join(dataDir, "tasks", taskID)); err != nil {
++			return fail(err)
++		}
+ 	} else if !os.IsNotExist(err) {
+-		return nil, err
++		return fail(err)
+ 	}
+ 	transcripts := filepath.Join(extractedDir, "files", "transcripts")
+ 	entries, err := os.ReadDir(transcripts)
+ 	if err != nil && !os.IsNotExist(err) {
+-		return nil, err
++		return fail(err)
+ 	}
+ 	for _, entry := range entries {
+-		sources = append(sources, restoredArchivePath{
+-			Source: filepath.Join(transcripts, entry.Name()), Destination: filepath.Join(dataDir, "transcripts", entry.Name()),
+-		})
++		if err := add(filepath.Join(transcripts, entry.Name()), filepath.Join(dataDir, "transcripts", entry.Name())); err != nil {
++			return fail(err)
++		}
+ 	}
+ 	for _, move := range sources {
+-		// The destination tree is built from a numeric task id, but a symlinked
+-		// tasks/ or transcripts/ parent would still redirect the rename outside the
+-		// data dir. Refuse any existing link component below it.
+-		if pathCrossesSymlink(dataDir, move.Destination) {
+-			return nil, fmt.Errorf("restore destination crosses a symlink: %s", move.Destination)
+-		}
+-		if _, err := os.Lstat(move.Destination); err == nil {
+-			return nil, fmt.Errorf("restore destination already exists: %s", move.Destination)
++		// Lstat and Rename resolve through the same os.Root. There is no separate
++		// path check that a link can be swapped behind: if tasks/ or transcripts/
++		// becomes a link outside the root at any point, MkdirAll/Rename refuse it.
++		if _, err := root.Lstat(move.DestRel); err == nil {
++			return fail(fmt.Errorf("restore destination already exists: %s", move.Destination))
+ 		} else if !os.IsNotExist(err) {
+-			return nil, err
++			return fail(err)
+ 		}
+ 	}
+ 	stage.moves = sources
+ 	journal := archiveRestoreJournal{ArchiveID: archiveID, TaskID: numericTaskID, Moves: sources}
+ 	if err := writeArchiveJournal(filepath.Join(extractedDir, "restore-journal.json"), journal); err != nil {
+-		return nil, err
++		return fail(err)
+ 	}
+ 	for _, move := range sources {
+-		if err := os.MkdirAll(filepath.Dir(move.Destination), 0o755); err != nil {
++		if err := root.MkdirAll(filepath.Dir(move.DestRel), 0o755); err != nil {
+ 			_ = stage.rollback()
+ 			return nil, err
+ 		}
+-		if err := os.Rename(move.Source, move.Destination); err != nil {
++		if err := root.Rename(move.SourceRel, move.DestRel); err != nil {
+ 			_ = stage.rollback()
+ 			return nil, err
+ 		}
+@@ -285,31 +363,36 @@ func (s *taskArchiveRestoreFiles) rollback() error {
+ 	if s == nil || s.done {
+ 		return nil
+ 	}
++	if s.root == nil {
++		s.done = true
++		return errors.New("restore stage has no root")
++	}
+ 	var errs []error
+ 	for i := len(s.moves) - 1; i >= 0; i-- {
+ 		move := s.moves[i]
+-		if _, err := os.Lstat(move.Destination); os.IsNotExist(err) {
++		if _, err := s.root.Lstat(move.DestRel); os.IsNotExist(err) {
+ 			continue
+ 		} else if err != nil {
+ 			errs = append(errs, err)
+ 			continue
+ 		}
+-		if _, err := os.Lstat(move.Source); err == nil {
++		if _, err := s.root.Lstat(move.SourceRel); err == nil {
+ 			errs = append(errs, fmt.Errorf("restore rollback source exists: %s", move.Source))
+ 			continue
+ 		} else if !os.IsNotExist(err) {
+ 			errs = append(errs, err)
+ 			continue
+ 		}
+-		if err := os.MkdirAll(filepath.Dir(move.Source), archiveDirMode); err != nil {
++		if err := s.root.MkdirAll(filepath.Dir(move.SourceRel), archiveDirMode); err != nil {
+ 			errs = append(errs, err)
+ 			continue
+ 		}
+-		if err := os.Rename(move.Destination, move.Source); err != nil {
++		if err := s.root.Rename(move.DestRel, move.SourceRel); err != nil {
+ 			errs = append(errs, err)
+ 		}
+ 	}
+ 	s.done = true
++	errs = append(errs, s.root.Close())
+ 	return errors.Join(errs...)
+ }
+ 
+@@ -318,7 +401,29 @@ func (s *taskArchiveRestoreFiles) commit() error {
+ 		return nil
+ 	}
+ 	s.done = true
+-	return os.RemoveAll(s.extracted)
++	if s.root == nil {
++		return errors.New("restore stage has no root")
++	}
++	errs := []error{}
++	if s.extractedRel != "" {
++		errs = append(errs, s.root.RemoveAll(s.extractedRel))
++	}
++	errs = append(errs, s.root.Close())
++	return errors.Join(errs...)
++}
++
++// removeRestoreStage removes one staging directory through a dataDir root.
++func removeRestoreStage(dataDir, path string) error {
++	rel, err := restoreRel(dataDir, path)
++	if err != nil {
++		return err
++	}
++	root, err := os.OpenRoot(dataDir)
++	if err != nil {
++		return err
++	}
++	defer root.Close()
++	return root.RemoveAll(rel)
+ }
+ 
+ // recoverTaskArchiveRestoreStages resolves file installs left by an interrupted
+@@ -343,7 +448,7 @@ func recoverTaskArchiveRestoreStages(dataDir string, pg *pgdb.DB) error {
+ 		raw, err := os.ReadFile(filepath.Join(root, "restore-journal.json"))
+ 		if os.IsNotExist(err) {
+ 			// Extraction was interrupted before any destination rename.
+-			if err := os.RemoveAll(root); err != nil {
++			if err := removeRestoreStage(dataDir, root); err != nil {
+ 				errs = append(errs, err)
+ 			}
+ 			continue
+@@ -372,17 +477,21 @@ func recoverTaskArchiveRestoreStages(dataDir string, pg *pgdb.DB) error {
+ 			continue
+ 		}
+ 		if restored {
+-			if err := os.RemoveAll(root); err != nil {
++			if err := removeRestoreStage(dataDir, root); err != nil {
+ 				errs = append(errs, err)
+ 			}
+ 			continue
+ 		}
+-		stage := &taskArchiveRestoreFiles{extracted: root, moves: journal.Moves}
++		stage, err := openTaskArchiveRestoreFiles(dataDir, root, journal.Moves)
++		if err != nil {
++			errs = append(errs, err)
++			continue
++		}
+ 		if err := stage.rollback(); err != nil {
+ 			errs = append(errs, err)
+ 			continue
+ 		}
+-		if err := os.RemoveAll(root); err != nil {
++		if err := removeRestoreStage(dataDir, root); err != nil {
+ 			errs = append(errs, err)
+ 		}
+ 	}
+diff --git a/server/task_archives.go b/server/task_archives.go
+index b73dfb2..99faac0 100644
+--- a/server/task_archives.go
++++ b/server/task_archives.go
+@@ -257,10 +257,20 @@ func (s *Server) restoreTaskArchive(job *pgdb.TaskArchive) (runErr error) {
+ 		return nil
+ 	}
+ 	_ = s.m.pg.UpdateTaskArchiveProgress(job.ID, "verify_package", 10)
+-	restoreParent := filepath.Join(taskArchiveRoot(s.m.dir), ".restore")
+-	if err := os.MkdirAll(restoreParent, archiveDirMode); err != nil {
++	// Create the staging parent through a dataDir root: a pre-existing .restore
++	// symlink to another directory is refused instead of followed by MkdirAll.
++	dataRoot, err := os.OpenRoot(s.m.dir)
++	if err != nil {
++		return err
++	}
++	if err := dataRoot.MkdirAll(filepath.Join("archives", "tasks", ".restore"), archiveDirMode); err != nil {
++		_ = dataRoot.Close()
+ 		return err
+ 	}
++	if err := dataRoot.Close(); err != nil {
++		return err
++	}
++	restoreParent := filepath.Join(taskArchiveRoot(s.m.dir), ".restore")
+ 	extracted, err := os.MkdirTemp(restoreParent, fmt.Sprintf("%d-", job.ID))
+ 	if err != nil {
+ 		return err
+diff --git a/server/workspace.go b/server/workspace.go
+index 1281d42..80e599b 100644
+--- a/server/workspace.go
++++ b/server/workspace.go
+@@ -82,36 +82,6 @@ func writeFileError(w http.ResponseWriter, err error, missing string) {
+ 	}
+ }
+ 
+-// pathCrossesSymlink reports whether any existing component of abs below root is a
+-// symlink. Kept for the archive-restore helper, whose destinations are built from
+-// server-side data and whose sources are renamed from a separate temp root, so it
+-// cannot use a single os.Root for both sides. The file-manager and skill routes do
+-// not use this check: os.Root resolves them directly and has no check-then-use gap.
+-func pathCrossesSymlink(root, abs string) bool {
+-	rel, err := filepath.Rel(root, abs)
+-	if err != nil {
+-		return true
+-	}
+-	current := root
+-	for _, part := range strings.Split(rel, string(os.PathSeparator)) {
+-		if part == "" || part == "." {
+-			continue
+-		}
+-		current = filepath.Join(current, part)
+-		info, err := os.Lstat(current)
+-		if os.IsNotExist(err) {
+-			return false
+-		}
+-		if err != nil {
+-			return true
+-		}
+-		if info.Mode()&os.ModeSymlink != 0 {
+-			return true
+-		}
+-	}
+-	return false
+-}
+-
+ func wsDisplay(rel string) string {
+ 	if rel == "." {
+ 		return ""

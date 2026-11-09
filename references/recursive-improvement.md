@@ -160,3 +160,27 @@ intentionally small and can itself be improved by the same loop.
   restore check mattered, remove only that check, run the probe, capture the
   `err=<nil>` escape, restore the file, and rerun. A targeted revert produces
   cleaner before/after evidence than stashing the whole patch.
+- **A journal is a timing oracle.** F-006's restore wrote its journal after the
+  destination check and before the first rename, so polling for the journal
+  made the race deterministic: 20/20 escapes. When a check-then-use window is
+  suspected, look for any durable side effect (journal, lock file, temp file)
+  that marks the interval and trigger on it instead of sleeping.
+- **One root for both sides.** The fix for that race was not a stronger path
+  check; it was deriving the source and destination names under one `os.Root`
+  opened on the data dir. If a helper needs two roots, that is a design signal:
+  re-anchor the paths so the operation stays inside one descriptor.
+- **A launch configuration is authority, not metadata.** MCP tool calls were
+  `AskUser`-gated while the `create_mcp` write that installs the stdio command
+  was unconditionally Allowed. Any control attached to "use the capability"
+  must also cover "configure the capability", or the configuration path is the
+  bypass. Enumerate paired read/write and call/configure tools together.
+- **Startup work inherits no per-call gate.** `discoverEmptyMCPsOnStartup`
+  launched every enabled MCP with an empty cache, regardless of visibility, so
+  the command ran with no agent and no task. When reviewing an approval gate,
+  follow the object into every background consumer: startup discovery, retry
+  loops, workers, and reconciliation jobs.
+- **Fixture cleanup order is part of the test.** A `t.Cleanup` registered after
+  `defer m.Close()` runs against a closed pool and silently leaves rows behind.
+  Use a LIFO `defer` before the close (or pre-delete the fixed-name rows) and
+  rerun the suite; the F-007 second run is what exposed it. Fix the fixture, not
+  the assertion.

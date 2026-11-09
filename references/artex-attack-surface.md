@@ -30,6 +30,7 @@ State the model in the report. "Critical" for M2 is often "by design" for M1.
 | A9 | Build downloads unverified binaries and `@latest` packages | Medium | static | `Dockerfile:55,71,81,87,115` |
 | A10 | Setup token printed to logs | Low | static | `server/auth.go` (`initSetupToken`) |
 | A11 | Authenticated traffic ingest accepts arbitrary hosts (evidence poisoning) | Medium (M2) | static | `server/traffic_ingest.go:22` |
+| A12 | Agent-facing MCP write installs a stdio launcher that executes outside the MCP approval gate | High (M1/M2 when the agent can be steered) | confirmed (F-007) | `server/platform_tools.go` (`toolCreateMCP`), `server/mcpdiscover.go` (`discoverEmptyMCPsOnStartup`) |
 
 Sound areas are listed in §6. Do not report those as gaps.
 
@@ -166,6 +167,30 @@ Sound areas are listed in §6. Do not report those as gaps.
 
 **Fix.** Scope ingest to a task/session, sign captures, and mark extension-ingested traffic as a distinct provenance class.
 
+### A12 — Agent-facing MCP write installs a stdio launcher
+
+**Anchor.** `server/platform_tools.go:379` (`toolCreateMCP`),
+`server/platform_tools.go:400` (`toolUpdateMCP`), `server/mcpdiscover.go:77`
+(`discoverEmptyMCPsOnStartup`), `server/orchestration.go:134` (`wrTool` returns
+`permission.Allowed()`).
+
+**Mechanism.** `create_mcp` is seeded into the `tools` table and bound to the
+built-in Auto agent (`platformToolKeys`, `seedAutoDefaultBindings`). Every
+platform write tool is unconditionally Allowed. The schema accepts
+`transport=stdio` plus `command`/`args`, and `connectMCP` starts that command
+with `mcp.NewStdioClient`. MCP *tool calls* are `AskUser`-gated, but the launch
+command is not; startup discovery then launches every enabled MCP with an empty
+cache regardless of visibility. An agent that can be steered to call
+`create_mcp` therefore reaches host command execution without the approval
+prompt, and the row retries on later starts because a one-shot command leaves
+the cache empty.
+
+**Fix.** Agent-facing MCP tools accept only `http`/`sse` with a URL;
+`update_mcp` also refuses a missing id and an existing operator-managed stdio
+row. Operator `POST /api/mcp` keeps stdio. Confirmed by F-007: the pre-fix probe
+executed the command on discovery, the post-fix probe is rejected before
+persistence, and the HTTP control still succeeds.
+
 ## 3. Chain: symlink → key → admin (the one to prove first)
 
 | # | Stage | Action | Artifact | Confidence |
@@ -225,7 +250,7 @@ Ask these of any AI pentest/agent product:
 ## 7. What is still unverified
 
 - No runtime test of A1/A4/A5/A7 (no Docker/Postgres on the audit host).
-- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). The remaining non-DB management modules (custom tools, MCP, prompt templates) remain route-by-route unverified.
+- The PostgreSQL-backed routes were exercised under F-005's loopback probe: anonymous access (11 routes, all `401`), cross-task goal/constraint/scope/credential/rule operations, archive identifiers, and SQL metacharacters on the archive/findings/log filters. No authz or injection defect held. The file routes are now covered by F-006's loopback matrix (skill read/write/dirs/delete/meta, chat uploads, workspace, archive restore). F-007 covered MCP create/update: agent stdio is rejected, HTTP is accepted, and the operator route still creates stdio. The remaining non-DB management modules (custom tools, prompt templates) remain route-by-route unverified, and no probe shows target content reaching the Auto agent unprompted.
 - No review of `mcphttp/`, `llmrec/`, `enrich/`, or the browser extension's message handling beyond permissions.
 - No CORS/CSRF browser test; the analysis is header-level only.
 - `guard.New()` is documented as the pentest-task guard, but current non-test call sites all use `NewWithInterceptor`; confirm per version before claiming a rule-less mode.

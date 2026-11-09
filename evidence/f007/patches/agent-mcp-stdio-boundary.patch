@@ -1,0 +1,68 @@
+diff --git a/server/platform_tools.go b/server/platform_tools.go
+index 6970b07..1a740e0 100644
+--- a/server/platform_tools.go
++++ b/server/platform_tools.go
+@@ -341,6 +341,26 @@ func mcpSchema(withID bool) map[string]any {
+ 	return objSchema(props, required...)
+ }
+ 
++// validateAgentMCPTarget keeps the agent-facing MCP tools away from stdio.
++// connectMCP starts a stdio server with command+args (mcp.NewStdioClient), and
++// startup discovery walks every enabled MCP with an empty cache regardless of
++// visibility. MCP *calls* are AskUser-gated; letting an Allowed agent tool write
++// the launch command would reach the same execution without that gate, so stdio
++// stays an operator-only action (POST /api/mcp, System → MCP).
++func validateAgentMCPTarget(transport, url string) error {
++	switch strings.ToLower(strings.TrimSpace(transport)) {
++	case "http", "sse":
++		if strings.TrimSpace(url) == "" {
++			return fmt.Errorf("%s MCP requires a url", strings.ToLower(strings.TrimSpace(transport)))
++		}
++		return nil
++	case "stdio":
++		return fmt.Errorf("stdio MCP servers launch a local process and are operator-only; add them on the System → MCP page, or use an http/sse transport")
++	default:
++		return fmt.Errorf("transport must be http or sse (stdio is operator-only)")
++	}
++}
++
+ func (a mcpToolInput) toDB() *db.MCPServer {
+ 	enabled := true
+ 	if a.Enabled != nil {
+@@ -366,6 +386,9 @@ func (s *Server) toolCreateMCP() actool.CoreTool {
+ 			if strings.TrimSpace(a.Name) == "" || strings.TrimSpace(a.Transport) == "" {
+ 				return actool.Errorf("name / transport are required"), nil
+ 			}
++			if err := validateAgentMCPTarget(a.Transport, a.URL); err != nil {
++				return actool.Errorf(err.Error()), nil
++			}
+ 			id, err := s.m.pg.SaveMCP(a.toDB())
+ 			if err != nil {
+ 				return actool.Errorf(err.Error()), nil
+@@ -383,6 +406,26 @@ func (s *Server) toolUpdateMCP() actool.CoreTool {
+ 			if a.ID == 0 {
+ 				return actool.Errorf("id is required"), nil
+ 			}
++			servers, err := s.m.pg.ListMCP()
++			if err != nil {
++				return actool.Errorf(err.Error()), nil
++			}
++			var existing *db.MCPServer
++			for _, server := range servers {
++				if server.ID == a.ID {
++					existing = server
++					break
++				}
++			}
++			if existing == nil {
++				return actool.Errorf(fmt.Sprintf("MCP does not exist: id=%d", a.ID)), nil
++			}
++			if strings.EqualFold(existing.Transport, "stdio") {
++				return actool.Errorf("this stdio MCP is operator-managed; edit it on the System → MCP page"), nil
++			}
++			if err := validateAgentMCPTarget(a.Transport, a.URL); err != nil {
++				return actool.Errorf(err.Error()), nil
++			}
+ 			if _, err := s.m.pg.SaveMCP(a.toDB()); err != nil {
+ 				return actool.Errorf(err.Error()), nil
+ 			}

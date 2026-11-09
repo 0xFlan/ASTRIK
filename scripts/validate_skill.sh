@@ -42,6 +42,16 @@ required=(
   "evidence/f006/logs/f006-archive-after.log"
   "evidence/f006/logs/go-test-run1.log"
   "evidence/f006/logs/go-test-run2.log"
+  "findings/f007-archive-restore-and-mcp-launch-chain.md"
+  "evidence/f007/README.md"
+  "evidence/f007/repro/zz_evidence_f007_test.go"
+  "evidence/f007/patches/archive-restore-single-root.patch"
+  "evidence/f007/patches/agent-mcp-stdio-boundary.patch"
+  "evidence/f007/patches/tests.patch"
+  "evidence/f007/logs/f007-before.log"
+  "evidence/f007/logs/f007-after.log"
+  "evidence/f007/logs/go-test-run1.log"
+  "evidence/f007/logs/go-test-run2.log"
 )
 
 for f in "${required[@]}"; do
@@ -51,8 +61,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.10 |' README.md; then
-  echo "README revision is not 1.10" >&2
+if ! grep -q '| Revision | 1.11 |' README.md; then
+  echo "README revision is not 1.11" >&2
   exit 1
 fi
 
