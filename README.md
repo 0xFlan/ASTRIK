@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.1 |
+| Revision | 1.2 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 1.0 | 2026-11-09 | Initial operating skill and reference set |
 | 1.1 | 2026-11-09 | Added the web-auth technique pack, the five-request field protocol, the sanitized field test, and this ISO-structured README |
+| 1.2 | 2026-11-09 | Added the authenticated CORS-allowlist and future-dated-signature chain patterns and the S65 conditional field-test summary |
 
 ## 1 Scope
 
@@ -172,7 +173,7 @@ The verb **shall** denotes a mandatory requirement; **should** denotes a recomme
 
 8.3 A negative result **shall** be retained; it prevents re-treading and demonstrates that the method can kill a hypothesis.
 
-8.4 The 2026-11-09 field test is summarized in Annex C. It produced two negatives with five read-only requests and no finding.
+8.4 The 2026-11-09 field test is summarized in Annex C. It produced two negatives with five read-only requests and no finding. The S65 follow-up in Annex D produced two conditional positives and no standalone finding.
 
 ## 9 Records
 
@@ -253,6 +254,22 @@ The ARTEX and Pojun source trees are not bundled; pins are recorded in `referenc
 | Evidence | Byte-identical bodies, identical redirect targets, no canary reflection |
 | Finding | None; both hypotheses killed |
 | Lesson | A cookie-write primitive is not server acceptance; a wildcard CORS pair is not a credentialed read |
+
+Raw captures and target identifiers are withheld from this public repository.
+
+## Annex D — S65 field test summary (2026-11-09)
+
+| Item | Record |
+|---|---|
+| Target class | Public C2 SaaS bounty surface; authenticated account route |
+| Authorization | Published bounty program; read-only |
+| Requests | 30 explicit GET/OPTIONS; no POST/PUT/DELETE; controlled account only |
+| CORS finding | Authenticated route reflected any `*.c2` origin with credentials; unrelated suffixes rejected |
+| Cookie-only read | 403; no data read |
+| Unregistered-key read | 403 `invalid Signature match`; registered key plus time-var returned 200 |
+| Signature freshness | +30d and +365d accepted; -30d rejected |
+| Disposition | Two conditional positives; no standalone submission; no customer data |
+| Lesson | A reflected origin is a policy gap; prove cookie-only or key-confused acceptance before claiming a read |
 
 Raw captures and target identifiers are withheld from this public repository.
 

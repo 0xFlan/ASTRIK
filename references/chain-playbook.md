@@ -37,6 +37,8 @@ Rules:
 | postMessage handoff | `postMessage`, `event.origin`, `endsWith` allowlist, opener | Cross-origin message | Key/token handoff |
 | CORS wildcard pair | `ACAO:*` + `ACAC:true`, origin reflection, browser credentials | Usually none (browser gate) | Negative; do not report alone |
 | HTML sink gate | Reflection plus a gate flag (`show_err_desc`, `useHtml`) | Conditional XSS | Stored XSS, admin action |
+| CORS authenticated allowlist | Exact reflection of any cookie-parent subdomain, `ACAC:true` | Credentialed request surface | Cross-origin read if a cookie-only or key-confused route exists |
+| Future-dated signature | `X-*-Date` at +30d/+365d with a fresh time-var | Upper-bound gap | Replay of a captured signed request + session |
 | Access control | Sequential/UUID IDs, tenant header, bulk endpoints, method swap, `/v1` vs `/v2` | BOLA/BFLA read or write | Data export, victim email change, privilege escalation |
 | Injection | SQLi, NoSQLi, template, command, deserialization, XXE, SSRF | Query/file/network capability | Credential harvest, metadata credentials, RCE |
 | File handling | Traversal, symlink follow, upload type, archive extract, filename handling | Arbitrary read/write | Secret read, stored XSS, webshell |
@@ -70,7 +72,7 @@ Write the ledger:
 
 If any row is `inferred`, the chain is **partial**. State the missing link and cap severity at the weakest proven row.
 
-## 4. Ten chain templates
+## 4. Chain templates
 
 ### T1 — Secret → forge → admin
 `read key/config/backup` → `recover signing key or DB creds` → `mint token or direct DB auth` → `admin action`.
@@ -131,6 +133,14 @@ Minimum proof: script execution in a controlled browser, not a reflected string.
 ### T15 — CORS wildcard (negative pattern)
 `ACAO:*` + `ACAC:true` → `browser credentialed fetch` → blocked unless the exact origin is reflected and a secret is in the body.
 Minimum proof: for a negative, five origins, OPTIONS, and a `credentials:'include'` browser fetch. Record the block; do not report the header pair alone.
+
+### T16 — Parent-cookie origin reflection
+`any subdomain can write the parent cookie` → `authenticated API reflects any cookie-parent subdomain origin with ACAC:true` → `protected route accepts cookie-only or a client-registered key` → `cross-origin account read`.
+Minimum proof: a valid preflight is only the policy gap. Prove the protected route accepts the parent cookie without a registered signature, or accepts a key the attacker can register. A self-generated key rejected with `invalid Signature match` means key binding; record the negative.
+
+### T17 — Future-dated signature replay
+`capture a signed request (signature + time-var) and the session cookie` → `replay with a date +30d/+365d` → `read the response from an allowed origin`.
+Minimum proof: a registered-key request with a far-future date returns 200 while the same request with a far-past date is rejected. The time-var is the remaining gate; do not claim a 365-day replay unless its lifetime is also unbounded. Without a captured signed request this is a conditional hardening finding, not a PoC.
 
 ## 5. Amplifiers
 

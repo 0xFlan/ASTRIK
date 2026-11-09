@@ -44,8 +44,11 @@ Rules:
 
 - A `401` without the cookie is a **session gap**, not a signature defect. Do not call it a broken signature.
 - A `200` with a far-future date **and** the session cookie is a replay window. Impact requires a stolen signed request plus the session, so cap severity accordingly.
+- Test both bounds. A far-future date accepted is an upper-bound gap; a far-past date rejected is only half a control. If the server also issues a time-var, that nonce is the remaining freshness gate; measure its lifetime separately.
 - Do not replay state-changing requests. Prove the window on a read-only route.
 - Do not attack keys or brute-force the HMAC/RSA material.
+
+Field test S65 (2026-11-09): with a registered key and a fresh server-issued time-var, `X-C2-Date` at +30 days and +365 days both returned 200; -30 days returned 403 `invalid date string`. The time-var lifetime was not measured, so this is an upper-bound gap, not a proven 365-day replay window.
 
 ## 3. Parent-domain cookie shadowing
 
@@ -100,6 +103,8 @@ Test:
 - If `ACAO` is constant `*`, the credentialed read is blocked by the browser. Record the negative.
 
 Never report the header pair alone as a vulnerability.
+
+**Authenticated route allowlist.** A protected API can reflect any subdomain of the cookie parent (`evil.c2.example.com`) while rejecting unrelated suffixes. Test five origins: the legitimate origin, a real sibling, a synthetic device-style subdomain, an unrelated suffix, and `null`. Reflection with `ACAC:true` is a policy gap, not a read: test cookie-only and unregistered-key requests separately. Field test S65: any `*.c2` origin was reflected on the account route; cookie-only and a fresh unregistered 1024-bit key were both 403; a registered key plus a fresh time-var returned 200. No read without the key.
 
 ## 6. HTML sink gating
 
@@ -159,6 +164,8 @@ Sequential, one second apart. Store the raw request and response, body size, SHA
 | Parent-domain auth cookie accepted as console state | **Negative** — 302 locale redirect, identical body hash, no `Set-Cookie`, canary absent |
 
 No finding. The test demonstrates two useful negatives: a cookie-write primitive is not server acceptance, and a wildcard CORS pair is not a credentialed read. Target details and raw captures are withheld from this public repository.
+
+**S65 (2026-11-09).** Authenticated CORS and signature freshness. 30 explicit read-only GET/OPTIONS, no POST/PUT/DELETE. The protected account route reflected any `*.c2` origin with credentials; cookie-only and unregistered-key requests were 403; a registered key plus a fresh time-var was 200. Signed dates at +30d and +365d were accepted, while -30d was rejected. Conditional only; no data read without a registered signature, and no captured signed request. Raw captures are withheld.
 
 ## 11. Checklist
 
