@@ -1,0 +1,15 @@
+=== RUN   TestF013CrossTaskFindingTrafficBind
+2026/11/09 14:26:56 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 14:26:56 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 14:26:56 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF013CrossTaskFindingTrafficBind1895051402/004/jwt.key
+2026/11/09 14:26:56 [auth] no admin password is set. Setup token for the /setup page: 6dd9b5ea0ef15fd50025c623a8944efa
+2026/11/09 14:26:56 [btw] recover: context canceled
+2026/11/09 14:26:56 [engine] built provider for LLM profile 230 (anthropic / claude-x)
+2026/11/09 14:26:56 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 14:26:56 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 14:26:56 [manager] reloaded 170 task(s) from PG
+2026/11/09 14:26:56 [task-archive] worker: context canceled
+F013_PREFIX cross_bind=bound raw_head_secret=true raw_body_has_A=true
+--- PASS: TestF013CrossTaskFindingTrafficBind (0.13s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.621s

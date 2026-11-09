@@ -88,7 +88,22 @@ required=(
   "evidence/f011/logs/f011-after.log"
   "evidence/f011/logs/go-test-run1.log"
   "findings/f012-live-model-prompt-injection.md"
+  "findings/f013-finding-traffic-scope.md"
+  "evidence/f013/README.md"
+  "evidence/f013/repro/zz_evidence_f013_test.go"
+  "evidence/f013/patches/finding-traffic-scope.patch"
+  "evidence/f013/logs/f013-prefix.log"
+  "evidence/f013/logs/f013-fixed.log"
+  "evidence/f013/logs/go-test.log"
+  "findings/f014-alternate-traffic-routes.md"
+  "evidence/f014/README.md"
+  "evidence/f014/repro/zz_evidence_f014_routes_test.go"
+  "evidence/f014/logs/f014-routes.log"
+  "findings/f015-injection-variant-matrix.md"
   "evidence/live/README.md"
+  "evidence/live/probes-1.16.log"
+  "evidence/live/probes-1.16.json"
+  "evidence/live/repro/zz_evidence_live_injection_variants_test.go"
   "evidence/live/probe.log"
   "evidence/live/probe.json"
   "evidence/live/repro/zz_evidence_live_injection_test.go"
@@ -101,8 +116,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.15 |' README.md; then
-  echo "README revision is not 1.15" >&2
+if ! grep -q '| Revision | 1.16 |' README.md; then
+  echo "README revision is not 1.16" >&2
   exit 1
 fi
 
