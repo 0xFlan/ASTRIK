@@ -113,3 +113,9 @@ intentionally small and can itself be improved by the same loop.
   but exited at `open stores` because PostgreSQL was absent. The request proof
   used the production `Handler()`; recording that limitation is better than
   calling a test harness a full server run.
+- **Bound the allocator, not just the output.** F-004's zstd frame was 72 bytes
+  and the ZIP was 228 bytes, but the declared 128 MiB window allocated ~135 MB
+  before the 20 MiB output cap could act. The guard is a decoder option; the
+  regression test asserts `400 window size exceeded` after the fix and still
+  accepts a normal zstd archive. For any `io.LimitReader` or output-size cap,
+  inspect the decoder's own window, dictionary, and metadata allocations.

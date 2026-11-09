@@ -20,6 +20,7 @@ required=(
   "findings/f001-ghidra-scriptpath-rce-chain.md"
   "findings/f002-chain-next-bypass-to-zstd-panic.md"
   "findings/f003-jwt-route-bypass-does-not-hold.md"
+  "findings/f004-zstd-window-memory-amplification.md"
 )
 
 for f in "${required[@]}"; do
@@ -29,8 +30,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.7 |' README.md; then
-  echo "README revision is not 1.7" >&2
+if ! grep -q '| Revision | 1.8 |' README.md; then
+  echo "README revision is not 1.8" >&2
   exit 1
 fi
 

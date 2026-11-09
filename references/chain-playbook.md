@@ -147,6 +147,10 @@ Minimum proof: exact replay returns 200 twice; then test a fresh signature at th
 `capture signed request headers` → `victim visits a script-capable *.c2 origin` → `send exact headers with the session cookie` → `reflected ACAO/ACAC exposes the response`.
 Minimum proof: exact replay is 200 with the controlled session, and the S65-style preflight reflects the origin. The missing link is capture of the signed headers; S49.1 parent-cookie write is not required for this chain. Cap at Medium until a real capture vector is shown.
 
+### T19 — Archive decoder memory amplification
+`authenticated upload/extract` → `compressed frame declares a large decoder window` → `decoder allocates the window before the output cap` → `a tiny request consumes hundreds of MB`.
+Minimum proof: record the archive's compressed size, the frame's declared window, and the measured heap after a forced GC. Then add a decoder option that caps the window and show the same archive returns a bounded error while a normal archive still succeeds. F-004 used a 228-byte ZIP with a 128 MiB window: 201 and ~135 MB before, 400 and ~26 KB after `WithDecoderMaxWindow(8<<20)`.
+
 ## 5. Amplifiers
 
 Multiply severity when a primitive reaches any of these. Test for them explicitly:
@@ -191,6 +195,7 @@ Then test the cheapest candidate. A chain usually dies because the operator stop
 
 - **Bug salad**: unrelated lows stapled together with "an attacker could". No shared artifact, no chain.
 - **Version-match link**: "this version has CVE-X, therefore RCE". That is L1, not a link.
+- **Output cap is not a memory cap**: a decompressor can allocate a declared window or dictionary before producing bytes. Measure both the decoded output and the decoder's window/allocation; cap the option, not only `io.LimitReader`.
 - **Destructive proof**: dropping a table to show SQLi. Read one row.
 - **Out-of-scope pivot**: using a scoped bug to reach an unscoped host. Stop; report the pivot surface.
 - **PII hoard**: exporting 1,000 records to prove an IDOR. One is enough.

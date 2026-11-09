@@ -46,7 +46,7 @@ influence in this deployment, not that the CVE is fake.
 
 | Package | Version | Adv. | Dependency path | Reachability verdict |
 |---|---|---|---|---|
-| `github.com/klauspost/compress` | 1.18.6 | 2 | direct Go | **Confirmed L2 DoS, post-auth (F-002/F-003).** `zstd` imported in `server/skill_zip.go` and `server/task_archive_package.go`; the advisory frame wrapped in a ZIP method-93 entry panics through `fsUploadSkill → readZipEntry` on 1.18.6 (`index out of range [33077]`) and returns `400 corrupt input: weights tableLog too big` on 1.20.2. The upload route is behind `requireAuth`, so the crash requires a JWT. GO-2026-5841 is `s2` (not called). Fix: 1.20.2; patch in `evidence/zstd/patches/`. |
+| `github.com/klauspost/compress` | 1.18.6 | 2 | direct Go | **Confirmed L2 DoS, post-auth (F-002/F-003).** `zstd` imported in `server/skill_zip.go` and `server/task_archive_package.go`; the advisory frame wrapped in a ZIP method-93 entry panics through `fsUploadSkill → readZipEntry` on 1.18.6 (`index out of range [33077]`) and returns `400 corrupt input: weights tableLog too big` on 1.20.2. The upload route is behind `requireAuth`, so the crash requires a JWT. GO-2026-5841 is `s2` (not called). Fix: 1.20.2; patch in `evidence/zstd/patches/`. **F-004:** the server's `ZipDecompressor` accepted a 128 MiB zstd window; a 228-byte authenticated archive returned `201` and retained ~135 MB of heap on both 1.18.6 and 1.20.2. The `server/skill_zip.go` patch adds an 8 MiB decoder-window cap and returns a bounded `400`; see `evidence/archive/` and `findings/f004-zstd-window-memory-amplification.md`. |
 | `github.com/andybalholm/brotli` | 1.2.1 | 1 | indirect Go | Not reachable: not imported by application code; OSV `called:false`. Fix: 1.2.7. |
 | `golang.org/x/crypto` | 0.58.0 | 1 | direct Go | Not reachable: advisory is `openpgp`, which is not imported; `called:false`. Bump on maintenance. |
 | `next` | 16.2.9 | 20 | direct runtime | **Middleware bypass disproven for this app (F-002).** The advisory requires a single `config.i18n.locales` entry; `web/next.config.mjs` has no `i18n` block, and the matcher covers locale-prefixed paths. A real 16.2.9 build redirected `/function/tasks`, `/en/function/tasks`, RSC, prefetch, and `x-middleware-subrequest` probes to `/login` (all 307). The upstream class was reproduced in a single-locale fixture: `/en/protected` returned 200 on 16.2.9 and 307 on 16.2.11. Rewrites SSRF is not reachable (static env destination); image RCE is config-gated; Server Actions/`use cache`/`next/og` are unused. Fix: 16.2.11; patch in `evidence/next/patches/`. |
@@ -73,8 +73,32 @@ traversal returned `404`; no request panicked. The valid-token control reached
 `fsUploadSkill` (1.18.6 panic, 1.20.2 bounded 400). The auth boundary holds; the
 crash remains post-auth. Details: `findings/f003-jwt-route-bypass-does-not-hold.md`.
 
+### Archive handling (F-004)
+
+The production `Server.Handler()` was driven with the oversized-window archive on
+compress 1.18.6 and 1.20.2. Before the fix, each returned `201` and installed a
+skill; after a forced GC, `HeapAlloc` rose by 135,163,008 bytes (1.18.6) and
+135,199,376 bytes (1.20.2). The ZIP is only 228 bytes and the frame is 72 bytes.
+After adding `zstd.WithDecoderMaxWindow(8<<20)`, the same archive returns
+`400 {"error":"failed to read SKILL.md: window size exceeded"}` with a heap delta
+of +26,136 / -11,096 bytes. A normal zstd archive still returns `201`.
+
+The same run rejected all eight ZIP traversal shapes (`..`, nested `..`,
+backslashes, doubled separators, `%2e%2e`, drive/colon, NUL, absolute path) with
+`400` and no outside canary. The tar.zst extractor rejected traversal, `.`,
+`a/..`, absolute paths, symlinks, hardlinks, FIFOs, and a forged 1 EiB header;
+the task package is server-generated and checksummed, so this is defense-in-depth.
+Details: `findings/f004-zstd-window-memory-amplification.md`.
+
 ## What this does and does not prove
 
+- F-004 is a confirmed authenticated memory-exhaustion primitive (L2→availability
+  impact): the 20 MiB upload cap does not bound the decoder window. The 8 MiB
+  server patch closes it; it is not an unauthenticated chain.
+- The full `go test ./...` is not green on this host because PostgreSQL is
+  absent; all non-`server` packages pass and DB-dependent `server` tests fail at
+  `no database config found`. The targeted F-004 tests pass on 1.18.6 and 1.20.2.
+  This is the same execution-layer limitation recorded in F-003.
 - The Go panic is a reachable code path (L2): the vulnerable symbol is compiled
   in and called on an archive path. F-003 exercised its authentication boundary
   with the full route stack: anonymous requests do not reach it, and a valid JWT

@@ -1,0 +1,30 @@
+=== RUN   TestSkillUploadRejectsOversizedZstdWindow
+    zz_evidence_archive_test.go:217: archive_sha256=a843104ffb6f8ddc30934eb52b62e3646a19c1b9095125bc7ca861aac2ec63ba archive_bytes=228 frame_sha256=20ff032aa79fd83b345f990e18203b0d88cb4047c5a64a52f15b7e165bf6f076 frame_bytes=72
+    zz_evidence_archive_test.go:223: oversized_window status=400 content_type="application/json" body="{\"error\":\"failed to read SKILL.md: window size exceeded\"}\n" heap_before=8359664 heap_after=8385800 heap_delta=26136
+    zz_evidence_archive_test.go:244: legitimate_zstd status=201 body="{\"files\":1,\"name\":\"archive-window-probe\"}\n"
+--- PASS: TestSkillUploadRejectsOversizedZstdWindow (0.00s)
+=== RUN   TestSkillUploadTraversalMatrix
+    zz_evidence_archive_test.go:286: traversal case_0 name="../outside.sh" archive_bytes=331 status=400 body="{\"error\":\"archive contains an illegal path ../outside.sh: invalid path: '..' not allowed\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_1 name="a/../../outside.sh" archive_bytes=341 status=400 body="{\"error\":\"archive contains an illegal path a/../../outside.sh: invalid path: '..' not allowed\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_2 name="..\\..\\outside.sh" archive_bytes=337 status=400 body="{\"error\":\"archive contains an illegal path ..\\\\..\\\\outside.sh: invalid path: illegal character '\\\\\\\\'\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_3 name="a//outside.sh" archive_bytes=331 status=400 body="{\"error\":\"archive contains an illegal path a//outside.sh: invalid path: must be relative with no empty segments\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_4 name="%2e%2e/outside.sh" archive_bytes=339 status=400 body="{\"error\":\"archive contains an illegal path %2e%2e/outside.sh: invalid path: illegal character '%'\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_5 name="C:/outside.sh" archive_bytes=331 status=400 body="{\"error\":\"archive contains an illegal path C:/outside.sh: invalid path: illegal character ':'\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_6 name="a\x00b.sh" archive_bytes=317 status=400 body="{\"error\":\"archive contains an illegal path a\\u0000b.sh: invalid path: illegal character '\\\\x00'\"}\n"
+    zz_evidence_archive_test.go:286: traversal case_7 name="/var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestSkillUploadTraversalMatrix2289899159/002/absolute-escape.sh" archive_bytes=529 status=400 body="{\"error\":\"archive contains an illegal path /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestSkillUploadTraversalMatrix2289899159/002/absolute-escape.sh: invalid path: must be relative with no empty segments\"}\n"
+--- PASS: TestSkillUploadTraversalMatrix (0.00s)
+=== RUN   TestTaskArchiveExtractorRejectsUnsafeEntries
+    zz_evidence_archive_test.go:359: tar_entry="dot dot" type=48 name="../escape.txt" status=unsafe task archive path "../escape.txt"
+    zz_evidence_archive_test.go:359: tar_entry="nested dot dot" type=48 name="a/../../escape.txt" status=unsafe task archive path "a/../../escape.txt"
+    zz_evidence_archive_test.go:359: tar_entry="dot" type=48 name="." status=unsafe task archive path "."
+    zz_evidence_archive_test.go:359: tar_entry="trailing dot dot" type=48 name="a/.." status=unsafe task archive path "a/.."
+    zz_evidence_archive_test.go:359: tar_entry="symlink" type=50 name="link" status=unsupported task archive entry type 50
+    zz_evidence_archive_test.go:359: tar_entry="hardlink" type=49 name="link" status=unsupported task archive entry type 49
+    zz_evidence_archive_test.go:359: tar_entry="fifo" type=54 name="pipe" status=unsupported task archive entry type 54
+    zz_evidence_archive_test.go:377: tar_absolute name="/var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestTaskArchiveExtractorRejectsUnsafeEntries712148040/016/absolute-escape.txt" status=unsafe task archive path "/var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestTaskArchiveExtractorRejectsUnsafeEntries712148040/016/absolute-escape.txt"
+--- PASS: TestTaskArchiveExtractorRejectsUnsafeEntries (0.00s)
+=== RUN   TestTaskArchiveExtractorRejectsForgedSize
+    zz_evidence_archive_test.go:417: forged_size status=task archive exceeds extraction safety limits
+--- PASS: TestTaskArchiveExtractorRejectsForgedSize (0.00s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.526s

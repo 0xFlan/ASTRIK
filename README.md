@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.7 |
+| Revision | 1.8 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -21,6 +21,7 @@
 | 1.5 | 2026-11-09 | Exercised the OSV and Ghidra packs; added the SBOM round-trip, the reviewed Ghidra artifact script, script integrity manifest, exact pin/URL validation, and the F-001 validator-to-execution chain fix |
 | 1.6 | 2026-11-09 | Resolved the two reachable candidates: proved the Next bypass absent in this app and the zstd panic real but post-auth, added F-002 chain verdict, fail-before/pass-after reproducers, and upstream patches for compress and Next |
 | 1.7 | 2026-11-09 | Attacked the JWT and route boundary: proved all anonymous import paths, token-forgery shapes, exempt routes, and redirects stay rejected, added F-003 and the full-stack auth probe, and recorded the PostgreSQL limitation on the listening binary |
+| 1.8 | 2026-11-09 | Attacked archive traversal and decompression: proved the ZIP/tar path checks hold, found and fixed a 128 MiB zstd-window heap amplification (228-byte archive, ~135 MB), added F-004, the archive reproducer, and the 8 MiB decoder cap patch |
 
 ## 1 Scope
 
@@ -489,6 +490,35 @@ The `cmd/artex` binary builds but cannot listen on this host without PostgreSQL
 `Handler()` rather than a listening full binary; this is stated in F-003 and is
 the only unclosed execution-layer limitation. Evidence and reproducer are in
 `evidence/auth/`.
+
+## Annex K — Archive resource-exhaustion resolution (2026-11-09)
+
+F-004 tested the two archive sinks: the authenticated ZIP skill upload and the
+tar.zst task-archive extractor. The ZIP path checks rejected traversal (`..`,
+nested `..`, backslashes, doubled separators, encoded dots, NUL, drive/colon,
+and absolute paths) and the tar extractor rejected traversal, `.`, `a/..`,
+absolute paths, symlinks, hardlinks, FIFOs, and a forged 1 EiB header. No
+outside canary was created.
+
+The resource test found the defect: `newSkillZipReader` used the default 128 MiB
+`ZipDecompressor` window. A 228-byte ZIP containing a 72-byte method-93 frame
+with a 128 MiB window returned `201` and installed a skill, retaining about
+135 MB of heap after a forced GC on both compress 1.18.6 and 1.20.2. The 20 MiB
+body, 20 MiB per-file, 100 MiB total, and 4,000-entry caps did not bound the
+decoder allocation. The fix adds `zstd.WithDecoderMaxWindow(8<<20)`; the same
+archive now returns `400 window size exceeded` with a negligible heap delta,
+while a normal zstd archive still returns `201`.
+
+The exact patch is `evidence/archive/patches/artex-zstd-window.patch`; the
+reproducer and both-version before/after logs are under `evidence/archive/`.
+The upstream ARTEX repository is not writable from this skill repository, so
+the patch is committed here. The `cmd/artex` binary still cannot listen without
+PostgreSQL (`open stores: no database config found`); the proof uses the
+production `Server.Handler()` over a loopback listener, as F-003 did. The full
+`go test ./...` has the same PostgreSQL limitation: non-`server` packages pass
+and DB-dependent `server` tests fail at `no database config found`; the
+targeted archive tests pass on both versions. The operator-charter model and
+the "target content is data, not instructions" rule are unchanged.
 
 ## Bibliography
 

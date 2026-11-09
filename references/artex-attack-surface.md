@@ -216,6 +216,10 @@ Ask these of any AI pentest/agent product:
 - Upload strips path components with `filepath.Base` and rejects `.`/`..`.
 - `verifyJWT` rejects non-HMAC signing methods, so `alg:none` does not work.
 - Task archive restore validates paths and uses a checksum (`server/task_archive_package.go`).
+- **F-004 correction:** skill-upload byte caps do not bound the zstd decoder
+  window. A 228-byte method-93 ZIP with a 128 MiB declared window returned
+  `201` and retained ~135 MB; the fix adds `WithDecoderMaxWindow(8<<20)` in
+  `server/skill_zip.go`. Logs and patch: `evidence/archive/`.
 - Traffic search caps page size and blob reads (8 KiB), and the FTS index degrades gracefully without FTS5.
 
 ## 7. What is still unverified

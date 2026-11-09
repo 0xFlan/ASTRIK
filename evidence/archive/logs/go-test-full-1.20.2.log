@@ -1,0 +1,125 @@
+ok  	github.com/Autumn-27/artex/agent	0.444s
+ok  	github.com/Autumn-27/artex/cmd/artex	0.353s
+ok  	github.com/Autumn-27/artex/config	0.578s
+ok  	github.com/Autumn-27/artex/db	1.069s
+?   	github.com/Autumn-27/artex/enrich	[no test files]
+ok  	github.com/Autumn-27/artex/evidence	2.322s
+ok  	github.com/Autumn-27/artex/guard	2.029s
+ok  	github.com/Autumn-27/artex/intercept	0.792s
+ok  	github.com/Autumn-27/artex/llmpool	1.251s
+ok  	github.com/Autumn-27/artex/llmrec	1.528s
+ok  	github.com/Autumn-27/artex/mcphttp	8.771s
+ok  	github.com/Autumn-27/artex/notify	2.230s
+?   	github.com/Autumn-27/artex/report	[no test files]
+2026/11/09 12:11:10 [auth] JWT key migrated from /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyMigratesdata2010306528/001/data/jwt.key to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyMigratesdata2010306528/001/keys/jwt.key
+2026/11/09 12:11:10 [auth] JWT key migrated from /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyMigratesbase3828386126/001/base/jwt.key to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyMigratesbase3828386126/001/keys/jwt.key
+2026/11/09 12:11:10 [auth] JWT key migrated from /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyMigratesDataDirFirst2843663690/001/data/jwt.key to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyMigratesDataDirFirst2843663690/001/keys/jwt.key
+2026/11/09 12:11:10 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestLoadOrCreateJWTKeyGenerates159007155/001/keys/jwt.key
+--- FAIL: TestCostLedgerEurOnUsage (0.00s)
+    cost_ledger_test.go:14: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+2026/11/09 12:11:10 [work worker-1 · #1] idle turn (thinking only, no body text, no tools), injecting rerun instruction (1/2)
+2026/11/09 12:11:10 [work ] idle turn (thinking only, no body text, no tools), injecting rerun instruction (1/5)
+2026/11/09 12:11:10 [work ] idle turn (thinking only, no body text, no tools), injecting rerun instruction (2/5)
+2026/11/09 12:11:10 [work ] idle turn (thinking only, no body text, no tools), injecting rerun instruction (3/5)
+2026/11/09 12:11:10 [work ] idle turn (thinking only, no body text, no tools), injecting rerun instruction (4/5)
+2026/11/09 12:11:10 [work ] idle turn (thinking only, no body text, no tools), injecting rerun instruction (5/5)
+2026/11/09 12:11:10 [work ] idle turns (thinking only, no body text, no tools) reached the rerun cap 5, letting it finish
+--- FAIL: TestFindingTrafficToolUpgradePreservesCustomization (0.00s)
+    finding_traffic_test.go:81: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingTrafficAPIAndExport (0.00s)
+    finding_traffic_test.go:144: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingTrafficArchiveV3RoundTripAndRetry (0.00s)
+    finding_traffic_test.go:250: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingTrafficFailedReportDoesNotTrigger (0.00s)
+    finding_traffic_test.go:361: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingTrafficUTF8SegmentsAndInheritedWrites (0.00s)
+    finding_traffic_test.go:390: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingWorkflowAutoHintToPlannerAndSetting (0.00s)
+    finding_workflow_test.go:41: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingWorkflowMigrationPreservesUserConfiguration (0.00s)
+    finding_workflow_test.go:199: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestFindingWorkflowReporterBindsBeforeWritingReport (0.00s)
+    finding_workflow_test.go:266: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+2026/11/09 12:11:10 [llm-test] anthropic / m @ http://127.0.0.1:55281 — attempt 1/1 HTTP 200
+response body: {"id":"m","type":"message","role":"assistant","model":"m","content":[{"type":"text","text":"OK"}],"stop_reason":"end_turn","usage":{"input_tokens":1,"output_tokens":1},"data":[]}
+2026/11/09 12:11:10 [llm-test] anthropic / m @ http://127.0.0.1:55284 — attempt 1/1 HTTP 200
+response body: {"id":"m","type":"message","role":"assistant","model":"m","content":[{"type":"text","text":"OK"}],"stop_reason":"end_turn","usage":{"input_tokens":1,"output_tokens":1}}
+--- FAIL: TestOllamaKeylessProfileLifecycle (0.00s)
+    llm_ollama_test.go:108: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestOllamaListModels (0.00s)
+    llm_ollama_test.go:194: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestLLMTestStoredKeyFallbackIsTrimmed (0.00s)
+    llm_test_fallback_test.go:23: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestLLMTestStoredProfileUsesProfileEndpoint (0.00s)
+    llm_test_fallback_test.go:102: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestMCPHealthStateTransitions (0.00s)
+    mcp_health_test.go:14: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyEndToEndRealtimeDelivery (0.00s)
+    notify_api_test.go:249: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyChannelAPIMasksSecretsAndPreservesOnUpdate (0.00s)
+    notify_api_test.go:280: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyChannelAPICreateValidation (0.00s)
+    notify_api_test.go:365: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyFilterBlocksBelowThreshold (0.00s)
+    notify_api_test.go:395: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyDigestBatchesMultipleFindingsIntoOneMessage (0.00s)
+    notify_api_test.go:421: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyDisabledChannelDoesNotSend (0.00s)
+    notify_api_test.go:470: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyStatusChangeDelivery (0.00s)
+    notify_api_test.go:492: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyStatusChangeSuppressedByDefault (0.00s)
+    notify_api_test.go:523: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyTestMessageEndpoint (0.00s)
+    notify_api_test.go:549: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyDeliveriesHistoryAndRetry (0.00s)
+    notify_api_test.go:580: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyMetaAndSettingsRoundTrip (0.00s)
+    notify_api_test.go:652: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyDeepLinkUsesPublicBaseURL (0.00s)
+    notify_api_test.go:707: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyNoDeepLinkWithoutBaseURL (0.00s)
+    notify_api_test.go:732: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestNotifyDigestSegmentsAndDefersRemainder (0.00s)
+    notify_api_test.go:766: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestPlannerQuietSkipEdge (0.00s)
+    planner_quiet_test.go:15: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestPlannerQuietModeToggleMidRun (0.00s)
+    planner_quiet_test.go:83: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+2026/11/09 12:11:10 [task-archive] skipping symlink (unsupported by the archive, other files unaffected): /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestTaskArchivePackageSkipsSymlink417437205/001/payload/link.txt
+--- FAIL: TestTaskCredentialsFlow (0.00s)
+    task_credentials_test.go:15: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+2026/11/09 12:11:10 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 500ms (1/2): boom: upstream 500
+2026/11/09 12:11:10 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 1s (2/2): boom: upstream 500
+2026/11/09 12:11:11 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 500ms (1/2): boom: upstream 500
+2026/11/09 12:11:12 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 1s (2/2): boom: upstream 500
+2026/11/09 12:11:13 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 500ms (1/2): boom: upstream 500
+2026/11/09 12:11:13 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 1s (2/2): boom: upstream 500
+2026/11/09 12:11:14 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 500ms (1/2): boom: upstream 500
+2026/11/09 12:11:15 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 1s (2/2): boom: upstream 500
+2026/11/09 12:11:16 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 500ms (1/2): boom: upstream 500
+2026/11/09 12:11:16 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 1s (2/2): boom: upstream 500
+2026/11/09 12:11:17 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 500ms (1/2): boom: upstream 500
+2026/11/09 12:11:18 [task-llm] task 1 non-streaming call failed, retrying on the same provider after 1s (2/2): boom: upstream 500
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (1/2): openai: status 429: rate limit exceeded
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (2/2): openai: status 429: rate limit exceeded
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (1/2): openai: status 500: internal server error
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (2/2): openai: status 500: internal server error
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (1/2): dial tcp: network is unreachable
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (2/2): dial tcp: network is unreachable
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (1/2): anthropic: overloaded_error
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (2/2): anthropic: overloaded_error
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (1/2): dial tcp: connection reset by peer
+2026/11/09 12:11:19 [task-llm] task 7 pre-commit stream failure, retrying on the same provider after 0s (2/2): dial tcp: connection reset by peer
+--- FAIL: TestPauseShiftsTaskDeadlineOnResume (0.00s)
+    task_pause_deadline_test.go:15: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+2026/11/09 12:11:19 [toolusage] insert list_facts: ledger unavailable
+--- FAIL: TestTrafficIngestFlow (0.00s)
+    traffic_ingest_test.go:47: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+--- FAIL: TestTrafficIngestRequiresAuth (0.00s)
+    traffic_ingest_test.go:100: no database config found: the environment variable ARTEX_PG_DSN is not set, and config file /tmp/baarai-zstd-fixed/server/config.json provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry
+FAIL
+FAIL	github.com/Autumn-27/artex/server	11.035s
+ok  	github.com/Autumn-27/artex/sidequestion	2.140s
+ok  	github.com/Autumn-27/artex/traffic	6.508s
+FAIL

@@ -1,0 +1,20 @@
+diff --git a/server/skill_zip.go b/server/skill_zip.go
+index 8a1129f..da80b2d 100644
+--- a/server/skill_zip.go
++++ b/server/skill_zip.go
+@@ -68,7 +68,14 @@ func newSkillZipReader(buf []byte) (*zip.Reader, error) {
+ 	zr.RegisterDecompressor(zipMethodBzip2, func(r io.Reader) io.ReadCloser {
+ 		return io.NopCloser(bzip2.NewReader(r))
+ 	})
+-	zdec := zstd.ZipDecompressor(zstd.WithDecoderConcurrency(1))
++	// ZipDecompressor's default 128 MiB window is far larger than a skill
++	// archive needs and lets a 72-byte frame force ~135 MiB of retained heap.
++	// The zstd encoder's normal maximum window is 8 MiB; bound the decoder to
++	// that so a compressed upload cannot amplify into a memory-exhaustion DoS.
++	zdec := zstd.ZipDecompressor(
++		zstd.WithDecoderConcurrency(1),
++		zstd.WithDecoderMaxWindow(8<<20),
++	)
+ 	zr.RegisterDecompressor(zipMethodZstd, zdec)
+ 	zr.RegisterDecompressor(zipMethodZstdPKW, zdec)
+ 	return zr, nil
