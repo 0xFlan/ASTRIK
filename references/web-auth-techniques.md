@@ -50,6 +50,13 @@ Rules:
 
 Field test S65 (2026-11-09): with a registered key and a fresh server-issued time-var, `X-C2-Date` at +30 days and +365 days both returned 200; -30 days returned 403 `invalid date string`. The time-var lifetime was not measured, so this is an upper-bound gap, not a proven 365-day replay window.
 
+**Stateful time-vars.** A server-issued time-var can be reusable yet stateful. Test the exact same signed request twice, then a fresh signature at the same date, a higher date, a lower date, and after a new challenge. Two behaviors change the replay conclusion:
+
+- **Monotonic floor:** a higher accepted date can make a lower-date replay fail. The token is not a static bearer; the next legitimate request can invalidate an older capture.
+- **Rotation:** a new challenge can invalidate the previous token. Re-send the old exact request after requesting a new challenge.
+
+Do not infer a year-long replay window from an `exp` field around 31.5 million. Measure exact replay and separate `exp` from rotation and the date floor. S66: exact +365d and current-date requests each returned 200 twice; after +365d was accepted, the lower current-date replay was 403; a new challenge invalidated the prior token; the same token signed a different path at the same date. The effective window is bounded by rotation and the monotonic floor, not by `exp` alone.
+
 ## 3. Parent-domain cookie shadowing
 
 Look for `Set-Cookie` with `Domain=<parent>`, `SameSite=None`, and no `HttpOnly` on a value the console later reads (`*_lid`, `*_tid`, `*_hid`, `session`, `token`).
@@ -105,6 +112,8 @@ Test:
 Never report the header pair alone as a vulnerability.
 
 **Authenticated route allowlist.** A protected API can reflect any subdomain of the cookie parent (`evil.c2.example.com`) while rejecting unrelated suffixes. Test five origins: the legitimate origin, a real sibling, a synthetic device-style subdomain, an unrelated suffix, and `null`. Reflection with `ACAC:true` is a policy gap, not a read: test cookie-only and unregistered-key requests separately. Field test S65: any `*.c2` origin was reflected on the account route; cookie-only and a fresh unregistered 1024-bit key were both 403; a registered key plus a fresh time-var returned 200. No read without the key.
+
+**Exact replay + CORS.** A CORS reflection becomes a read only when paired with a captured signed request. An exact replay can be sent from a reflected `*.c2` origin with the victim's cookie; the missing artifact is the captured headers, not the CORS header. Do not count the CORS reflection alone.
 
 ## 6. HTML sink gating
 
@@ -166,6 +175,8 @@ Sequential, one second apart. Store the raw request and response, body size, SHA
 No finding. The test demonstrates two useful negatives: a cookie-write primitive is not server acceptance, and a wildcard CORS pair is not a credentialed read. Target details and raw captures are withheld from this public repository.
 
 **S65 (2026-11-09).** Authenticated CORS and signature freshness. 30 explicit read-only GET/OPTIONS, no POST/PUT/DELETE. The protected account route reflected any `*.c2` origin with credentials; cookie-only and unregistered-key requests were 403; a registered key plus a fresh time-var was 200. Signed dates at +30d and +365d were accepted, while -30d was rejected. Conditional only; no data read without a registered signature, and no captured signed request. Raw captures are withheld.
+
+**S66 (2026-11-09).** Stateful time-var replay. Exact current-date and +365d signed requests each returned 200 twice with the same body hash. A higher accepted date imposed a monotonic floor: the next lower-date replay was 403. A new challenge invalidated the prior token, and the same token signed a different path at the same date (200). The server `exp` field was around 31.5 million (roughly 365 days), but the effective window is bounded by rotation and the floor; post-expiry replay was not reachable at low rate. No captured-request/CORS PoC; no customer data.
 
 ## 11. Checklist
 

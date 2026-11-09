@@ -32,7 +32,8 @@ Rules:
 | Identity oracle | Login/register/reset differentials: status, message, timing | Valid usernames/emails | Password spray within policy, reset poisoning, phishing pretext |
 | Token weakness | JWT `alg:none`, weak HMAC, `kid` traversal, missing `aud`/`iss`, long TTL, no revocation, token in URL | Forged or replayable session | Admin API, persistence after password change |
 | Session transport | Non-HttpOnly cookie, `localStorage`, token in query/Referer, token in logs | Session theft path | Account takeover via XSS or log access |
-| Signed-request freshness | `X-*-Date`/signature headers, replay with shifted dates, with and without session | Replay window or session gap | Session replay, state change |
+| Signed-request freshness | `X-*-Date`/signature headers, exact replay, shifted dates, with and without session | Replay race window or session gap | Captured-request replay, state change |
+| Stateful time-var | exact signed replay twice; higher/lower date; new challenge | Rotation or monotonic floor | Short race window, not a year-long token |
 | Cookie scope/shadowing | `Domain=parent`, `SameSite=None`, controlled subdomain | Parent-cookie write | Session fixation, account confusion |
 | postMessage handoff | `postMessage`, `event.origin`, `endsWith` allowlist, opener | Cross-origin message | Key/token handoff |
 | CORS wildcard pair | `ACAO:*` + `ACAC:true`, origin reflection, browser credentials | Usually none (browser gate) | Negative; do not report alone |
@@ -138,9 +139,13 @@ Minimum proof: for a negative, five origins, OPTIONS, and a `credentials:'includ
 `any subdomain can write the parent cookie` → `authenticated API reflects any cookie-parent subdomain origin with ACAC:true` → `protected route accepts cookie-only or a client-registered key` → `cross-origin account read`.
 Minimum proof: a valid preflight is only the policy gap. Prove the protected route accepts the parent cookie without a registered signature, or accepts a key the attacker can register. A self-generated key rejected with `invalid Signature match` means key binding; record the negative.
 
-### T17 — Future-dated signature replay
-`capture a signed request (signature + time-var) and the session cookie` → `replay with a date +30d/+365d` → `read the response from an allowed origin`.
-Minimum proof: a registered-key request with a far-future date returns 200 while the same request with a far-past date is rejected. The time-var is the remaining gate; do not claim a 365-day replay unless its lifetime is also unbounded. Without a captured signed request this is a conditional hardening finding, not a PoC.
+### T17 — Stateful signed-request replay
+`capture a signed request (signature + time-var) and the session cookie` → `replay the exact request while the token is active` → `read the response from an allowed origin`.
+Minimum proof: exact replay returns 200 twice; then test a fresh signature at the same date, a higher date, a lower date, and after a new challenge. A higher accepted date can impose a monotonic floor that rejects lower-date replays; a new challenge can rotate the token. Do not infer a year-long replay from `exp`; report the observed pre-expiry window and the missing capture vector. Without a captured signed request this is a conditional hardening finding.
+
+### T18 — Exact replay + authenticated CORS
+`capture signed request headers` → `victim visits a script-capable *.c2 origin` → `send exact headers with the session cookie` → `reflected ACAO/ACAC exposes the response`.
+Minimum proof: exact replay is 200 with the controlled session, and the S65-style preflight reflects the origin. The missing link is capture of the signed headers; S49.1 parent-cookie write is not required for this chain. Cap at Medium until a real capture vector is shown.
 
 ## 5. Amplifiers
 

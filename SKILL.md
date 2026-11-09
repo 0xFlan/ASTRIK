@@ -118,6 +118,7 @@ For signed requests, parent-domain cookies, postMessage/opener handoffs, CORS, a
 - `ACAO:*` with `ACAC:true` is browser-inert for credentialed reads unless the exact origin is reflected.
 - An authenticated allowlist that reflects any cookie-parent subdomain is a real policy gap, but it is not a read until a cookie-only or registered-key request succeeds.
 - A far-future signature date is a replay window only if the signed request also carries a valid session and a live time-var; test both date bounds.
+- A server-issued time-var can be reusable but stateful: exact replay may succeed while a higher accepted date creates a monotonic floor and a new challenge rotates the token. Measure both before calling it a long replay window.
 
 ## 6. Evidence bar
 

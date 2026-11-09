@@ -3,7 +3,7 @@
 | Item | Value |
 |---|---|
 | Document identifier | ARTEX-PENTEST-SKILL-001 |
-| Revision | 1.2 |
+| Revision | 1.3 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -16,6 +16,7 @@
 | 1.0 | 2026-11-09 | Initial operating skill and reference set |
 | 1.1 | 2026-11-09 | Added the web-auth technique pack, the five-request field protocol, the sanitized field test, and this ISO-structured README |
 | 1.2 | 2026-11-09 | Added the authenticated CORS-allowlist and future-dated-signature chain patterns and the S65 conditional field-test summary |
+| 1.3 | 2026-11-09 | Corrected the replay model for stateful time-vars, added exact-replay/CORS chain T18, and recorded S66 |
 
 ## 1 Scope
 
@@ -173,7 +174,7 @@ The verb **shall** denotes a mandatory requirement; **should** denotes a recomme
 
 8.3 A negative result **shall** be retained; it prevents re-treading and demonstrates that the method can kill a hypothesis.
 
-8.4 The 2026-11-09 field test is summarized in Annex C. It produced two negatives with five read-only requests and no finding. The S65 follow-up in Annex D produced two conditional positives and no standalone finding.
+8.4 The 2026-11-09 field test is summarized in Annex C. It produced two negatives with five read-only requests and no finding. The S65 follow-up in Annex D produced two conditional positives and no standalone finding. The S66 follow-up in Annex E separated exact replay from a stateful time-var's rotation and monotonic date floor.
 
 ## 9 Records
 
@@ -270,6 +271,24 @@ Raw captures and target identifiers are withheld from this public repository.
 | Signature freshness | +30d and +365d accepted; -30d rejected |
 | Disposition | Two conditional positives; no standalone submission; no customer data |
 | Lesson | A reflected origin is a policy gap; prove cookie-only or key-confused acceptance before claiming a read |
+
+Raw captures and target identifiers are withheld from this public repository.
+
+## Annex E — S66 stateful signed-request replay (2026-11-09)
+
+| Item | Record |
+|---|---|
+| Target class | Public C2 SaaS bounty surface; authenticated account route |
+| Authorization | Published bounty program; read-only |
+| Requests | GET/HEAD/OPTIONS only; controlled account; no POST/PUT/DELETE |
+| Time-var field | Server `exp` around 31.5 million (roughly 365 days); semantics not documented |
+| Exact replay | Current-date and +365d signed requests returned 200 twice with the same body hash |
+| Statefulness | A higher accepted date made a lower-date replay 403; a new challenge invalidated the prior token |
+| Cross-path | The same token signed a different path at the same date (200) |
+| Post-expiry | Not reachable at low rate; no post-expiry replay observed |
+| CORS chain | Exact replay + reflected origin would read account data only with captured headers; no capture |
+| Disposition | Conditional Medium replay chain; no High/Critical; no customer data |
+| Lesson | Exact replay is not the same as a year-long token; test rotation, monotonic dates, and the capture vector |
 
 Raw captures and target identifiers are withheld from this public repository.
 
