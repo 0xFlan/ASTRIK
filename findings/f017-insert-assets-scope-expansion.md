@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Closed as design-intent scope expansion; no cross-task read |
+| Status | Superseded by F-018: the write path composed into a cross-task `auth` read |
 | Severity | Low (global asset/ingest write pollution in M2; not a confidentiality defect) |
 | Affected | `agent/tools_insert.go` (`insertAssets`), `server/traffic_ingest.go` (`ingestTraffic`), `db/task_assets_context.go` (`HostsByTaskWithSources`) |
 | Trigger | Task B calls `insert_assets` with a service URL on task A's host, then presents B's task token to `/api/traffic/ingest` |
@@ -16,16 +16,17 @@ accepts the foreign URL, links it to B, and the same ingest then succeeds with
 
 This is the documented discovery path: `insert_assets` is the worker's
 asset-registration tool and auto-scope is explicitly derived from the item the
-worker inserts. It is not a cross-task read: the ingested row is owned by B,
-`traffic_search`/`traffic_get`/`traffic_blob` still filter by owner, and A's raw
-exchange remains invisible to B (`F017 ... operator=200`, task-token routes
-`401`). The residual is that a compromised worker can add arbitrary global asset
-records and write its own traffic for them; that is a write/pollution boundary,
-not proof of data access outside the task.
+worker inserts. At 1.17 the ingested row was B-owned, the traffic readers still
+filtered by owner, and A's raw exchange remained invisible to B (`F017 ...
+operator=200`, task-token routes `401`). That was incomplete: F-018 showed the
+same auto-scope makes A's asset row visible to B's `list_assets`, including the
+stored `auth` credentials. F-018 redacts foreign credentials at the scoped read;
+the raw traffic path remains blocked by F-013 and the owner-scoped readers.
 
-## Non-composition
+## Composition
 
-The write does not chain with F-013: F-013's fixed `evidence.Store.prepare`
-requires the traffic row to be in the finding task's scope, and B's new row is
-B-owned; A's raw row still fails the owner check. It also does not turn the
-compact IDs into a read primitive.
+F-017 supplies the first link of F-018: B registers a different URL on A's host,
+which auto-adds the host scope. The write alone did not expose raw traffic, but
+it did expose A's asset metadata until F-018's read-side redaction. F-013's
+fixed `evidence.Store.prepare` still requires the traffic row to belong to the
+finding task, so the composed chain does not reach A's raw exchange.

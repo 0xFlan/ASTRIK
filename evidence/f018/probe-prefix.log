@@ -1,0 +1,15 @@
+=== RUN   TestF018AssetMergeCredentialRead
+2026/11/09 16:42:06 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 16:42:06 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 16:42:06 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF018AssetMergeCredentialRead2432765455/004/jwt.key
+2026/11/09 16:42:06 [auth] no admin password is set. Setup token for the /setup page: 37d4a1490cccf5de07e36a71ae08fec7
+2026/11/09 16:42:06 [btw] recover: context canceled
+2026/11/09 16:42:06 [engine] built provider for LLM profile 266 (anthropic / claude-x)
+2026/11/09 16:42:06 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 16:42:06 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 16:42:06 [manager] reloaded 197 task(s) from PG
+2026/11/09 16:42:06 [task-archive] worker: context canceled
+F018 pre_has_secret=false insert={"errors":null,"results":[{"index":0,"id":579,"type":"service"}]} after_id_has_secret=true after_dsl_has_secret=true task_ids={2370}
+--- PASS: TestF018AssetMergeCredentialRead (0.15s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.634s
