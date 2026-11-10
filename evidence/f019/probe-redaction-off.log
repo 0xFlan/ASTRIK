@@ -1,0 +1,15 @@
+=== RUN   TestF018ForeignHostScopeGate
+2026/11/09 16:52:27 [pg] database config source: environment variable ARTEX_PG_DSN
+2026/11/09 16:52:27 [mcp] browser MCP capture proxy configuration removed
+2026/11/09 16:52:27 [auth] new JWT key written to /var/folders/c4/_bymc9tx19d31hlw5txg7z2h0000gp/T/TestF018ForeignHostScopeGate686373935/004/jwt.key
+2026/11/09 16:52:27 [auth] no admin password is set. Setup token for the /setup page: b44c5bdbbe224aa6d18c4d9f3da0c0c3
+2026/11/09 16:52:27 [btw] recover: context canceled
+2026/11/09 16:52:27 [engine] built provider for LLM profile 302 (anthropic / claude-x)
+2026/11/09 16:52:27 [engine] LLM configured from DB: anthropic / claude-x
+2026/11/09 16:52:27 [manager] reloaded 224 task(s) from PG
+2026/11/09 16:52:27 [mcp] startup auto-discovery of f007-chain-55674 failed: context canceled
+2026/11/09 16:52:27 [task-archive] worker: context canceled
+F018 pre_has_secret=false insert_denied="{\"errors\":[{\"index\":0,\"error\":\"asset [service] https://shared-f018-2740.example.test/other is outside task scope; add_task_scope before inserting a new host\"}],\"results\":null}" pending_asset=0 after_id_has_url=false after_id_has_secret=false after_dsl_has_url=false after_dsl_has_secret=false task_ids={2739}
+--- PASS: TestF018ForeignHostScopeGate (0.14s)
+PASS
+ok  	github.com/Autumn-27/artex/server	0.630s

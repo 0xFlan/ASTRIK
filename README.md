@@ -5,7 +5,7 @@ ASTRIK is the operator-chartered pentest and bounty skill built on ARTEX.
 | Item | Value |
 |---|---|
 | Document identifier | ASTRIK-001 |
-| Revision | 1.18 |
+| Revision | 1.19 |
 | Date | 2026-11-09 |
 | Status | Released |
 | Classification | Public |
@@ -34,6 +34,7 @@ ASTRIK is the operator-chartered pentest and bounty skill built on ARTEX.
 | 1.16 | 2026-11-09 | Probed the post-F-011 boundary: found and fixed a cross-task finding-evidence bind that copied raw traffic (F-013), closed alternate raw/blob/tool/export and token-replay routes (F-014), and ran six real-model injection variants across target data and trusted control-plane fields (F-015); added `evidence/f013/`, `evidence/f014/`, and the 1.16 live matrix |
 | 1.17 | 2026-11-09 | Bypassed the model and called the worker write tools directly: found and fixed cross-task finding/fact asset anchors (F-016), measured compact traffic and BIGSERIAL finding/asset IDs, kept task-token routes 401 after replay/malformed/deleted-token probes, and recorded the remaining `insert_assets` self-expansion as a design-intent write limitation (F-017) |
 | 1.18 | 2026-11-09 | Chained F-017's host-claim write to a cross-task asset read: a new URL on A's host auto-scoped B to that host and `list_assets` returned A's stored `auth` password; fixed with task-owned credential redaction in both scoped asset reads and recorded F-018 |
+| 1.19 | 2026-11-10 | Closed F-017/F-018 at the root: a task-scoped `insert_assets` now requires the host/IP to be covered by its existing scope or owned assets before upsert/auto-scope; unproven foreign hosts are rejected, while explicit shared scope still permits metadata discovery and own assets |
 
 ## 1 Scope
 
@@ -797,6 +798,18 @@ and the token stops resolving after B is deleted. `traffic_blob` denies B and
 allows A for the same hash. No cross-task read or added privilege reproduced.
 Evidence: `evidence/f014/`; finding: F-014.
 
+F-019 removed the scope-manufacturing prerequisite that F-017 and F-018 shared.
+A task-scoped `insert_assets` now calls `HostCoveredByTaskScope` before any
+upsert. The host must already match the task's (or a direct source's)
+`root_domain`/`subdomain`/`ip`/`cidr`/`company` scope, or an asset the task
+already owns. An unproven host is rejected with `outside task scope`; no asset
+row, ownership link, or auto-scope is created. The scope gate also checks
+IP-literal URL hosts, so omitting a DNS name does not bypass it. The F-018 chain
+now yields `pending_asset=0` and no A URL or `auth` by ID or DSL. An explicit
+`add_task_scope` grant still restores shared metadata discovery, while A's
+credential stays redacted and B's own asset credential remains readable.
+Evidence: `evidence/f019/`; finding: F-019.
+
 F-018 chained F-017's write into a read. The exact-URL foreign-owner guard did
 not cover a **different** URL on A's host: B's `insert_assets` succeeded, its
 subdomain auto-scope claimed the host, and both `list_assets(id=A)` and a domain
@@ -804,9 +817,9 @@ DSL query returned A's service asset including the stored `auth` password. The
 pre-fix transcript is `after_id_has_secret=true after_dsl_has_secret=true`; the
 fixed `GetByIDsInScope`/`QueryDSLInScope` redact `auth` unless the calling task
 is in the asset's `task_ids`, so both become false while B's own asset password
-stays readable. This is the first cross-task credential read in the asset
-library, and it makes F-017's write path security-relevant. Evidence:
-`evidence/f018/`; finding: F-018.
+stays readable. F-019 later closed the root cause by rejecting the unproven
+host before the upsert; this redaction remains as defense in depth for explicit
+shared scope. Evidence: `evidence/f018/`; finding: F-018.
 
 F-016 bypassed the model and called the worker tools directly against two real
 tasks and the production handler. Pre-fix, B's `report_finding` and `record_fact`
@@ -818,14 +831,16 @@ assuming it: traffic IDs are `unix-seconds-sequence` (`1794264833-0001` next to
 and the adjacent finding ID are still denied by the F-011/F-013 owner checks.
 Evidence: `evidence/f017/`; finding: F-016.
 
-F-017 records the measured `insert_assets` behavior: B can register a service on
-A's host and then ingest that host with its own token (`host_expanded=true`,
-`ingested:1`, owner B). The pre-insert foreign ingest is still `ingested:0`, and
-the added row is B-owned; A's raw traffic remains unreadable (`traffic_get` and
-finding evidence deny the guessed IDs; task-token read routes are `401`). At
-1.17 this looked write-only. F-018 then showed the same auto-scope link exposes
-A's asset `auth`; the read is closed by F-018's credential redaction, while F-013
-still blocks the raw traffic path. Evidence: `evidence/f017/`; finding: F-017.
+F-017 recorded the measured `insert_assets` behavior: at 1.17, B could register
+a service on A's host and then ingest that host with its own token
+(`host_expanded=true`, `ingested:1`, owner B). At 1.17 this looked write-only;
+F-018 then showed the same auto-scope exposed A's asset `auth`. F-019 now closes
+the root cause: the unproven insert is rejected before any upsert, so the
+reproduced result is `host_expanded=false`, `post_ingest=ingested:0`, and
+`post_owner=0`; B's own host still ingests. A's raw traffic remains unreadable
+(`traffic_get` and finding evidence deny guessed IDs; task-token read routes are
+`401`), and F-013 still blocks the raw traffic path. Evidence: `evidence/f017/`;
+finding: F-017.
 
 F-015 ran six real-model variants: multiple tool results in one turn, a
 write-capable `insert_assets` after a target result, an untrusted `Read` file, a
@@ -862,8 +877,9 @@ with a specific reason, not an unexamined candidate.
 | F-014 | Closed — alternate route and token replay probes held | `findings/f014-alternate-traffic-routes.md` |
 | F-015 | Closed — six real-model injection variants produced no malicious write | `findings/f015-injection-variant-matrix.md` |
 | F-016 | Fixed — foreign finding/fact asset anchors rejected | `findings/f016-cross-task-finding-anchor.md` |
-| F-017 | Superseded — its write path composed into F-018's cross-task credential read | `findings/f017-insert-assets-scope-expansion.md` |
-| F-018 | Fixed — foreign asset `auth` is redacted from scoped agent reads | `findings/f018-cross-task-asset-credential-read.md` |
+| F-017 | Superseded — fixed at the root by F-019's pre-insert scope gate | `findings/f017-insert-assets-scope-expansion.md` |
+| F-018 | Superseded — root cause closed by F-019; credential redaction retained | `findings/f018-cross-task-asset-credential-read.md` |
+| F-019 | Fixed — `insert_assets` cannot expand scope onto an unproven host | `findings/f019-insert-assets-scope-gate.md` |
 
 ## Bibliography
 

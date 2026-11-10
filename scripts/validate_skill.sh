@@ -111,6 +111,11 @@ required=(
   "evidence/f018/probe-prefix.log"
   "evidence/f018/probe-fixed.log"
   "evidence/f018/repro/zz_evidence_f018_test.go"
+  "findings/f019-insert-assets-scope-gate.md"
+  "evidence/f019/README.md"
+  "evidence/f019/probe-redaction-on.log"
+  "evidence/f019/probe-redaction-off.log"
+  "evidence/f019/repro/zz_evidence_f018_test.go"
   "evidence/live/README.md"
   "evidence/live/probes-1.16.log"
   "evidence/live/probes-1.16.json"
@@ -127,8 +132,8 @@ for f in "${required[@]}"; do
   fi
 done
 
-if ! grep -q '| Revision | 1.18 |' README.md; then
-  echo "README revision is not 1.18" >&2
+if ! grep -q '| Revision | 1.19 |' README.md; then
+  echo "README revision is not 1.19" >&2
   exit 1
 fi
 

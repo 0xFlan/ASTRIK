@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Superseded by F-018: the write path composed into a cross-task `auth` read |
+| Status | Superseded — fixed at the root by F-019's pre-insert host-scope gate |
 | Severity | Low (global asset/ingest write pollution in M2; not a confidentiality defect) |
 | Affected | `agent/tools_insert.go` (`insertAssets`), `server/traffic_ingest.go` (`ingestTraffic`), `db/task_assets_context.go` (`HostsByTaskWithSources`) |
 | Trigger | Task B calls `insert_assets` with a service URL on task A's host, then presents B's task token to `/api/traffic/ingest` |

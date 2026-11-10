@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Confirmed, fixed in the local audit tree |
+| Status | Confirmed; root cause closed by F-019, credential redaction retained |
 | Severity | High in M2: task B reads task A's stored asset credentials (`auth`) without a traffic or finding bypass |
 | Affected | `agent/tools_insert.go` (`insert_assets` auto-scope), `db/asset_dsl.go` (`GetByIDsInScope`, `QueryDSLInScope`) |
 | Trigger | B inserts a **new** service URL on A's host. `insert_assets` auto-adds a subdomain scope for that host; B then calls `list_assets(id=A's service)` or a domain DSL query |
